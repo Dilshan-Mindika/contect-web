@@ -67,6 +67,7 @@ export default function ScrollCanvasBackground({
     ctx.imageSmoothingQuality = "high";
 
     // Strict 16:9 Aspect Ratio (1920x1080) math
+    // Strict 16:9 Aspect Ratio (1920x1080) contain-fit engine (100% full frame visible, zero cropping/zoom)
     const TARGET_ASPECT = 16 / 9;
     const canvasAspect = canvasWidth / canvasHeight;
 
@@ -76,20 +77,24 @@ export default function ScrollCanvasBackground({
     let destY: number;
 
     if (canvasAspect > TARGET_ASPECT) {
-      // Screen is wider than 16:9: match width for full immersive widescreen
-      destWidth = canvasWidth;
-      destHeight = canvasWidth / TARGET_ASPECT;
-      destX = 0;
-      destY = (canvasHeight - destHeight) / 2;
-    } else {
-      // Screen is taller than 16:9: match height
+      // Viewport is wider than 16:9: match height so full frame width and height are completely visible
       destHeight = canvasHeight;
       destWidth = canvasHeight * TARGET_ASPECT;
       destX = (canvasWidth - destWidth) / 2;
       destY = 0;
+    } else {
+      // Viewport is taller/narrower than 16:9: match width so full frame width and height are completely visible
+      destWidth = canvasWidth;
+      destHeight = canvasWidth / TARGET_ASPECT;
+      destX = 0;
+      destY = (canvasHeight - destHeight) / 2;
     }
 
-    // Clear and draw base frame
+    // Clear canvas background with dark theme color
+    ctx.fillStyle = "#050509";
+    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+    // Draw base frame with exact full 16:9 geometry
     ctx.globalAlpha = 1.0;
     ctx.drawImage(imgBase, 0, 0, imgBase.naturalWidth, imgBase.naturalHeight, destX, destY, destWidth, destHeight);
 
