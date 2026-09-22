@@ -9,6 +9,7 @@ interface ScrollCanvasProps {
 }
 
 const TOTAL_FRAMES_DEFAULT = 150;
+const TARGET_ASPECT = 16 / 9;
 
 export default function ScrollCanvasBackground({
   totalFrames = TOTAL_FRAMES_DEFAULT,
@@ -19,56 +20,52 @@ export default function ScrollCanvasBackground({
   const imagesCache = useRef<(HTMLImageElement | null)[]>([]);
   const targetFrameRef = useRef<number>(1);
   const currentFrameRef = useRef<number>(1);
-  const lastDrawnValRef = useRef<number>(-1);
+  const lastDrawnFrameRef = useRef<number>(-1);
   const isReducedMotion = useRef<boolean>(false);
   const animationFrameId = useRef<number | null>(null);
 
-  // Helper to format frame path (using optimized high-resolution WebP)
+  // Helper to format frame path (high-efficiency WebP)
   const getFramePath = useCallback((frameNumber: number) => {
     const formatted = String(frameNumber).padStart(3, "0");
     return `/frames/frame-${formatted}.webp`;
   }, []);
 
-  // 16:9 Precision Render Engine
-  const renderCanvas = useCallback((frameVal: number) => {
+  // Precise 16:9 Auto-Scale & Render Engine
+  const drawFrame = useCallback((frameNumber: number) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d", { alpha: false });
     if (!ctx) return;
 
-    const clampedVal = Math.max(1, Math.min(totalFrames, frameVal));
-    const frameBase = Math.floor(clampedVal);
-    const frameNext = Math.min(totalFrames, frameBase + 1);
-    const blendAlpha = clampedVal - frameBase;
+    const clampedFrame = Math.max(1, Math.min(totalFrames, Math.round(frameNumber)));
 
-    // Retrieve base frame or nearest loaded frame
-    let imgBase = imagesCache.current[frameBase];
-    if (!imgBase || !imgBase.complete || imgBase.naturalWidth === 0) {
+    // Retrieve requested frame or closest available cached frame
+    let img = imagesCache.current[clampedFrame];
+    if (!img || !img.complete || img.naturalWidth === 0) {
       for (let offset = 1; offset < totalFrames; offset++) {
-        const prev = imagesCache.current[Math.max(1, frameBase - offset)];
+        const prev = imagesCache.current[Math.max(1, clampedFrame - offset)];
         if (prev && prev.complete && prev.naturalWidth > 0) {
-          imgBase = prev;
+          img = prev;
           break;
         }
-        const next = imagesCache.current[Math.min(totalFrames, frameBase + offset)];
+        const next = imagesCache.current[Math.min(totalFrames, clampedFrame + offset)];
         if (next && next.complete && next.naturalWidth > 0) {
-          imgBase = next;
+          img = next;
           break;
         }
       }
     }
 
-    if (!imgBase || !imgBase.complete || imgBase.naturalWidth === 0) return;
+    if (!img || !img.complete || img.naturalWidth === 0) return;
 
     const canvasWidth = canvas.width;
     const canvasHeight = canvas.height;
+    if (canvasWidth === 0 || canvasHeight === 0) return;
 
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = "high";
 
-    // Strict 16:9 Aspect Ratio (1920x1080) math
-    // Strict 16:9 Aspect Ratio (1920x1080) contain-fit engine (100% full frame visible, zero cropping/zoom)
-    const TARGET_ASPECT = 16 / 9;
+    // Auto-scaling math: perfectly contains full 16:9 aspect ratio on ANY screen size
     const canvasAspect = canvasWidth / canvasHeight;
 
     let destWidth: number;
@@ -77,41 +74,40 @@ export default function ScrollCanvasBackground({
     let destY: number;
 
     if (canvasAspect > TARGET_ASPECT) {
-      // Viewport is wider than 16:9: match height so full frame width and height are completely visible
+      // Screen is wider than 16:9 -> fit to height, center horizontally
       destHeight = canvasHeight;
       destWidth = canvasHeight * TARGET_ASPECT;
       destX = (canvasWidth - destWidth) / 2;
       destY = 0;
     } else {
-      // Viewport is taller/narrower than 16:9: match width so full frame width and height are completely visible
+      // Screen is taller/narrower than 16:9 -> fit to width, center vertically
       destWidth = canvasWidth;
       destHeight = canvasWidth / TARGET_ASPECT;
       destX = 0;
       destY = (canvasHeight - destHeight) / 2;
     }
 
-    // Clear canvas background with dark theme color
+    // Fill background with dark theme color to prevent any seams
     ctx.fillStyle = "#050509";
     ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
-    // Draw base frame with exact full 16:9 geometry
-    ctx.globalAlpha = 1.0;
-    ctx.drawImage(imgBase, 0, 0, imgBase.naturalWidth, imgBase.naturalHeight, destX, destY, destWidth, destHeight);
+    // Draw single crisp frame at sub-pixel rounded position
+    ctx.drawImage(
+      img,
+      0,
+      0,
+      img.naturalWidth,
+      img.naturalHeight,
+      Math.round(destX),
+      Math.round(destY),
+      Math.round(destWidth),
+      Math.round(destHeight)
+    );
 
-    // Liquid-smooth sub-frame cross-fade
-    if (blendAlpha > 0.02 && frameNext !== frameBase) {
-      const imgNext = imagesCache.current[frameNext];
-      if (imgNext && imgNext.complete && imgNext.naturalWidth > 0) {
-        ctx.globalAlpha = blendAlpha;
-        ctx.drawImage(imgNext, 0, 0, imgNext.naturalWidth, imgNext.naturalHeight, destX, destY, destWidth, destHeight);
-        ctx.globalAlpha = 1.0;
-      }
-    }
-
-    lastDrawnValRef.current = clampedVal;
+    lastDrawnFrameRef.current = clampedFrame;
   }, [totalFrames]);
 
-  // Handle canvas resize with devicePixelRatio
+  // Robust Auto-Resize Handler for all screen sizes & DPRs
   const handleResize = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -129,11 +125,12 @@ export default function ScrollCanvasBackground({
       canvas.style.width = "100%";
       canvas.style.height = "100%";
 
-      renderCanvas(currentFrameRef.current);
+      // Redraw current frame immediately on resize
+      drawFrame(currentFrameRef.current);
     }
-  }, [renderCanvas]);
+  }, [drawFrame]);
 
-  // Instant high-speed parallel preloading of all 150 WebP frames
+  // Preload all 150 frames with parallel browser fetch and GPU decode
   useEffect(() => {
     imagesCache.current = new Array(totalFrames + 1).fill(null);
 
@@ -141,68 +138,64 @@ export default function ScrollCanvasBackground({
       isReducedMotion.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     }
 
-    // Step 1: Preload Frame 1 immediately
+    // Preload Frame 1 immediately for instant first paint
     const firstImg = new Image();
     firstImg.src = getFramePath(1);
     firstImg.onload = () => {
       imagesCache.current[1] = firstImg;
       if ("decode" in firstImg) {
-        firstImg.decode().then(() => {
+        firstImg.decode().catch(() => {}).finally(() => {
           handleResize();
-          renderCanvas(1);
-        }).catch(() => {
-          handleResize();
-          renderCanvas(1);
+          drawFrame(1);
         });
       } else {
         handleResize();
-        renderCanvas(1);
+        drawFrame(1);
       }
     };
 
-    // Step 2: Parallel batch preload for all 150 frames with hardware decode
-    const preloadAll = async () => {
-      const loadSingle = (index: number) => {
-        return new Promise<void>((resolve) => {
-          const img = new Image();
-          img.src = getFramePath(index);
-          img.onload = () => {
-            imagesCache.current[index] = img;
-            if ("decode" in img) {
-              img.decode().then(() => resolve()).catch(() => resolve());
-            } else {
-              resolve();
-            }
-          };
-          img.onerror = () => resolve();
-        });
-      };
-
-      // Burst load first 30 frames
-      const burstPromises: Promise<void>[] = [];
-      for (let i = 2; i <= 30 && i <= totalFrames; i++) {
-        burstPromises.push(loadSingle(i));
-      }
-      await Promise.all(burstPromises);
-
-      // Load remaining frames in batches of 20
-      for (let start = 31; start <= totalFrames; start += 20) {
-        const batch: Promise<void>[] = [];
-        for (let i = start; i < start + 20 && i <= totalFrames; i++) {
-          batch.push(loadSingle(i));
+    // Parallel background loading of remaining frames
+    for (let i = 2; i <= totalFrames; i++) {
+      const img = new Image();
+      img.src = getFramePath(i);
+      img.onload = () => {
+        imagesCache.current[i] = img;
+        if ("decode" in img) {
+          img.decode().catch(() => {});
         }
-        await Promise.all(batch);
-      }
-    };
-
-    preloadAll();
+      };
+    }
 
     return () => {
       imagesCache.current = [];
     };
-  }, [totalFrames, getFramePath, handleResize, renderCanvas]);
+  }, [totalFrames, getFramePath, handleResize, drawFrame]);
 
-  // Scroll position to target frame mapper
+  // Responsive ResizeObserver & Window Resize Listener
+  useEffect(() => {
+    handleResize();
+
+    window.addEventListener("resize", handleResize, { passive: true });
+    window.addEventListener("orientationchange", handleResize, { passive: true });
+
+    let resizeObserver: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== "undefined" && canvasRef.current) {
+      resizeObserver = new ResizeObserver(() => {
+        handleResize();
+      });
+      resizeObserver.observe(canvasRef.current);
+    }
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("orientationchange", handleResize);
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
+    };
+  }, [handleResize]);
+
+  // Real-time Scroll Position to Target Frame Calculation
   useEffect(() => {
     const handleScroll = () => {
       const container = containerRef?.current;
@@ -221,18 +214,14 @@ export default function ScrollCanvasBackground({
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
-    window.addEventListener("resize", handleResize);
-
     handleScroll();
-    handleResize();
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("resize", handleResize);
     };
-  }, [containerRef, totalFrames, handleResize]);
+  }, [containerRef, totalFrames]);
 
-  // Liquid 120 FPS RAF Loop with Delta Time Lerp
+  // Silky-Smooth 120 FPS Physics Animation Loop
   useEffect(() => {
     let isRunning = true;
     let lastTime = performance.now();
@@ -247,14 +236,16 @@ export default function ScrollCanvasBackground({
       const current = currentFrameRef.current;
       const diff = target - current;
 
-      if (Math.abs(diff) > 0.001) {
-        // High-precision smooth damping
-        const lerpRate = isReducedMotion.current ? 1 : 1 - Math.exp(-16 * dt);
-        const nextVal = current + diff * lerpRate;
+      if (Math.abs(diff) > 0.0001) {
+        // High-responsiveness exponential damping (snappy yet buttery smooth)
+        const lerpFactor = isReducedMotion.current ? 1 : 1 - Math.exp(-22 * dt);
+        const nextVal = current + diff * lerpFactor;
         currentFrameRef.current = nextVal;
-        renderCanvas(nextVal);
-      } else if (lastDrawnValRef.current !== current) {
-        renderCanvas(current);
+
+        const frameToDraw = Math.round(nextVal);
+        if (frameToDraw !== lastDrawnFrameRef.current) {
+          drawFrame(frameToDraw);
+        }
       }
 
       animationFrameId.current = requestAnimationFrame(animate);
@@ -268,7 +259,7 @@ export default function ScrollCanvasBackground({
         cancelAnimationFrame(animationFrameId.current);
       }
     };
-  }, [totalFrames, renderCanvas]);
+  }, [totalFrames, drawFrame]);
 
   return (
     <div className={`fixed inset-0 w-full h-full pointer-events-none z-0 overflow-hidden flex items-center justify-center ${className}`}>
@@ -277,8 +268,9 @@ export default function ScrollCanvasBackground({
         className="w-full h-full block"
         style={{ display: "block" }}
       />
-      {/* Subtle top & bottom edge shading for maximum text contrast while keeping 16:9 visual 100% visible */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#050509]/30 via-transparent to-[#050509]/50 pointer-events-none" />
+      {/* Subtle edge vignette for text readability */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#050509]/20 via-transparent to-[#050509]/40 pointer-events-none" />
     </div>
   );
 }
+

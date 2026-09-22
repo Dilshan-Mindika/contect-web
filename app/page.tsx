@@ -200,10 +200,10 @@ export default function ConstructionHeroPage() {
         />
 
         {/* Outer Frame with Minimalist Glass Outline (Matching Reference Layout) */}
-        <div className="relative z-10 w-full max-w-[1440px] h-full max-h-[920px] rounded-[28px] sm:rounded-[36px] lg:rounded-[44px] overflow-hidden border border-white/15 shadow-[0_20px_70px_rgba(0,0,0,0.85)] flex flex-col justify-between">
+        <div className="relative z-10 w-full max-w-[1440px] h-full max-h-[920px] rounded-[24px] sm:rounded-[32px] lg:rounded-[44px] overflow-y-auto lg:overflow-hidden border border-white/15 shadow-[0_20px_70px_rgba(0,0,0,0.85)] flex flex-col justify-between custom-scrollbar">
           
           {/* ================= TOP NAVIGATION BAR ================= */}
-          <header className="relative z-30 w-full px-6 sm:px-10 lg:px-14 pt-5 sm:pt-7 flex items-center justify-between">
+          <header className="relative z-30 w-full px-4 sm:px-8 lg:px-14 pt-4 sm:pt-6 lg:pt-7 flex items-center justify-between shrink-0">
             {/* Brand Logo matching reference ("EcoDream") */}
             <a href="#" className="flex items-center gap-2.5 group">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 via-teal-500 to-amber-400 p-[1.5px] shadow-lg shadow-teal-900/30">
@@ -291,16 +291,16 @@ export default function ConstructionHeroPage() {
           )}
 
           {/* ================= MAIN HERO BODY CONTENT (DYNAMIC PER SCROLL SECTION) ================= */}
-          <div className="relative z-20 w-full px-6 sm:px-10 lg:px-14 pt-4 sm:pt-8 flex-1 flex flex-col justify-between">
+          <div className="relative z-20 w-full px-4 sm:px-8 lg:px-12 pt-2 sm:pt-4 lg:pt-6 flex-1 flex flex-col justify-between">
             
             {/* Top Row: Oversized Headline (Left) + Top Feature Glass Card (Right) */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 lg:gap-8 items-start">
               
               {/* Left Column: Badge + Dynamic Headline + CTA Button */}
               <div className="lg:col-span-7 xl:col-span-7 flex flex-col items-start select-none transition-all duration-500 ease-out">
                 
                 {/* Availability / Phase Badge */}
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/40 border border-white/20 text-emerald-300 text-[11px] sm:text-xs font-semibold tracking-wider uppercase backdrop-blur-md mb-3 sm:mb-4 shadow-sm">
+                <div className="inline-flex items-center gap-2 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-black/40 border border-white/20 text-emerald-300 text-[10px] sm:text-xs font-semibold tracking-wider uppercase backdrop-blur-md mb-2 sm:mb-3 shadow-sm">
                   <span className="relative flex h-2 w-2">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
@@ -309,18 +309,18 @@ export default function ConstructionHeroPage() {
                 </div>
 
                 {/* Oversized Brand Headline */}
-                <h1 className="text-white font-extrabold uppercase text-4xl sm:text-5xl md:text-6xl lg:text-[66px] xl:text-[76px] leading-[0.96] tracking-[-0.03em] drop-shadow-lg">
+                <h1 className="text-white font-extrabold uppercase text-3xl sm:text-5xl md:text-6xl lg:text-[60px] xl:text-[72px] leading-[0.96] tracking-[-0.03em] drop-shadow-lg">
                   <span className="block transition-all duration-300">{currentStage.headlineLine1}</span>
                   <span className="block transition-all duration-300 text-transparent bg-clip-text bg-gradient-to-r from-white via-zinc-100 to-amber-100">
                     {currentStage.headlineLine2}
                   </span>
-                  <div className="flex flex-wrap items-center gap-3 sm:gap-5 mt-1">
+                  <div className="flex flex-wrap items-center gap-2.5 sm:gap-4 mt-1">
                     <span className="transition-all duration-300">{currentStage.headlineLine3}</span>
                     
                     {/* Inline CTA Button matching reference style */}
                     <a
                       href="#consultation"
-                      className="inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-2.5 sm:py-3.5 rounded-full bg-white text-zinc-950 font-semibold text-xs sm:text-sm tracking-normal hover:bg-zinc-100 hover:scale-105 active:scale-95 transition-all duration-300 shadow-[0_4px_25px_rgba(255,255,255,0.4)] group cursor-pointer"
+                      className="inline-flex items-center justify-center gap-2 px-5 sm:px-7 py-2 sm:py-3 rounded-full bg-white text-zinc-950 font-semibold text-xs sm:text-sm tracking-normal hover:bg-zinc-100 hover:scale-105 active:scale-95 transition-all duration-300 shadow-[0_4px_25px_rgba(255,255,255,0.4)] group cursor-pointer"
                     >
                       <span>{currentStage.ctaText}</span>
                       <svg
@@ -337,7 +337,7 @@ export default function ConstructionHeroPage() {
                 </h1>
 
                 {/* Short Supporting Description */}
-                <p className="mt-3 sm:mt-4 text-zinc-200 text-xs sm:text-sm max-w-md font-normal leading-relaxed drop-shadow-md bg-black/25 backdrop-blur-sm p-2 rounded-xl border border-white/10">
+                <p className="mt-2 sm:mt-3 text-zinc-200 text-xs sm:text-sm max-w-md font-normal leading-relaxed drop-shadow-md bg-black/25 backdrop-blur-sm p-2 rounded-xl border border-white/10">
                   {currentStage.description}
                 </p>
               </div>
@@ -474,10 +474,10 @@ export default function ConstructionHeroPage() {
           </div>
 
           {/* ================= SCROLL STAGE STEPPER & CONSULTATION BAR ================= */}
-          <div className="relative z-30 w-full px-6 sm:px-10 lg:px-14 pb-4 pt-1 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="relative z-30 w-full px-4 sm:px-8 lg:px-12 pb-3 sm:pb-4 pt-1 flex flex-col sm:flex-row items-center justify-between gap-2.5 shrink-0">
             
             {/* Scroll Stage Interactive Stepper (Click to jump to any stage) */}
-            <div className="flex items-center gap-2 bg-black/40 backdrop-blur-md px-4 py-2 rounded-full border border-white/15">
+            <div className="flex items-center gap-2 bg-black/40 backdrop-blur-md px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full border border-white/15">
               <span className="text-[10px] uppercase font-bold text-zinc-400 tracking-wider mr-1">
                 Phase 0{currentStageIdx + 1}
               </span>
