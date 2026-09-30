@@ -90,12 +90,11 @@ export default function ServicesPage() {
       <main className="pt-28 pb-20">
         {/* Hero Header */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0038B8]/20 border border-[#0038B8]/40 text-[#FFB800] text-xs font-bold tracking-wider uppercase backdrop-blur-md mb-6">
-            <span className="w-2 h-2 rounded-full bg-[#FFB800]" />
+          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-[#0038B8]/25 border border-[#0038B8]/50 text-[#FFB800] text-xs font-bold tracking-wider uppercase backdrop-blur-md mb-6 text-shadow-sub">
             CONTEC Engineering & Construction
           </div>
 
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold uppercase tracking-tight leading-[0.95] max-w-4xl mb-8">
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold uppercase tracking-tight leading-[0.95] max-w-4xl mb-8 text-shadow-heading">
             From Computational <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-slate-100 to-[#FFB800]">Vision</span> to Turnkey Reality
           </h1>
 

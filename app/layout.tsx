@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import FloatingActions from "@/components/FloatingActions";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -35,6 +36,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-[#050811] text-[#f4f4f7] selection:bg-[#0038B8] selection:text-white">
         {children}
+        <FloatingActions />
       </body>
     </html>
   );

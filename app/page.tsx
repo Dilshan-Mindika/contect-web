@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import ScrollCanvasBackground from "@/components/ScrollCanvasBackground";
+import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 interface SectionStage {
@@ -182,7 +183,6 @@ export default function HomePage() {
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const [currentStageIdx, setCurrentStageIdx] = useState<number>(0);
   const [activeChipIdx, setActiveChipIdx] = useState<number>(0);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Interactive Estimator State
   const [terrain, setTerrain] = useState("Alpine Mountain");
@@ -231,108 +231,26 @@ export default function HomePage() {
 
   return (
     <div className="relative w-full bg-[#050811] text-white">
+      {/* Global Sticky Navigation Bar */}
+      <Navbar />
       
-      {/* ================= SECTION 1: STICKY SCROLL HERO (150-FRAME CANVA ANIMATION) ================= */}
+      {/* ================= SECTION 1: STICKY SCROLL HERO (150-FRAME COVER ANIMATION) ================= */}
       <div ref={scrollContainerRef} className="relative w-full min-h-[450vh]">
         
-        {/* Sticky Viewport pinned full screen as user scrolls */}
-        <div className="sticky top-0 h-screen w-full flex items-center justify-center p-2 sm:p-4 md:p-6 lg:p-7 overflow-hidden">
+        {/* Full-Screen Sticky Viewport */}
+        <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden">
           
-          {/* Full-Screen 16:9 Scroll-Linked Canvas Animation */}
+          {/* Edge-to-Edge 16:9 Scroll-Linked Canvas Animation (Zero black spaces on sides) */}
           <ScrollCanvasBackground
             totalFrames={150}
             containerRef={scrollContainerRef}
           />
 
-          {/* Outer Frame with Minimalist Glass Outline */}
-          <div className="relative z-10 w-full max-w-[1440px] h-full max-h-[920px] rounded-[24px] sm:rounded-[32px] lg:rounded-[44px] overflow-y-auto lg:overflow-hidden border border-white/15 shadow-[0_20px_70px_rgba(0,0,0,0.85)] flex flex-col justify-between custom-scrollbar">
+          {/* Borderless Full-Screen Content Layer */}
+          <div className="relative z-10 w-full h-full flex flex-col justify-between overflow-y-auto lg:overflow-hidden custom-scrollbar pt-20 sm:pt-24 lg:pt-24">
             
-            {/* ================= TOP NAVIGATION BAR ================= */}
-            <header className="relative z-30 w-full px-4 sm:px-8 lg:px-14 pt-4 sm:pt-6 lg:pt-7 flex items-center justify-between shrink-0">
-              {/* Brand Logo */}
-              <Link href="/" className="flex items-center gap-3 group">
-                <div className="relative h-9 sm:h-11 w-32 sm:w-44 transition-transform duration-300 group-hover:scale-105">
-                  <Image
-                    src="/branding/logo nav.png"
-                    alt="CONTEC Design & Build"
-                    fill
-                    className="object-contain object-left"
-                    priority
-                  />
-                </div>
-              </Link>
-
-              {/* Navigation Links */}
-              <nav className="hidden md:flex items-center gap-6 lg:gap-8 bg-[#080e1c]/80 backdrop-blur-md px-5 py-1.5 rounded-full border border-blue-500/20">
-                {[
-                  { label: "Home", href: "/" },
-                  { label: "About", href: "/about" },
-                  { label: "Services", href: "/services" },
-                  { label: "Projects", href: "/projects" },
-                  { label: "Contact", href: "/contact" },
-                ].map((item, idx) => (
-                  <Link
-                    key={item.label}
-                    href={item.href}
-                    className={`text-xs lg:text-sm font-semibold transition-colors hover:text-[#FFB800] drop-shadow-sm ${
-                      idx === 0 ? "text-white font-bold" : "text-zinc-300/85"
-                    }`}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-              </nav>
-
-              {/* Top Right Action Button */}
-              <div className="flex items-center gap-3">
-                <Link
-                  href="/contact"
-                  className="px-5 sm:px-6 py-2 rounded-full border border-[#FFB800]/50 hover:border-[#FFB800] text-[#FFB800] hover:text-black hover:bg-[#FFB800] text-xs sm:text-sm font-bold backdrop-blur-md bg-[#FFB800]/10 transition-all duration-300 shadow-sm"
-                >
-                  Contact Us ↗
-                </Link>
-
-                {/* Mobile Hamburger Button */}
-                <button
-                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                  className="md:hidden p-2 rounded-lg bg-[#080e1c]/80 border border-white/15 text-white backdrop-blur-md"
-                  aria-label="Toggle menu"
-                >
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    {mobileMenuOpen ? (
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    ) : (
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                    )}
-                  </svg>
-                </button>
-              </div>
-            </header>
-
-            {/* Mobile Dropdown Nav Menu */}
-            {mobileMenuOpen && (
-              <div className="relative z-40 mx-4 mt-2 p-4 rounded-2xl glass-panel border border-white/20 bg-[#050811]/90 backdrop-blur-xl md:hidden flex flex-col gap-3">
-                {[
-                  { label: "Home", href: "/" },
-                  { label: "About Us", href: "/about" },
-                  { label: "Services", href: "/services" },
-                  { label: "Projects", href: "/projects" },
-                  { label: "Contact", href: "/contact" },
-                ].map((item) => (
-                  <Link
-                    key={item.label}
-                    href={item.href}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="px-3 py-2 rounded-lg text-sm text-zinc-100 hover:bg-white/10"
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-              </div>
-            )}
-
             {/* ================= MAIN HERO BODY CONTENT ================= */}
-            <div className="relative z-20 w-full px-4 sm:px-8 lg:px-12 pt-2 sm:pt-4 lg:pt-6 flex-1 flex flex-col justify-between">
+            <div className="relative z-20 w-full px-4 sm:px-8 lg:px-12 pt-2 sm:pt-4 flex-1 flex flex-col justify-between">
               
               {/* Top Row: Headline (Left) + Feature Glass Card (Right) */}
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 lg:gap-8 items-start">
@@ -340,17 +258,13 @@ export default function HomePage() {
                 {/* Left Column: Badge + Dynamic Headline + CTA Button */}
                 <div className="lg:col-span-7 xl:col-span-7 flex flex-col items-start select-none transition-all duration-500 ease-out">
                   
-                  {/* Availability / Phase Badge */}
-                  <div className="inline-flex items-center gap-2 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-[#0038B8]/30 border border-[#0038B8]/60 text-[#FFB800] text-[10px] sm:text-xs font-bold tracking-wider uppercase backdrop-blur-md mb-2 sm:mb-3 shadow-sm">
-                    <span className="relative flex h-2 w-2">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FFB800] opacity-75" />
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-[#FFB800]" />
-                    </span>
+                  {/* Category Badge with Golden Ambient Light */}
+                  <div className="inline-flex items-center px-4 py-1.5 rounded-full glass-badge text-[#FFB800] text-[11px] sm:text-xs font-bold tracking-wider uppercase mb-2 sm:mb-3">
                     {currentStage.badge}
                   </div>
 
-                  {/* Oversized Brand Headline */}
-                  <h1 className="text-white font-extrabold uppercase text-3xl sm:text-5xl md:text-6xl lg:text-[60px] xl:text-[72px] leading-[0.96] tracking-[-0.03em] drop-shadow-lg">
+                  {/* High-Contrast Oversized Brand Headline with Drop Shadow */}
+                  <h1 className="text-white font-extrabold uppercase text-3xl sm:text-5xl md:text-6xl lg:text-[60px] xl:text-[72px] leading-[0.96] tracking-[-0.03em] drop-shadow-[0_4px_20px_rgba(0,0,0,0.95)]">
                     <span className="block transition-all duration-300">{currentStage.headlineLine1}</span>
                     <span className="block transition-all duration-300 text-transparent bg-clip-text bg-gradient-to-r from-white via-blue-100 to-[#FFB800]">
                       {currentStage.headlineLine2}
@@ -358,10 +272,10 @@ export default function HomePage() {
                     <div className="flex flex-wrap items-center gap-2.5 sm:gap-4 mt-1">
                       <span className="transition-all duration-300">{currentStage.headlineLine3}</span>
                       
-                      {/* Inline CTA Button */}
+                      {/* Inline CTA Button with Warm Amber Glow Shadow */}
                       <Link
                         href={currentStage.ctaHref}
-                        className="inline-flex items-center justify-center gap-2 px-5 sm:px-7 py-2 sm:py-3 rounded-full bg-[#FFB800] hover:bg-[#F59E0B] text-black font-extrabold text-xs sm:text-sm tracking-normal hover:scale-105 active:scale-95 transition-all duration-300 shadow-[0_4px_25px_rgba(255,184,0,0.3)] group cursor-pointer"
+                        className="inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-2.5 sm:py-3 rounded-full bg-[#FFB800] hover:bg-[#F59E0B] text-black font-extrabold text-xs sm:text-sm tracking-normal hover:scale-105 active:scale-95 transition-all duration-300 shadow-[0_6px_28px_rgba(255,184,0,0.45)] group cursor-pointer"
                       >
                         <span>{currentStage.ctaText}</span>
                         <svg
@@ -377,15 +291,15 @@ export default function HomePage() {
                     </div>
                   </h1>
 
-                  {/* Short Supporting Description */}
-                  <p className="mt-2 sm:mt-3 text-zinc-200 text-xs sm:text-sm max-w-md font-normal leading-relaxed drop-shadow-md bg-black/40 backdrop-blur-sm p-2 rounded-xl border border-white/10">
+                  {/* Supporting Description with Solid Dark Contrast Backplate */}
+                  <p className="mt-3 text-zinc-100 text-xs sm:text-sm max-w-lg font-medium leading-relaxed dark-backdrop-contrast p-3.5 sm:p-4 rounded-2xl text-shadow-sub">
                     {currentStage.description}
                   </p>
                 </div>
 
                 {/* Right Column: Floating Top-Right Glass Card */}
                 <div className="lg:col-span-5 xl:col-span-5 flex justify-end">
-                  <div className="w-full max-w-[460px] rounded-[24px] sm:rounded-[28px] glass-panel border border-blue-500/25 p-4 sm:p-5 backdrop-blur-md bg-[#080e1c]/60 shadow-2xl transition-all duration-300">
+                  <div className="w-full max-w-[460px] rounded-[24px] sm:rounded-[28px] glass-panel border border-blue-500/30 p-4 sm:p-5 backdrop-blur-2xl bg-[#080e1c]/90 shadow-[0_16px_45px_rgba(0,0,0,0.85)] transition-all duration-300">
                     
                     {/* Style/Phase Pill Chips */}
                     <div className="flex flex-wrap items-center gap-2 pb-3 border-b border-white/15">
@@ -393,10 +307,10 @@ export default function HomePage() {
                         <button
                           key={chip}
                           onClick={() => setActiveChipIdx(idx)}
-                          className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 cursor-pointer ${
+                          className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-200 cursor-pointer ${
                             activeChipIdx === idx
-                              ? "bg-[#FFB800] text-black shadow-md font-bold"
-                              : "bg-white/[0.08] text-zinc-200 hover:bg-white/[0.18] hover:text-white"
+                              ? "bg-[#FFB800] text-black shadow-[0_2px_12px_rgba(255,184,0,0.45)]"
+                              : "bg-white/[0.08] text-zinc-200 hover:bg-white/[0.18] hover:text-white border border-white/10"
                           }`}
                         >
                           {chip}
@@ -407,13 +321,13 @@ export default function HomePage() {
                     {/* Content Details + Inset Image Preview */}
                     <div className="mt-3.5 flex flex-col-reverse sm:flex-row gap-3.5 items-start sm:items-center justify-between">
                       <div className="flex-1 pr-1">
-                        <div className="inline-block text-[11px] font-bold text-[#FFB800] uppercase tracking-wider mb-1">
+                        <div className="inline-block text-[11px] font-extrabold text-[#FFB800] uppercase tracking-wider mb-1 text-shadow-sub">
                           {currentStage.topCardTag}
                         </div>
-                        <h3 className="text-white font-semibold text-sm sm:text-base mb-1">
+                        <h3 className="text-white font-bold text-sm sm:text-base mb-1 text-shadow-sub">
                           {currentStage.topCardTitle}
                         </h3>
-                        <p className="text-zinc-200 text-xs leading-relaxed">
+                        <p className="text-zinc-200 text-xs leading-relaxed font-medium">
                           {currentStage.topCardDesc}
                         </p>
                       </div>
@@ -437,10 +351,10 @@ export default function HomePage() {
               {/* ================= BOTTOM ROW CARDS & SOCIAL PROOF ================= */}
               <div className="pb-3 sm:pb-4 pt-3 grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
                 
-                {/* Bottom Left: Tinted Card */}
+                {/* Bottom Left: Tinted Card with High Contrast */}
                 <div className="md:col-span-4 xl:col-span-4">
-                  <div className="glass-card-warm rounded-[22px] sm:rounded-[26px] p-3.5 sm:p-4 flex gap-3.5 items-center transition-all duration-300 hover:border-[#FFB800]/50 group">
-                    <div className="relative w-16 sm:w-18 h-18 sm:h-20 rounded-xl overflow-hidden shrink-0 border border-[#FFB800]/30 shadow-md">
+                  <div className="glass-card-warm rounded-[22px] sm:rounded-[26px] p-3.5 sm:p-4 flex gap-3.5 items-center transition-all duration-300 hover:border-[#FFB800]/60 group">
+                    <div className="relative w-16 sm:w-18 h-18 sm:h-20 rounded-xl overflow-hidden shrink-0 border border-[#FFB800]/40 shadow-md">
                       <Image
                         src={currentStage.bottomLeftImage}
                         alt="Materials Preview"
@@ -450,10 +364,10 @@ export default function HomePage() {
                     </div>
 
                     <div className="flex-1">
-                      <h4 className="text-white font-semibold text-xs sm:text-sm mb-0.5">
+                      <h4 className="text-white font-bold text-xs sm:text-sm mb-0.5 text-shadow-sub">
                         {currentStage.bottomLeftTitle}
                       </h4>
-                      <p className="text-zinc-200 text-[11px] sm:text-xs leading-snug line-clamp-2">
+                      <p className="text-zinc-200 text-[11px] sm:text-xs leading-snug line-clamp-2 font-medium">
                         {currentStage.bottomLeftDesc}
                       </p>
                       <Link
@@ -467,39 +381,41 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                {/* Bottom Center: Social Proof */}
+                {/* Bottom Center: Social Proof with High Contrast Backdrop */}
                 <div className="md:col-span-4 xl:col-span-4 flex flex-col items-center justify-center text-center py-1">
-                  <div className="flex items-center justify-center -space-x-3 mb-1.5">
-                    {[
-                      { src: "/images/avatar-1.jpg", alt: "Specialist 1" },
-                      { src: "/images/avatar-2.jpg", alt: "Specialist 2" },
-                      { src: "/images/avatar-3.jpg", alt: "Specialist 3" },
-                    ].map((avatar, idx) => (
-                      <div
-                        key={idx}
-                        className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-full overflow-hidden border-2 border-[#050811] shadow-md ring-1 ring-[#FFB800]/50"
-                      >
-                        <Image src={avatar.src} alt={avatar.alt} fill className="object-cover" />
-                      </div>
-                    ))}
-                  </div>
+                  <div className="dark-backdrop-contrast px-5 py-2.5 rounded-2xl flex flex-col items-center">
+                    <div className="flex items-center justify-center -space-x-3 mb-1.5">
+                      {[
+                        { src: "/images/avatar-1.jpg", alt: "Specialist 1" },
+                        { src: "/images/avatar-2.jpg", alt: "Specialist 2" },
+                        { src: "/images/avatar-3.jpg", alt: "Specialist 3" },
+                      ].map((avatar, idx) => (
+                        <div
+                          key={idx}
+                          className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-full overflow-hidden border-2 border-[#050811] shadow-md ring-1 ring-[#FFB800]"
+                        >
+                          <Image src={avatar.src} alt={avatar.alt} fill className="object-cover" />
+                        </div>
+                      ))}
+                    </div>
 
-                  <div className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight drop-shadow-md">
-                    {currentStage.statNumber}
+                    <div className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
+                      {currentStage.statNumber}
+                    </div>
+                    <p className="text-zinc-200 text-xs max-w-[220px] leading-tight mt-0.5 font-medium text-shadow-sub">
+                      {currentStage.statLabel}
+                    </p>
                   </div>
-                  <p className="text-zinc-200 text-xs max-w-[220px] leading-tight mt-0.5 drop-shadow-sm">
-                    {currentStage.statLabel}
-                  </p>
                 </div>
 
-                {/* Bottom Right: Mission Statement */}
+                {/* Bottom Right: Mission Statement with Strong Backdrop */}
                 <div className="md:col-span-4 xl:col-span-4 flex flex-col items-start md:items-end text-left md:text-right">
-                  <p className="text-zinc-200 text-xs sm:text-sm max-w-xs leading-relaxed drop-shadow-md bg-black/35 backdrop-blur-sm p-2 rounded-xl border border-white/10">
+                  <p className="text-zinc-100 text-xs sm:text-sm max-w-xs leading-relaxed font-medium dark-backdrop-contrast p-3.5 rounded-2xl text-shadow-sub">
                     {currentStage.rightStatement}
                   </p>
                   <Link
                     href={currentStage.rightHref}
-                    className="inline-flex items-center gap-1.5 mt-2 text-xs sm:text-sm font-bold text-white hover:text-[#FFB800] transition-colors group drop-shadow-sm"
+                    className="inline-flex items-center gap-1.5 mt-2 text-xs sm:text-sm font-extrabold text-white hover:text-[#FFB800] transition-colors group text-shadow-sub"
                   >
                     <span>{currentStage.rightLink}</span>
                     <span className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">↗</span>
@@ -512,8 +428,8 @@ export default function HomePage() {
 
             {/* ================= SCROLL STAGE STEPPER ================= */}
             <div className="relative z-30 w-full px-4 sm:px-8 lg:px-12 pb-3 sm:pb-4 pt-1 flex flex-col sm:flex-row items-center justify-between gap-2.5 shrink-0">
-              <div className="flex items-center gap-2 bg-[#080e1c]/80 backdrop-blur-md px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full border border-blue-500/20">
-                <span className="text-[10px] uppercase font-bold text-zinc-400 tracking-wider mr-1">
+              <div className="flex items-center gap-2 bg-[#080e1c]/85 backdrop-blur-xl px-4 py-2 rounded-full border border-blue-500/30 shadow-lg">
+                <span className="text-[10px] uppercase font-bold text-zinc-300 tracking-wider mr-1">
                   Phase 0{currentStageIdx + 1}
                 </span>
                 {STAGES.map((_, idx) => (
@@ -522,18 +438,18 @@ export default function HomePage() {
                     onClick={() => scrollToStage(idx)}
                     className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
                       currentStageIdx === idx
-                        ? "w-8 bg-[#FFB800] shadow-[0_0_10px_rgba(255,184,0,0.8)]"
-                        : "w-2 bg-white/30 hover:bg-white/60"
+                        ? "w-8 bg-[#FFB800] shadow-[0_0_12px_rgba(255,184,0,0.9)]"
+                        : "w-2 bg-white/40 hover:bg-white/70"
                     }`}
                     aria-label={`Jump to stage ${idx + 1}`}
                   />
                 ))}
-                <span className="text-[10px] text-zinc-400 ml-1">Scroll down to explore ↓</span>
+                <span className="text-[10px] text-zinc-300 ml-1 font-medium">Scroll down to explore ↓</span>
               </div>
 
               <Link
                 href="/projects"
-                className="text-xs font-bold text-zinc-300 hover:text-[#FFB800] flex items-center gap-1.5 transition-colors"
+                className="text-xs font-bold text-zinc-200 hover:text-[#FFB800] flex items-center gap-1.5 transition-colors bg-[#080e1c]/80 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/10"
               >
                 <span>View Full Architectural Portfolio</span>
                 <span>↓</span>
@@ -549,16 +465,16 @@ export default function HomePage() {
       <section className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 border-t border-white/10">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0038B8]/20 border border-[#0038B8]/40 text-[#FFB800] text-xs font-bold uppercase tracking-wider mb-4">
+            <div className="inline-flex items-center px-4 py-1.5 rounded-full glass-badge text-[#FFB800] text-xs font-bold uppercase tracking-wider mb-4">
               Integrated Capabilities
             </div>
-            <h2 className="text-3xl sm:text-5xl font-extrabold uppercase tracking-tight text-white max-w-2xl leading-tight">
+            <h2 className="text-3xl sm:text-5xl font-extrabold uppercase tracking-tight text-white max-w-2xl leading-tight drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)]">
               Mastery Across Every <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-slate-100 to-[#FFB800]">Dimension</span>
             </h2>
           </div>
           <Link
             href="/services"
-            className="px-6 py-3 rounded-full border border-blue-500/30 hover:border-[#FFB800] text-sm font-bold text-white hover:text-[#FFB800] transition-all backdrop-blur-md bg-white/[0.03] self-start md:self-auto"
+            className="px-6 py-3 rounded-full border border-blue-500/40 hover:border-[#FFB800] text-sm font-bold text-white hover:text-[#FFB800] transition-all backdrop-blur-md bg-[#080e1c]/80 shadow-lg self-start md:self-auto"
           >
             Explore All Services ↗
           </Link>
@@ -594,20 +510,20 @@ export default function HomePage() {
             <Link
               key={item.title}
               href={item.href}
-              className="glass-panel p-8 rounded-3xl border border-white/15 bg-white/[0.02] hover:bg-white/[0.06] hover:border-[#FFB800]/50 transition-all duration-300 group flex flex-col justify-between"
+              className="glass-panel p-8 rounded-3xl border border-white/15 bg-[#080e1c]/75 hover:bg-[#0c152b]/95 hover:border-[#FFB800]/60 hover:shadow-[0_12px_40px_rgba(0,56,184,0.3)] transition-all duration-300 group flex flex-col justify-between"
             >
               <div>
-                <span className="text-3xl font-extrabold text-[#FFB800] font-mono block mb-6 group-hover:translate-x-1 transition-transform">
+                <span className="text-3xl font-extrabold text-[#FFB800] font-mono block mb-6 group-hover:translate-x-1 transition-transform drop-shadow-[0_2px_8px_rgba(255,184,0,0.3)]">
                   {item.icon}
                 </span>
-                <h3 className="text-xl font-bold text-white mb-3 group-hover:text-[#FFB800] transition-colors">
+                <h3 className="text-xl font-bold text-white mb-3 group-hover:text-[#FFB800] transition-colors text-shadow-sub">
                   {item.title}
                 </h3>
-                <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed font-light">
+                <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed font-normal">
                   {item.desc}
                 </p>
               </div>
-              <div className="mt-8 pt-4 border-t border-white/10 flex items-center justify-between text-xs font-bold text-zinc-400 group-hover:text-[#FFB800]">
+              <div className="mt-8 pt-4 border-t border-white/10 flex items-center justify-between text-xs font-bold text-zinc-300 group-hover:text-[#FFB800]">
                 <span>View Details</span>
                 <span className="group-hover:translate-x-1 transition-transform">↗</span>
               </div>
@@ -620,16 +536,16 @@ export default function HomePage() {
       <section className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-t border-white/10">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FFB800]/15 border border-[#FFB800]/30 text-[#FFB800] text-xs font-bold uppercase tracking-wider mb-4">
+            <div className="inline-flex items-center px-4 py-1.5 rounded-full glass-badge text-[#FFB800] text-xs font-bold uppercase tracking-wider mb-4">
               Selected Works
             </div>
-            <h2 className="text-3xl sm:text-5xl font-extrabold uppercase tracking-tight text-white max-w-2xl leading-tight">
+            <h2 className="text-3xl sm:text-5xl font-extrabold uppercase tracking-tight text-white max-w-2xl leading-tight drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)]">
               Private Residences <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFB800] to-blue-300">Delivered</span>
             </h2>
           </div>
           <Link
             href="/projects"
-            className="px-6 py-3 rounded-full bg-[#FFB800] hover:bg-[#F59E0B] text-black text-sm font-extrabold transition-all shadow-lg shadow-amber-500/20 self-start md:self-auto"
+            className="px-6 py-3 rounded-full bg-[#FFB800] hover:bg-[#F59E0B] text-black text-sm font-extrabold transition-all shadow-[0_4px_20px_rgba(255,184,0,0.35)] self-start md:self-auto"
           >
             Browse All 120+ Estates ↗
           </Link>
@@ -640,7 +556,7 @@ export default function HomePage() {
             <Link
               key={proj.title}
               href={proj.href}
-              className="group glass-panel rounded-3xl overflow-hidden border border-white/15 bg-white/[0.02] hover:border-[#FFB800]/40 transition-all duration-500 flex flex-col justify-between"
+              className="group glass-panel rounded-3xl overflow-hidden border border-white/15 bg-[#080e1c]/75 hover:border-[#FFB800]/50 hover:shadow-[0_16px_48px_rgba(0,0,0,0.9)] transition-all duration-500 flex flex-col justify-between"
             >
               <div className="relative w-full h-80 overflow-hidden">
                 <Image
@@ -649,22 +565,22 @@ export default function HomePage() {
                   fill
                   className="object-cover group-hover:scale-110 transition-transform duration-700"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#050811] via-black/20 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#050811] via-[#050811]/70 to-transparent" />
                 <div className="absolute top-4 left-4">
-                  <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-[#0038B8]/80 backdrop-blur-md border border-white/20 text-[#FFB800] uppercase">
+                  <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-[#0038B8]/90 backdrop-blur-md border border-white/20 text-[#FFB800] uppercase shadow-md">
                     {proj.category}
                   </span>
                 </div>
                 <div className="absolute bottom-4 left-4 right-4">
-                  <span className="text-xs text-zinc-300 block mb-1">{proj.location}</span>
-                  <h3 className="text-2xl font-bold text-white group-hover:text-[#FFB800] transition-colors">
+                  <span className="text-xs text-zinc-300 block mb-1 font-medium">{proj.location}</span>
+                  <h3 className="text-2xl font-bold text-white group-hover:text-[#FFB800] transition-colors text-shadow-sub">
                     {proj.title}
                   </h3>
                 </div>
               </div>
 
               <div className="p-6 pt-4 border-t border-white/10 flex items-center justify-between text-xs">
-                <span className="text-zinc-400 font-medium">{proj.specs}</span>
+                <span className="text-zinc-300 font-medium">{proj.specs}</span>
                 <span className="text-[#FFB800] font-bold group-hover:translate-x-1 transition-transform">
                   Explore ↗
                 </span>
@@ -686,40 +602,40 @@ export default function HomePage() {
               className="object-cover group-hover:scale-105 transition-transform duration-700"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-            <div className="absolute bottom-6 left-6 right-6 bg-black/70 backdrop-blur-md p-4 rounded-2xl border border-white/15">
+            <div className="absolute bottom-6 left-6 right-6 dark-backdrop-contrast p-4 rounded-2xl">
               <span className="text-xs font-mono font-bold text-[#FFB800] block mb-1">
                 Material Detail • Grade-5 Titanium & Glulam
               </span>
-              <p className="text-xs text-zinc-300">
+              <p className="text-xs text-zinc-200 font-medium">
                 Interlocking parametric joints precision CNC-milled with sub-millimeter tolerances for century-long structural integrity.
               </p>
             </div>
           </div>
 
           <div className="lg:col-span-6 space-y-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0038B8]/20 border border-[#0038B8]/40 text-[#FFB800] text-xs font-bold uppercase tracking-wider">
+            <div className="inline-flex items-center px-4 py-1.5 rounded-full glass-badge text-[#FFB800] text-xs font-bold uppercase tracking-wider">
               Materiality & Zero Carbon
             </div>
             
-            <h2 className="text-3xl sm:text-5xl font-extrabold uppercase tracking-tight text-white leading-tight">
+            <h2 className="text-3xl sm:text-5xl font-extrabold uppercase tracking-tight text-white leading-tight drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)]">
               Honest Materials, <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-slate-100 to-[#FFB800]">
                 Enduring Tactility
               </span>
             </h2>
 
-            <p className="text-sm sm:text-base text-zinc-300 leading-relaxed font-light">
+            <p className="text-sm sm:text-base text-zinc-200 leading-relaxed font-normal">
               We combine certified European mass timber, low-carbon geopolymer concrete, charred Japanese cedar, and electrochromic glass that tints intelligently with solar intensity.
             </p>
 
             <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/10">
-              <div className="p-4 rounded-2xl bg-white/[0.03] border border-blue-500/20">
-                <span className="text-2xl font-extrabold text-[#FFB800] block font-mono">92%</span>
-                <span className="text-xs text-zinc-400">Waste reduction via robotic off-site prefabrication</span>
+              <div className="p-4 rounded-2xl bg-[#080e1c]/85 border border-blue-500/30 shadow-lg">
+                <span className="text-2xl font-extrabold text-[#FFB800] block font-mono drop-shadow-[0_2px_8px_rgba(255,184,0,0.3)]">92%</span>
+                <span className="text-xs text-zinc-300 font-medium">Waste reduction via robotic off-site prefabrication</span>
               </div>
-              <div className="p-4 rounded-2xl bg-white/[0.03] border border-blue-500/20">
-                <span className="text-2xl font-extrabold text-blue-400 block font-mono">100 Yrs</span>
-                <span className="text-xs text-zinc-400">Designed structural service lifetime rating</span>
+              <div className="p-4 rounded-2xl bg-[#080e1c]/85 border border-blue-500/30 shadow-lg">
+                <span className="text-2xl font-extrabold text-blue-400 block font-mono drop-shadow-[0_2px_8px_rgba(59,130,246,0.3)]">100 Yrs</span>
+                <span className="text-xs text-zinc-300 font-medium">Designed structural service lifetime rating</span>
               </div>
             </div>
 
@@ -745,10 +661,10 @@ export default function HomePage() {
             <span className="text-xs font-bold font-mono text-[#FFB800] tracking-wider uppercase block mb-2">
               Interactive Planning Tool
             </span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold uppercase text-white tracking-tight">
+            <h2 className="text-3xl sm:text-4xl font-extrabold uppercase text-white tracking-tight drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)]">
               Project Feasibility & Energy Estimator
             </h2>
-            <p className="text-xs sm:text-sm text-zinc-300 mt-2 font-light">
+            <p className="text-xs sm:text-sm text-zinc-300 mt-2 font-normal">
               Configure your property parameters below for an instant preliminary timeline and solar harvesting calculation.
             </p>
           </div>
@@ -770,8 +686,8 @@ export default function HomePage() {
                       onClick={() => setTerrain(t)}
                       className={`px-3 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                         terrain === t
-                          ? "bg-[#FFB800] text-black shadow-md"
-                          : "bg-white/[0.05] text-zinc-300 hover:bg-white/10 border border-white/10"
+                          ? "bg-[#FFB800] text-black shadow-[0_2px_12px_rgba(255,184,0,0.45)]"
+                          : "bg-white/[0.06] text-zinc-300 hover:bg-white/10 border border-white/15"
                       }`}
                     >
                       {t}
@@ -786,7 +702,7 @@ export default function HomePage() {
                   <label className="text-xs font-semibold uppercase tracking-wider text-zinc-300">
                     2. Desired Living Footprint
                   </label>
-                  <span className="text-sm font-extrabold text-[#FFB800] font-mono">
+                  <span className="text-sm font-extrabold text-[#FFB800] font-mono drop-shadow-[0_1px_6px_rgba(255,184,0,0.3)]">
                     {sqft.toLocaleString()} sq ft ({Math.round(sqft * 0.0929)} m²)
                   </span>
                 </div>
@@ -799,7 +715,7 @@ export default function HomePage() {
                   onChange={(e) => setSqft(Number(e.target.value))}
                   className="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-[#FFB800]"
                 />
-                <div className="flex justify-between text-[10px] text-zinc-500 mt-1 font-mono">
+                <div className="flex justify-between text-[10px] text-zinc-400 mt-1 font-mono">
                   <span>2,500 sq ft</span>
                   <span>7,000 sq ft</span>
                   <span>12,000 sq ft</span>
@@ -818,8 +734,8 @@ export default function HomePage() {
                       onClick={() => setAutonomy(lvl)}
                       className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                         autonomy === lvl
-                          ? "bg-[#FFB800] text-black shadow-md"
-                          : "bg-white/[0.05] text-zinc-300 hover:bg-white/10 border border-white/10"
+                          ? "bg-[#FFB800] text-black shadow-[0_2px_12px_rgba(255,184,0,0.45)]"
+                          : "bg-white/[0.06] text-zinc-300 hover:bg-white/10 border border-white/15"
                       }`}
                     >
                       {lvl}
@@ -832,36 +748,36 @@ export default function HomePage() {
 
             {/* Right Column: Calculated Results Card */}
             <div className="lg:col-span-5">
-              <div className="p-6 sm:p-8 rounded-3xl bg-black/60 border border-blue-500/20 backdrop-blur-xl space-y-6">
-                <span className="text-xs font-bold uppercase tracking-wider text-[#FFB800] block border-b border-white/10 pb-3">
+              <div className="p-6 sm:p-8 rounded-3xl bg-[#050811]/92 border border-blue-500/30 backdrop-blur-2xl space-y-6 shadow-[0_16px_48px_rgba(0,0,0,0.9)]">
+                <span className="text-xs font-bold uppercase tracking-wider text-[#FFB800] block border-b border-white/10 pb-3 text-shadow-sub">
                   Preliminary Build Metrics
                 </span>
 
                 <div className="space-y-4 text-xs">
                   <div className="flex items-center justify-between pb-3 border-b border-white/5">
-                    <span className="text-zinc-400">Estimated Construction Timeline:</span>
-                    <span className="text-white font-bold text-sm font-mono">{calculatedMonths} Months</span>
+                    <span className="text-zinc-300 font-medium">Estimated Construction Timeline:</span>
+                    <span className="text-white font-bold text-sm font-mono text-shadow-sub">{calculatedMonths} Months</span>
                   </div>
 
                   <div className="flex items-center justify-between pb-3 border-b border-white/5">
-                    <span className="text-zinc-400">Daily Clean Energy Output:</span>
-                    <span className="text-[#FFB800] font-bold text-sm font-mono">~{calculatedSolar} kW / day</span>
+                    <span className="text-zinc-300 font-medium">Daily Clean Energy Output:</span>
+                    <span className="text-[#FFB800] font-bold text-sm font-mono text-shadow-sub">~{calculatedSolar} kW / day</span>
                   </div>
 
                   <div className="flex items-center justify-between pb-3 border-b border-white/5">
-                    <span className="text-zinc-400">Annual Carbon Offset:</span>
-                    <span className="text-white font-bold text-sm font-mono">{Math.round(sqft * 0.0042)} Metric Tons</span>
+                    <span className="text-zinc-300 font-medium">Annual Carbon Offset:</span>
+                    <span className="text-white font-bold text-sm font-mono text-shadow-sub">{Math.round(sqft * 0.0042)} Metric Tons</span>
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <span className="text-zinc-400">Estimated Turnkey Investment:</span>
-                    <span className="text-[#FFB800] font-extrabold text-base font-mono">${calculatedInvestment}M – ${(Number(calculatedInvestment) * 1.3).toFixed(1)}M</span>
+                    <span className="text-zinc-300 font-medium">Estimated Turnkey Investment:</span>
+                    <span className="text-[#FFB800] font-extrabold text-base font-mono text-shadow-sub">${calculatedInvestment}M – ${(Number(calculatedInvestment) * 1.3).toFixed(1)}M</span>
                   </div>
                 </div>
 
                 <Link
                   href="/contact"
-                  className="w-full py-3.5 rounded-full bg-[#FFB800] hover:bg-[#F59E0B] text-black font-extrabold text-xs text-center block uppercase tracking-wider transition-all shadow-lg shadow-amber-500/20"
+                  className="w-full py-3.5 rounded-full bg-[#FFB800] hover:bg-[#F59E0B] text-black font-extrabold text-xs text-center block uppercase tracking-wider transition-all shadow-[0_4px_20px_rgba(255,184,0,0.35)]"
                 >
                   Request Detailed Architectural Blueprint ↗
                 </Link>
@@ -876,10 +792,10 @@ export default function HomePage() {
       {/* ================= SECTION 6: CLIENT TESTIMONIALS & AWARDS ================= */}
       <section className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-t border-white/10">
         <div className="text-center max-w-2xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0038B8]/20 border border-[#0038B8]/40 text-[#FFB800] text-xs font-bold uppercase tracking-wider mb-4">
+          <div className="inline-flex items-center px-4 py-1.5 rounded-full glass-badge text-[#FFB800] text-xs font-bold uppercase tracking-wider mb-4">
             Client Voices & Recognition
           </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold uppercase tracking-tight text-white">
+          <h2 className="text-3xl sm:text-4xl font-extrabold uppercase tracking-tight text-white drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)]">
             Trusted by Discerning Visionaries
           </h2>
         </div>
@@ -907,18 +823,18 @@ export default function HomePage() {
           ].map((item) => (
             <div
               key={item.client}
-              className="glass-panel p-8 rounded-3xl border border-white/15 bg-white/[0.02] flex flex-col justify-between"
+              className="glass-panel p-8 rounded-3xl border border-white/15 bg-[#080e1c]/60 hover:border-blue-500/40 hover:bg-[#0c152b]/80 transition-all duration-300 flex flex-col justify-between shadow-xl"
             >
               <div>
-                <div className="text-[#FFB800] text-base mb-4 tracking-widest">{item.rating}</div>
-                <p className="text-sm text-zinc-300 leading-relaxed italic mb-6 font-light">
-                  "{item.quote}"
+                <div className="text-[#FFB800] text-base mb-4 tracking-widest drop-shadow-[0_1px_6px_rgba(255,184,0,0.4)]">{item.rating}</div>
+                <p className="text-sm text-zinc-200 leading-relaxed italic mb-6 font-normal">
+                  &ldquo;{item.quote}&rdquo;
                 </p>
               </div>
 
               <div className="pt-4 border-t border-white/10">
                 <h4 className="text-white font-bold text-sm">{item.client}</h4>
-                <p className="text-xs text-[#FFB800] font-medium">{item.residence}</p>
+                <p className="text-xs text-[#FFB800] font-semibold">{item.residence}</p>
               </div>
             </div>
           ))}
@@ -927,18 +843,18 @@ export default function HomePage() {
 
       {/* ================= SECTION 7: FINAL CALL TO ACTION BANNER ================= */}
       <section className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="rounded-3xl bg-gradient-to-r from-[#0038B8]/30 via-[#080e1c] to-[#FFB800]/20 border border-blue-500/30 p-10 sm:p-16 text-center relative overflow-hidden shadow-2xl">
+        <div className="rounded-3xl bg-gradient-to-r from-[#0038B8]/35 via-[#080e1c] to-[#FFB800]/20 border border-blue-500/40 p-10 sm:p-16 text-center relative overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.9)]">
           <div className="relative z-10 max-w-3xl mx-auto">
-            <h2 className="text-3xl sm:text-5xl font-extrabold uppercase text-white tracking-tight leading-tight mb-4">
+            <h2 className="text-3xl sm:text-5xl font-extrabold uppercase text-white tracking-tight leading-tight mb-4 drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)]">
               Building Visions, Designing Futures
             </h2>
-            <p className="text-sm sm:text-base text-zinc-300 mb-8 leading-relaxed font-light">
+            <p className="text-sm sm:text-base text-zinc-200 mb-8 leading-relaxed font-normal">
               Connect with our principal architects and engineering partners in Zurich, London, or New York for a private design discovery consultation.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4">
               <Link
                 href="/contact"
-                className="px-8 py-4 rounded-full bg-[#FFB800] hover:bg-[#F59E0B] text-black font-extrabold text-sm tracking-wide transition-all shadow-lg shadow-amber-500/30"
+                className="px-8 py-4 rounded-full bg-[#FFB800] hover:bg-[#F59E0B] text-black font-extrabold text-sm tracking-wide transition-all shadow-[0_4px_24px_rgba(255,184,0,0.45)]"
               >
                 Schedule Discovery Session ↗
               </Link>

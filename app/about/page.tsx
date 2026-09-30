@@ -64,12 +64,11 @@ export default function AboutPage() {
       <main className="pt-28 pb-20">
         {/* Hero Section */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0038B8]/20 border border-[#0038B8]/40 text-[#FFB800] text-xs font-bold tracking-wider uppercase backdrop-blur-md mb-6">
-            <span className="w-2 h-2 rounded-full bg-[#FFB800] animate-pulse" />
+          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-[#0038B8]/25 border border-[#0038B8]/50 text-[#FFB800] text-xs font-bold tracking-wider uppercase backdrop-blur-md mb-6 text-shadow-sub">
             Our Heritage & Philosophy
           </div>
 
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold uppercase tracking-tight leading-[0.95] max-w-4xl mb-8">
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold uppercase tracking-tight leading-[0.95] max-w-4xl mb-8 text-shadow-heading">
             Building Visions, <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFB800] via-slate-100 to-blue-400">Designing Futures</span>
           </h1>
 

@@ -65,7 +65,7 @@ export default function ScrollCanvasBackground({
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = "high";
 
-    // Auto-scaling math: perfectly contains full 16:9 aspect ratio on ANY screen size
+    // Auto-scaling cover engine: fills edge-to-edge across 100% of viewport with zero black spaces on sides
     const canvasAspect = canvasWidth / canvasHeight;
 
     let destWidth: number;
@@ -74,17 +74,17 @@ export default function ScrollCanvasBackground({
     let destY: number;
 
     if (canvasAspect > TARGET_ASPECT) {
-      // Screen is wider than 16:9 -> fit to height, center horizontally
-      destHeight = canvasHeight;
-      destWidth = canvasHeight * TARGET_ASPECT;
-      destX = (canvasWidth - destWidth) / 2;
-      destY = 0;
-    } else {
-      // Screen is taller/narrower than 16:9 -> fit to width, center vertically
+      // Screen is wider than 16:9 -> match width edge-to-edge, center vertically (zero left/right bars)
       destWidth = canvasWidth;
       destHeight = canvasWidth / TARGET_ASPECT;
       destX = 0;
       destY = (canvasHeight - destHeight) / 2;
+    } else {
+      // Screen is taller than 16:9 -> match height edge-to-edge, center horizontally (zero top/bottom bars)
+      destHeight = canvasHeight;
+      destWidth = canvasHeight * TARGET_ASPECT;
+      destX = (canvasWidth - destWidth) / 2;
+      destY = 0;
     }
 
     // Fill background with dark theme color to prevent any seams
