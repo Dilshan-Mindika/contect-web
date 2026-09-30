@@ -13,8 +13,14 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Aether AI — Next-Gen AI Image Generator",
-  description: "Create breathtaking, photorealistic visuals and concept art with state-of-the-art neural diffusion models.",
+  title: "CONTEC Design & Build — Building Visions, Designing Futures",
+  description:
+    "Pioneering sustainable architecture, robotic structural engineering, and turnkey luxury construction by CONTEC Design & Build.",
+  icons: {
+    icon: "/branding/favicon.png",
+    shortcut: "/branding/favicon.png",
+    apple: "/branding/favicon.png",
+  },
 };
 
 export default function RootLayout({
@@ -27,10 +33,9 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-[#050509] text-[#f4f4f7] selection:bg-purple-600 selection:text-white">
+      <body className="min-h-full flex flex-col bg-[#050811] text-[#f4f4f7] selection:bg-[#0038B8] selection:text-white">
         {children}
       </body>
     </html>
   );
 }
-
