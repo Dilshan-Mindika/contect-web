@@ -86,19 +86,35 @@ export default function Footer() {
 
           {/* Col 4: Studios & Contact */}
           <div>
-            <h4 className="text-xs uppercase font-bold text-[#FFB800] tracking-wider mb-4">Global Studios</h4>
+            <h4 className="text-xs uppercase font-bold text-[#FFB800] tracking-wider mb-4">Contact & Location</h4>
             <div className="flex flex-col gap-3 text-xs text-zinc-400 leading-relaxed">
               <div>
-                <p className="text-white font-semibold">Zurich (Headquarters)</p>
-                <p>Bahnhofstrasse 45, 8001 Zürich</p>
+                <p className="text-white font-semibold">Kandy Head Office</p>
+                <p>No. 167, George E. De Silva Mawatha,</p>
+                <p>Kandy, Sri Lanka, 20000</p>
               </div>
               <div>
-                <p className="text-white font-semibold">London Design Lab</p>
-                <p>100 Bishopsgate, London EC2N 4AG</p>
+                <p className="text-white font-semibold">Direct Inquiries & WhatsApp</p>
+                <a href="tel:+94777812141" className="hover:text-[#FFB800] transition-colors block text-zinc-300 font-medium">
+                  +94 77 781 2141
+                </a>
               </div>
               <div>
-                <p className="text-white font-semibold">New York Studio</p>
-                <p>432 Park Avenue, New York, NY 10022</p>
+                <p className="text-white font-semibold">Official Email</p>
+                <a href="mailto:conteckandy@gmail.com" className="text-[#FFB800] hover:underline">
+                  conteckandy@gmail.com
+                </a>
+              </div>
+              <div className="pt-2">
+                <a
+                  href="https://www.facebook.com/conteckandy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#0038B8]/20 border border-[#0038B8]/40 text-[#FFB800] text-xs font-bold hover:bg-[#0038B8]/40 transition-colors"
+                >
+                  <span>Follow on Facebook</span>
+                  <span>↗</span>
+                </a>
               </div>
             </div>
           </div>
@@ -107,11 +123,11 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500">
-          <p>© {new Date().getFullYear()} CONTEC Design & Build. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} ConTec Design & Build (Kandy). All rights reserved.</p>
           <div className="flex items-center gap-6">
-            <a href="#" className="hover:text-zinc-300 transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-zinc-300 transition-colors">Terms of Service</a>
-            <a href="#" className="hover:text-[#FFB800] transition-colors">Sustainability Report 2026</a>
+            <a href="https://www.facebook.com/conteckandy" target="_blank" rel="noopener noreferrer" className="hover:text-[#FFB800] transition-colors">Facebook Page</a>
+            <Link href="/contact" className="hover:text-zinc-300 transition-colors">Contact Office</Link>
+            <Link href="/services" className="hover:text-[#FFB800] transition-colors">House Master Services</Link>
           </div>
         </div>
       </div>

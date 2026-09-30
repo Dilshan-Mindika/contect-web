@@ -54,11 +54,11 @@ export default function FloatingActions() {
 
       {/* WhatsApp Floating Concierge Button */}
       <a
-        href="https://wa.me/41791234567?text=Hello%20CONTEC%20Design%20%26%20Build%2C%20I%20would%20like%20to%20inquire%20about%20a%20project."
+        href="https://wa.me/94777812141?text=Hello%20ConTec%20Kandy%2C%20I%20would%20like%20to%20inquire%20about%20a%20construction%20%2F%20design%20project."
         target="_blank"
         rel="noopener noreferrer"
         className="group relative flex items-center justify-center w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-[#25D366] text-white shadow-[0_8px_30px_rgba(37,211,102,0.45)] hover:scale-108 hover:shadow-[0_12px_40px_rgba(37,211,102,0.6)] active:scale-95 transition-all duration-300"
-        aria-label="Contact CONTEC on WhatsApp"
+        aria-label="Contact ConTec on WhatsApp"
       >
         {/* Subtle Ambient Pulse Ring */}
         <span className="absolute -inset-1 rounded-full bg-[#25D366]/40 animate-ping pointer-events-none -z-10" />

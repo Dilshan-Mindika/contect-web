@@ -154,27 +154,27 @@ const STAGES: SectionStage[] = [
 
 const FEATURED_PROJECTS = [
   {
-    title: "Alpine Horizon Villa",
-    location: "St. Moritz, Switzerland",
-    category: "Alpine Sanctuary",
-    specs: "6,400 sq ft • 42 kW Solar • Net-Positive +120%",
+    title: "Hanthana Hillside Sanctuary",
+    location: "Hanthana, Kandy",
+    category: "Hillside Luxury",
+    specs: "6,400 sq ft • 42 kW Solar • Net-Zero Living",
     image: "/images/project-alpine.jpg",
     href: "/projects",
   },
   {
-    title: "Mirador Cliff Residence",
-    location: "Mallorca, Spain",
-    category: "Coastal Estate",
-    specs: "5,800 sq ft • 38 kW Solar • Cantilevered Design",
+    title: "Anniewatte Modern Residence",
+    location: "Anniewatte, Kandy",
+    category: "Tropical Modern",
+    specs: "5,800 sq ft • 38 kW Solar • Turnkey Build",
     image: "/images/project-coastal.jpg",
     href: "/projects",
   },
   {
-    title: "Sky Atrium Penthouse",
-    location: "Tokyo, Japan",
-    category: "Urban Biophilic",
-    specs: "4,200 sq ft • Indoor Atrium • LEED Platinum",
-    image: "/images/project-penthouse.jpg",
+    title: "Victoria Lakefront Villa",
+    location: "Digana / Victoria Golf Resort",
+    category: "Eco Sanctuary",
+    specs: "4,800 sq ft • Solar Microgrid • Multi-Tier Deck",
+    image: "/images/project-forest.jpg",
     href: "/projects",
   },
 ];
@@ -803,21 +803,21 @@ export default function HomePage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {[
             {
-              quote: "CONTEC delivered our alpine villa in St. Moritz three months ahead of schedule. The home produced 140% of its winter energy needs during the coldest blizzard on record.",
-              client: "Johannes & Claire von Berg",
-              residence: "Alpine Horizon Villa • St. Moritz",
+              quote: "ConTec delivered our Hanthana hillside villa ahead of schedule. The structural retaining and rock foundations held flawlessly through the heaviest monsoon season on record.",
+              client: "Dr. Rohan & Anoma Senanayake",
+              residence: "Hanthana Hillside Sanctuary • Kandy",
               rating: "★★★★★",
             },
             {
-              quote: "The cantilevered steel engineering in our Mallorca cliff house is sheer magic. We live entirely off-grid without sacrificing a single tactile luxury.",
-              client: "Mateo S.",
-              residence: "Mirador Cliff Residence • Mallorca",
+              quote: "The open-plan biophilic architecture and custom Kumbuk woodwork in our Anniewatte residence is sheer mastery. ConTec managed every municipal approval and key handover turnkey.",
+              client: "Kavinda Dissanayake",
+              residence: "Anniewatte Modern Residence • Kandy",
               rating: "★★★★★",
             },
             {
-              quote: "The acoustic isolation and indoor biophilic atrium transformed our Tokyo duplex. It feels like an ancient mountain retreat 40 stories in the air.",
-              client: "Dr. Kenji Takahashi",
-              residence: "Sky Atrium Penthouse • Tokyo",
+              quote: "House Master Kandy performed a full waterproofing and electrical diagnostic on our commercial building. Transparent pricing and exceptional structural precision.",
+              client: "Mahesh Bandaranaike",
+              residence: "Commercial Facility • Kandy",
               rating: "★★★★★",
             },
           ].map((item) => (
@@ -849,7 +849,7 @@ export default function HomePage() {
               Building Visions, Designing Futures
             </h2>
             <p className="text-sm sm:text-base text-zinc-200 mb-8 leading-relaxed font-normal">
-              Connect with our principal architects and engineering partners in Zurich, London, or New York for a private design discovery consultation.
+              Visit our head office at No. 167, George E. De Silva Mawatha, Kandy, or message our project directors on WhatsApp for a direct consultation.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4">
               <Link
@@ -858,12 +858,14 @@ export default function HomePage() {
               >
                 Schedule Discovery Session ↗
               </Link>
-              <Link
-                href="/projects"
+              <a
+                href="https://wa.me/94777812141?text=Hello%20ConTec%2C%20I%20would%20like%20to%20discuss%20a%20project."
+                target="_blank"
+                rel="noopener noreferrer"
                 className="px-8 py-4 rounded-full border border-white/30 hover:border-white text-white font-bold text-sm backdrop-blur-md bg-white/[0.08] transition-all"
               >
-                Explore Portfolio
-              </Link>
+                WhatsApp Us Directly
+              </a>
             </div>
           </div>
         </div>

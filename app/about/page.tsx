@@ -5,54 +5,54 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 export const metadata = {
-  title: "About Us | CONTEC Design & Build",
-  description: "Learn about CONTEC's visionary team, zero-carbon construction philosophy, and award-winning sustainable architectural living.",
+  title: "About Us | ConTec Design & Build (Kandy)",
+  description: "Learn about ConTec Kandy's expert team, master construction craftsmanship, property development, and House Master property care services.",
 };
 
 const LEADERSHIP = [
   {
-    name: "Elena Vance, AIA",
-    role: "Principal Design Architect & Co-Founder",
-    bio: "Pioneered parametric biophilic structural forms with over 18 years leading flagship sustainable projects across the Alps and Scandinavia.",
+    name: "Eng. Dilshan Perera, C.Eng",
+    role: "Managing Director & Principal Project Director",
+    bio: "Over 18 years of pioneering luxury residential construction, complex hillside foundations, and turnkey commercial developments across Kandy and the Central Province.",
     image: "/images/avatar-1.jpg",
-    credentials: "ETH Zurich Architecture • AIA Fellow",
+    credentials: "B.Sc. Civil Eng. • CEng MIE(SL)",
   },
   {
-    name: "Dr. Marcus Thorne",
-    role: "Chief Structural Engineer & BIM Director",
-    bio: "Specializes in aerospace-grade steel pre-fabrication, seismic load dampening, and automated robotic construction execution.",
+    name: "Archt. Kasun Jayawardena, AIA / SLIA",
+    role: "Head of Architectural Design & 3D Visualization",
+    bio: "Specializes in modern tropical architecture, biophilic daylighting, panoramic hillside integration, and high-precision 3D BIM coordination.",
     image: "/images/avatar-2.jpg",
-    credentials: "Imperial College London • Ph.D. Civil Eng.",
+    credentials: "M.Arch • Chartered Architect (SLIA)",
   },
   {
-    name: "Soraya Al-Mansoor",
-    role: "Head of Sustainable Systems & Microgrids",
-    bio: "Leads research in autonomous residential solar microgrids, thermal phase-change envelopes, and cradle-to-cradle materiality.",
+    name: "Eng. Samantha Weerasinghe",
+    role: "Lead Structural Engineer & House Master Director",
+    bio: "Leads hillside retaining wall engineering, structural diagnostics, roof waterproofing, and House Master comprehensive property care.",
     image: "/images/avatar-3.jpg",
-    credentials: "MIT Sustainable Architecture • LEED AP BD+C",
+    credentials: "B.Sc. Structural Eng. • Green Building AP",
   },
 ];
 
 const TIMELINE = [
   {
-    year: "2014",
-    title: "Foundation in Zurich",
-    desc: "Established with a bold mission: prove that ultra-luxury residences can be 100% net-zero energy producers.",
+    year: "2015",
+    title: "Established in Kandy",
+    desc: "Founded at George E. De Silva Mawatha to deliver uncompromising design & build construction standards in Sri Lanka.",
   },
   {
     year: "2018",
-    title: "Passivhaus Gold Milestone",
-    desc: "Delivered the first triple-certified Alpine residence operating off-grid through harsh winter blizzards.",
+    title: "Hillside Engineering Milestone",
+    desc: "Engineered and delivered award-winning cantilevered hillside villas across Hanthana, Anniewatte, and Bahirawakanda.",
   },
   {
     year: "2022",
-    title: "Robotic Prefabrication Studio",
-    desc: "Opened our 40,000 sq ft millimeter-accuracy CNC timber and steel pre-fabrication facility.",
+    title: "House Master Kandy Launch",
+    desc: "Established the dedicated House Master division for comprehensive property care, waterproofing, and structural maintenance.",
   },
   {
     year: "2026",
-    title: "Global Studio Expansion",
-    desc: "Over 120 completed private estates across Europe, North America, and Japan, setting new industry benchmarks.",
+    title: "Premier Turnkey Developer",
+    desc: "Over 120 luxury residences, commercial complexes, and bespoke renovations completed with 100% client satisfaction.",
   },
 ];
 
