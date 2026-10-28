@@ -18,10 +18,16 @@ import {
   LeaveStatus,
   AuditModule,
   AuditSeverity,
+  MachineryFleet,
+  MachineryStatus,
+  SiteDailyLog,
+  ConstructionQuotation,
+  QuotationStatus,
+  Subcontractor,
+  WebsiteShowcaseProject,
+  WebsiteInquiry,
 } from './types';
-import {
-  ENTERPRISE_USERS,
-} from './auth';
+import { ENTERPRISE_USERS } from './auth';
 import {
   INITIAL_LEADS,
   INITIAL_INVOICES,
@@ -31,6 +37,12 @@ import {
   INITIAL_EMPLOYEES,
   INITIAL_LEAVES,
   INITIAL_AUDIT_LOGS,
+  INITIAL_MACHINERY,
+  INITIAL_SITE_LOGS,
+  INITIAL_QUOTATIONS,
+  INITIAL_SUBCONTRACTORS,
+  INITIAL_WEBSITE_PROJECTS,
+  INITIAL_WEBSITE_INQUIRIES,
 } from './store';
 
 interface ERPContextType {
@@ -50,6 +62,12 @@ interface ERPContextType {
   employees: Employee[];
   leaves: LeaveRequest[];
   auditLogs: AuditLog[];
+  machinery: MachineryFleet[];
+  siteLogs: SiteDailyLog[];
+  quotations: ConstructionQuotation[];
+  subcontractors: Subcontractor[];
+  websiteProjects: WebsiteShowcaseProject[];
+  websiteInquiries: WebsiteInquiry[];
 
   // Mutations
   addLead: (lead: Omit<CRMLead, 'id' | 'lastUpdated'>) => void;
@@ -63,6 +81,16 @@ interface ERPContextType {
   adjustStock: (id: string, quantityDelta: number) => void;
   updateLeaveStatus: (id: string, status: LeaveStatus) => void;
   addEmployee: (employee: Omit<Employee, 'id' | 'empId'>) => void;
+  
+  // Construction Mutations
+  addQuotation: (quotation: Omit<ConstructionQuotation, 'id' | 'quoteNumber' | 'createdDate'>) => void;
+  updateQuotationStatus: (id: string, status: QuotationStatus) => void;
+  addSiteDailyLog: (log: Omit<SiteDailyLog, 'id'>) => void;
+  updateMachineryStatus: (id: string, status: MachineryStatus) => void;
+  addWebsiteProject: (project: Omit<WebsiteShowcaseProject, 'id'>) => void;
+  deleteWebsiteProject: (id: string) => void;
+  updateInquiryStatus: (id: string, status: WebsiteInquiry['status']) => void;
+  sendQuotationEmailAction: (quotationId: string) => Promise<{ success: boolean; simulated?: boolean; message?: string }>;
   logAuditEvent: (action: string, module: AuditModule, details: string, severity?: AuditSeverity) => void;
 }
 
@@ -73,7 +101,7 @@ export function ERPProvider({ children }: { children: React.ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Enterprise Data States
+  // Core Enterprise Data States
   const [leads, setLeads] = useState<CRMLead[]>(INITIAL_LEADS);
   const [invoices, setInvoices] = useState<Invoice[]>(INITIAL_INVOICES);
   const [projects, setProjects] = useState<Project[]>(INITIAL_PROJECTS);
@@ -82,6 +110,14 @@ export function ERPProvider({ children }: { children: React.ReactNode }) {
   const [employees, setEmployees] = useState<Employee[]>(INITIAL_EMPLOYEES);
   const [leaves, setLeaves] = useState<LeaveRequest[]>(INITIAL_LEAVES);
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>(INITIAL_AUDIT_LOGS);
+
+  // Construction Specialized Data States
+  const [machinery, setMachinery] = useState<MachineryFleet[]>(INITIAL_MACHINERY);
+  const [siteLogs, setSiteLogs] = useState<SiteDailyLog[]>(INITIAL_SITE_LOGS);
+  const [quotations, setQuotations] = useState<ConstructionQuotation[]>(INITIAL_QUOTATIONS);
+  const [subcontractors] = useState<Subcontractor[]>(INITIAL_SUBCONTRACTORS);
+  const [websiteProjects, setWebsiteProjects] = useState<WebsiteShowcaseProject[]>(INITIAL_WEBSITE_PROJECTS);
+  const [websiteInquiries, setWebsiteInquiries] = useState<WebsiteInquiry[]>(INITIAL_WEBSITE_INQUIRIES);
 
   // Check existing session on mount
   useEffect(() => {
@@ -94,7 +130,6 @@ export function ERPProvider({ children }: { children: React.ReactNode }) {
             setUser(data.user);
           }
         } else {
-          // If no active session, auto-login with Super Admin for seamless preview or allow manual login
           const storedToken = localStorage.getItem('contec_erp_token');
           const storedUser = localStorage.getItem('contec_erp_user');
           if (storedToken && storedUser) {
@@ -170,7 +205,6 @@ export function ERPProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem('contec_erp_user');
   };
 
-  // Switch persona seamlessly for evaluating role-based access control
   const switchPersona = async (email: string) => {
     const persona = ENTERPRISE_USERS[email];
     if (persona) {
@@ -178,7 +212,7 @@ export function ERPProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // Data mutation helpers
+  // Mutations
   const addLead = (leadData: Omit<CRMLead, 'id' | 'lastUpdated'>) => {
     const newLead: CRMLead = {
       ...leadData,
@@ -250,7 +284,6 @@ export function ERPProvider({ children }: { children: React.ReactNode }) {
           const updatedTasks = prj.tasks.map((t) =>
             t.id === taskId ? { ...t, status } : t
           );
-          // Auto recalculate progress based on completed tasks
           const completedCount = updatedTasks.filter((t) => t.status === 'COMPLETED').length;
           const newProgress = Math.round((completedCount / updatedTasks.length) * 100);
           return { ...prj, tasks: updatedTasks, progress: Math.max(prj.progress, newProgress) };
@@ -326,6 +359,92 @@ export function ERPProvider({ children }: { children: React.ReactNode }) {
     logAuditEvent('EMPLOYEE_ONBOARDED', 'HR', `Onboarded new talent: ${newEmp.name} (${newEmp.role})`);
   };
 
+  // Construction Specialized Mutations
+  const addQuotation = (quoteData: Omit<ConstructionQuotation, 'id' | 'quoteNumber' | 'createdDate'>) => {
+    const nextQuoteNum = `CNT-QT-2026-${Math.floor(500 + Math.random() * 500)}`;
+    const newQuote: ConstructionQuotation = {
+      ...quoteData,
+      id: `quote-${Date.now().toString().slice(-4)}`,
+      quoteNumber: nextQuoteNum,
+      createdDate: new Date().toISOString().split('T')[0],
+    };
+    setQuotations((prev) => [newQuote, ...prev]);
+    logAuditEvent('QUOTATION_GENERATED', 'BOQ', `Generated official construction tender ${newQuote.quoteNumber} for ${newQuote.clientCompany} ($${newQuote.grandTotal.toLocaleString()})`);
+  };
+
+  const updateQuotationStatus = (id: string, status: QuotationStatus) => {
+    setQuotations((prev) =>
+      prev.map((q) => (q.id === id ? { ...q, status } : q))
+    );
+    logAuditEvent('QUOTATION_STATUS_UPDATED', 'BOQ', `Quotation ${id} marked as ${status}`);
+  };
+
+  const addSiteDailyLog = (logData: Omit<SiteDailyLog, 'id'>) => {
+    const newLog: SiteDailyLog = {
+      ...logData,
+      id: `log-site-${Date.now().toString().slice(-4)}`,
+    };
+    setSiteLogs((prev) => [newLog, ...prev]);
+    logAuditEvent('SITE_DAILY_LOG_SUBMITTED', 'SITE_LOGS', `Site log filed for ${newLog.projectName}: ${newLog.concretePouredM3} m³ poured, ${newLog.workforceCount} personnel`);
+  };
+
+  const updateMachineryStatus = (id: string, status: MachineryStatus) => {
+    setMachinery((prev) =>
+      prev.map((m) => (m.id === id ? { ...m, status } : m))
+    );
+    logAuditEvent('MACHINERY_STATUS_CHANGED', 'MACHINERY', `Equipment asset ${id} status changed to ${status}`);
+  };
+
+  const addWebsiteProject = (projectData: Omit<WebsiteShowcaseProject, 'id'>) => {
+    const newWebProject: WebsiteShowcaseProject = {
+      ...projectData,
+      id: `web-prj-${Date.now().toString().slice(-4)}`,
+    };
+    setWebsiteProjects((prev) => [newWebProject, ...prev]);
+    logAuditEvent('WEBSITE_PROJECT_ADDED', 'WEBSITE', `Added portfolio project: ${newWebProject.title}`);
+  };
+
+  const deleteWebsiteProject = (id: string) => {
+    setWebsiteProjects((prev) => prev.filter((p) => p.id !== id));
+    logAuditEvent('WEBSITE_PROJECT_DELETED', 'WEBSITE', `Removed portfolio project: ${id}`);
+  };
+
+  const updateInquiryStatus = (id: string, status: WebsiteInquiry['status']) => {
+    setWebsiteInquiries((prev) =>
+      prev.map((inq) => (inq.id === id ? { ...inq, status } : inq))
+    );
+    logAuditEvent('INQUIRY_STATUS_UPDATED', 'WEBSITE', `Client inquiry ${id} updated to ${status}`);
+  };
+
+  const sendQuotationEmailAction = async (quotationId: string) => {
+    const q = quotations.find((quote) => quote.id === quotationId);
+    if (!q) return { success: false, message: 'Quotation not found' };
+
+    try {
+      const res = await fetch('/api/erp/email/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'QUOTATION',
+          to: q.clientEmail,
+          clientName: q.clientName,
+          quotation: {
+            quoteNumber: q.quoteNumber,
+            projectScope: q.projectScope,
+            grandTotal: q.grandTotal,
+            validUntil: q.validUntil,
+          },
+        }),
+      });
+
+      const data = await res.json();
+      logAuditEvent('QUOTATION_EMAIL_DISPATCHED', 'BOQ', `Dispatched tender ${q.quoteNumber} via email to ${q.clientEmail}`);
+      return { success: true, simulated: data.simulated, message: 'Quotation successfully dispatched' };
+    } catch {
+      return { success: false, message: 'Failed to dispatch email' };
+    }
+  };
+
   return (
     <ERPContext.Provider
       value={{
@@ -343,6 +462,12 @@ export function ERPProvider({ children }: { children: React.ReactNode }) {
         employees,
         leaves,
         auditLogs,
+        machinery,
+        siteLogs,
+        quotations,
+        subcontractors,
+        websiteProjects,
+        websiteInquiries,
         addLead,
         updateLeadStage,
         addInvoice,
@@ -354,6 +479,14 @@ export function ERPProvider({ children }: { children: React.ReactNode }) {
         adjustStock,
         updateLeaveStatus,
         addEmployee,
+        addQuotation,
+        updateQuotationStatus,
+        addSiteDailyLog,
+        updateMachineryStatus,
+        addWebsiteProject,
+        deleteWebsiteProject,
+        updateInquiryStatus,
+        sendQuotationEmailAction,
         logAuditEvent,
       }}
     >

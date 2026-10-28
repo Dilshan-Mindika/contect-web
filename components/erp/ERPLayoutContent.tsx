@@ -21,15 +21,23 @@ import {
   ExternalLink,
   Lock,
   Sparkles,
+  FileText,
+  Wrench,
+  Activity,
+  Globe,
 } from 'lucide-react';
 
 const NAV_ITEMS = [
   { label: 'Executive Command', href: '/erp', icon: LayoutDashboard, badge: 'Live' },
-  { label: 'CRM & Contracts', href: '/erp/crm', icon: TrendingUp, badge: '5 Deals' },
+  { label: 'Quotations & BOQ', href: '/erp/quotations', icon: FileText, badge: 'PDF' },
+  { label: 'Sites & Engineering', href: '/erp/projects', icon: HardHat, badge: '4 Sites' },
+  { label: 'Plant & Machinery', href: '/erp/machinery', icon: Wrench, badge: 'Fleet' },
+  { label: 'Site Daily Logs', href: '/erp/site-logs', icon: Activity, badge: 'Shift' },
   { label: 'Finance & Invoicing', href: '/erp/finance', icon: CreditCard, badge: '$48.6M' },
-  { label: 'Project Operations', href: '/erp/projects', icon: HardHat, badge: '4 Sites' },
-  { label: 'Supply Chain & Stock', href: '/erp/inventory', icon: Boxes, badge: 'Alerts' },
+  { label: 'Supply & Yard Stock', href: '/erp/inventory', icon: Boxes, badge: 'Alerts' },
+  { label: 'Commercial CRM', href: '/erp/crm', icon: TrendingUp, badge: '5 Deals' },
   { label: 'HR & Workforce', href: '/erp/hr', icon: Users, badge: '184 Staff' },
+  { label: 'Website CMS', href: '/erp/website', icon: Globe, badge: 'Live' },
   { label: 'Security & Audit', href: '/erp/audit', icon: ShieldCheck, badge: 'Quantum' },
 ];
 
@@ -241,13 +249,21 @@ export default function ERPLayoutContent({ children }: { children: React.ReactNo
             </div>
 
             {/* Sidebar Footer System Health */}
-            <div className="pt-4 border-t border-white/10">
+            <div className="pt-4 border-t border-white/10 space-y-2">
               <div className="flex items-center justify-between text-xs text-zinc-400">
                 <span className="flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-emerald-400" />
                   <span>Nodes Operational</span>
                 </span>
                 <span className="font-mono text-[10px] text-zinc-400">99.98% SLA</span>
+              </div>
+              <div className="flex items-center justify-between text-[11px] text-zinc-500 font-mono">
+                <span>MySQL (.env)</span>
+                <span className="text-blue-400">Pool Ready</span>
+              </div>
+              <div className="flex items-center justify-between text-[11px] text-zinc-500 font-mono">
+                <span>Email SMTP</span>
+                <span className="text-emerald-400">Dispatch Active</span>
               </div>
             </div>
           </div>
