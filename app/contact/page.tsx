@@ -17,11 +17,30 @@ export default function ContactPage() {
   });
 
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [inquiryId, setInquiryId] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.fullName || !formData.email) return;
-    setSubmitted(true);
+
+    setIsSubmitting(true);
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (data.inquiryId) {
+        setInquiryId(data.inquiryId);
+      }
+    } catch (err) {
+      console.warn('Inquiry dispatch error', err);
+    } finally {
+      setIsSubmitting(false);
+      setSubmitted(true);
+    }
   };
 
   return (
@@ -60,6 +79,11 @@ export default function ContactPage() {
                     <h3 className="text-2xl font-bold text-white mb-3">
                       Consultation Request Received
                     </h3>
+                    {inquiryId && (
+                      <div className="inline-block px-3 py-1 bg-white/10 border border-[#FFB800]/40 rounded-lg text-xs font-mono text-[#FFB800] mb-4">
+                        Inquiry Reference Dossier: {inquiryId}
+                      </div>
+                    )}
                     <p className="text-sm text-zinc-300 max-w-md mx-auto leading-relaxed mb-6 font-light">
                       Thank you, {formData.fullName}. A principal architect from CONTEC Design & Build will review your site specifications and contact you at {formData.email}.
                     </p>
@@ -202,9 +226,17 @@ export default function ContactPage() {
 
                     <button
                       type="submit"
-                      className="w-full py-4 rounded-full bg-[#FFB800] hover:bg-[#F59E0B] text-black font-extrabold text-sm tracking-wide uppercase transition-all shadow-lg shadow-amber-500/20 cursor-pointer"
+                      disabled={isSubmitting}
+                      className="w-full py-4 rounded-full bg-[#FFB800] hover:bg-[#F59E0B] text-black font-extrabold text-sm tracking-wide uppercase transition-all shadow-lg shadow-amber-500/20 cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
                     >
-                      Submit Project Discovery Request ↗
+                      {isSubmitting ? (
+                        <>
+                          <span className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin"></span>
+                          <span>Registering Inquiry with Engineering Team...</span>
+                        </>
+                      ) : (
+                        <span>Submit Project Discovery Request ↗</span>
+                      )}
                     </button>
 
                     <p className="text-center text-[11px] text-zinc-500">
