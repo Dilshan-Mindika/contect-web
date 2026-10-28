@@ -57,7 +57,10 @@ export default function Footer() {
                 <Link href="/projects" className="hover:text-[#FFB800] transition-colors">Project Portfolio</Link>
               </li>
               <li>
-                <Link href="/contact" className="hover:text-[#FFB800] transition-colors">Book Consultation</Link>
+                <Link href="/erp" className="text-[#FFB800] font-bold hover:underline flex items-center gap-1">
+                  <span>Enterprise ERP Suite</span>
+                  <span className="text-[10px] px-1.5 py-0.2 rounded bg-[#0038B8] text-white">v4.2</span>
+                </Link>
               </li>
             </ul>
           </div>
@@ -125,6 +128,9 @@ export default function Footer() {
         <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500">
           <p>© {new Date().getFullYear()} ConTec Design & Build (Kandy). All rights reserved.</p>
           <div className="flex items-center gap-6">
+            <Link href="/erp" className="text-[#FFB800] hover:underline font-semibold">
+              ERP Executive Suite
+            </Link>
             <a href="https://www.facebook.com/conteckandy" target="_blank" rel="noopener noreferrer" className="hover:text-[#FFB800] transition-colors">Facebook Page</a>
             <Link href="/contact" className="hover:text-zinc-300 transition-colors">Contact Office</Link>
             <Link href="/services" className="hover:text-[#FFB800] transition-colors">House Master Services</Link>
