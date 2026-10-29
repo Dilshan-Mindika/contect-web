@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useERP } from '@/lib/erp/AuthContext';
+import { formatLKR } from '@/lib/erp/currency';
 import {
   Users,
   Search,
@@ -18,9 +19,9 @@ export default function HRPage() {
     'Executive Board',
     'Corporate Finance',
     'Field Operations',
-    'People & Culture',
-    'Commercial & CRM',
     'Structural Engineering',
+    'Quantity Surveying & Contracts',
+    'Safety & Quality Assurance',
   ];
 
   const filteredEmployees = employees.filter((emp) => {
@@ -32,7 +33,8 @@ export default function HRPage() {
     return matchesDept && matchesSearch;
   });
 
-  const totalPayroll = employees.reduce((acc, emp) => acc + emp.salary, 0);
+  const totalMonthlyPayroll = employees.reduce((acc, emp) => acc + emp.salary, 0);
+  const totalAnnualPayroll = employees.reduce((acc, emp) => acc + (emp.annualPackageLkr || emp.salary * 12), 0);
   const avgAttendance = Math.round(
     employees.reduce((acc, emp) => acc + emp.attendanceRate, 0) / (employees.length || 1)
   );
@@ -45,32 +47,32 @@ export default function HRPage() {
         <div>
           <div className="flex items-center gap-2 text-xs font-mono text-[#FFB800] uppercase tracking-wider">
             <Users className="w-4 h-4" />
-            <span>Human Resource Management (HRMS) & Workforce</span>
+            <span>Human Resource Management (HRMS) & Engineering Talent (LKR)</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-white mt-1">
-            Workforce Directory & Leave Approvals
+            Construction Workforce & Talent Directory
           </h1>
           <p className="text-xs sm:text-sm text-zinc-400 mt-0.5">
-            Oversee corporate talent, structural engineering assignments, and annual payroll.
+            Oversee chartered structural engineers, quantity surveyors, site safety officers, EPF/ETF contributions, and monthly payroll in LKR.
           </p>
         </div>
       </div>
 
-      {/* KPI Cards */}
+      {/* KPI Cards in LKR */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="p-4 rounded-xl bg-[#080e1c]/80 border border-white/10">
-          <span className="text-xs text-zinc-400">Annual Corporate Payroll</span>
-          <div className="text-2xl font-extrabold text-white mt-1">
-            ${(totalPayroll / 1000000).toFixed(2)}M
+          <span className="text-xs text-zinc-400">Total Corporate Payroll (Annual)</span>
+          <div className="text-2xl font-extrabold text-white mt-1 font-mono">
+            {formatLKR(totalAnnualPayroll, true)}
           </div>
-          <span className="text-[11px] text-zinc-400 mt-1 block">
-            Across {employees.length} core leadership & engineering positions
+          <span className="text-[11px] text-zinc-400 mt-1 block font-mono">
+            Monthly Run Rate: {formatLKR(totalMonthlyPayroll)} (Excl. EPF 12% & ETF 3%)
           </span>
         </div>
 
         <div className="p-4 rounded-xl bg-[#080e1c]/80 border border-white/10">
           <span className="text-xs text-zinc-400">Workforce Attendance Index</span>
-          <div className="text-2xl font-extrabold text-emerald-400 mt-1">
+          <div className="text-2xl font-extrabold text-emerald-400 mt-1 font-mono">
             {avgAttendance}%
           </div>
           <span className="text-[11px] text-emerald-400/80 mt-1 block">
@@ -81,14 +83,14 @@ export default function HRPage() {
         <div className="p-4 rounded-xl bg-[#080e1c]/80 border border-white/10">
           <span className="text-xs text-zinc-400">Pending Leave Approvals</span>
           <div
-            className={`text-2xl font-extrabold mt-1 ${
+            className={`text-2xl font-extrabold mt-1 font-mono ${
               pendingLeavesCount > 0 ? 'text-amber-400' : 'text-emerald-400'
             }`}
           >
             {pendingLeavesCount} Requests
           </div>
           <span className="text-[11px] text-zinc-400 mt-1 block">
-            Workflow review required
+            Workflow review & site handover required
           </span>
         </div>
       </div>
@@ -98,7 +100,7 @@ export default function HRPage() {
         <div className="flex items-center justify-between">
           <h2 className="text-base font-bold text-white flex items-center gap-2">
             <Calendar className="w-4 h-4 text-[#FFB800]" />
-            <span>Leave Requests & Absence Approvals</span>
+            <span>Leave Requests & Site Absence Workflow</span>
           </h2>
           <span className="text-xs font-mono text-zinc-400">
             {leaves.length} Submissions
@@ -162,7 +164,7 @@ export default function HRPage() {
                           </button>
                         </div>
                       ) : (
-                        <span className="text-[11px] text-zinc-400">Recorded</span>
+                        <span className="text-[11px] text-zinc-400 font-mono">Recorded</span>
                       )}
                     </td>
                   </tr>
@@ -204,16 +206,16 @@ export default function HRPage() {
           </div>
         </div>
 
-        {/* Employees Table */}
+        {/* Employees Table in LKR */}
         <div className="rounded-2xl bg-[#080e1c]/85 border border-white/10 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead className="bg-white/[0.03] text-zinc-400 font-mono text-[11px] border-b border-white/10 uppercase tracking-wider">
                 <tr>
                   <th className="py-3.5 px-4">Staff Member & ID</th>
-                  <th className="py-3.5 px-4">Role & Department</th>
-                  <th className="py-3.5 px-4">Direct Contact</th>
-                  <th className="py-3.5 px-4 text-right">Compensation</th>
+                  <th className="py-3.5 px-4">Role & Certification</th>
+                  <th className="py-3.5 px-4">Contact Details</th>
+                  <th className="py-3.5 px-4 text-right">Compensation (LKR)</th>
                   <th className="py-3.5 px-4 text-center">Attendance</th>
                   <th className="py-3.5 px-4 text-center">Status</th>
                 </tr>
@@ -223,18 +225,26 @@ export default function HRPage() {
                   <tr key={emp.id} className="hover:bg-white/[0.02] transition-colors">
                     <td className="py-3.5 px-4">
                       <div className="font-semibold text-white">{emp.name}</div>
-                      <div className="text-[10px] font-mono text-zinc-400">{emp.empId}</div>
+                      <div className="text-[10px] font-mono text-zinc-400">{emp.empId} • {emp.epfNo || 'EPF Pending'}</div>
                     </td>
-                    <td className="py-3.5 px-4">
+                    <td className="py-3.5 px-4 max-w-xs">
                       <div className="text-white font-medium">{emp.role}</div>
                       <div className="text-[11px] text-blue-300">{emp.department}</div>
+                      {emp.tradeCertification && (
+                        <div className="text-[10px] text-[#FFB800] font-mono mt-0.5 line-clamp-1">
+                          {emp.tradeCertification}
+                        </div>
+                      )}
                     </td>
                     <td className="py-3.5 px-4">
                       <div className="text-zinc-300 font-mono text-[11px]">{emp.email}</div>
                       <div className="text-zinc-400 text-[10px]">{emp.phone}</div>
                     </td>
                     <td className="py-3.5 px-4 text-right font-mono font-bold text-white">
-                      ${emp.salary.toLocaleString()}/yr
+                      <div className="text-white">{formatLKR(emp.salary)}/mo</div>
+                      <div className="text-[10px] text-zinc-400">
+                        {formatLKR(emp.annualPackageLkr || emp.salary * 12, true)}/yr
+                      </div>
                     </td>
                     <td className="py-3.5 px-4 text-center font-mono font-bold text-emerald-400">
                       {emp.attendanceRate}%
@@ -260,4 +270,3 @@ export default function HRPage() {
     </div>
   );
 }
-

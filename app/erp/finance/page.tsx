@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useERP } from '@/lib/erp/AuthContext';
 import { InvoiceStatus, Invoice } from '@/lib/erp/types';
+import { formatLKR } from '@/lib/erp/currency';
 import {
   CreditCard,
   Plus,
@@ -20,18 +21,19 @@ export default function FinancePage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
 
-  // Form State
+  // Form State in LKR
   const [clientName, setClientName] = useState('');
   const [projectName, setProjectName] = useState('');
-  const [itemDesc, setItemDesc] = useState('Structural Steel Core Pours & Testing');
-  const [itemAmount, setItemAmount] = useState(1200000);
+  const [itemDesc, setItemDesc] = useState('Substructure Concrete Raft Pour & Steel Reinforcement Inspection');
+  const [itemAmount, setItemAmount] = useState(85000000); // LKR 85 Million default
 
   const filteredInvoices = invoices.filter((inv) => {
     const matchesTab = activeTab === 'ALL' || inv.status === activeTab;
     const matchesSearch =
       inv.invoiceNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
       inv.clientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      inv.projectName.toLowerCase().includes(searchTerm.toLowerCase());
+      inv.projectName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (inv.ipcNumber && inv.ipcNumber.toLowerCase().includes(searchTerm.toLowerCase()));
     return matchesTab && matchesSearch;
   });
 
@@ -42,17 +44,21 @@ export default function FinancePage() {
   const totalPending = invoices
     .filter((inv) => inv.status === 'PENDING')
     .reduce((acc, inv) => acc + inv.total, 0);
-  const totalOverdue = invoices
-    .filter((inv) => inv.status === 'OVERDUE')
-    .reduce((acc, inv) => acc + inv.total, 0);
+
+  const totalRetention = invoices.reduce((acc, inv) => acc + (inv.retentionDeducted || Math.round(inv.subtotal * 0.05)), 0);
 
   const handleCreateInvoice = (e: React.FormEvent) => {
     e.preventDefault();
     if (!clientName || !projectName) return;
-    const tax = Math.round(itemAmount * 0.05);
+    const sscl = Math.round(itemAmount * 0.025);
+    const vat = Math.round(itemAmount * 0.18);
+    const retention = Math.round(itemAmount * 0.05);
+    const netTotal = itemAmount + sscl + vat - retention;
+
     addInvoice({
       clientName,
       projectName,
+      ipcNumber: `IPC #${Math.floor(10 + Math.random() * 90)} (CIDA SBD-02)`,
       issueDate: new Date().toISOString().split('T')[0],
       dueDate: new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0],
       items: [
@@ -64,8 +70,10 @@ export default function FinancePage() {
         },
       ],
       subtotal: Number(itemAmount),
-      tax,
-      total: Number(itemAmount) + tax,
+      ssclTax: sscl,
+      tax: vat,
+      retentionDeducted: retention,
+      total: netTotal,
       status: 'PENDING',
     });
     setClientName('');
@@ -80,13 +88,13 @@ export default function FinancePage() {
         <div>
           <div className="flex items-center gap-2 text-xs font-mono text-[#FFB800] uppercase tracking-wider">
             <CreditCard className="w-4 h-4" />
-            <span>Corporate Finance & Accounting Suite</span>
+            <span>Corporate Finance, Progress Billing & IPC Ledgers (LKR)</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-white mt-1">
-            Financial Ledger & Invoicing
+            Interim Payment Certificates (IPC) & Construction Billing
           </h1>
           <p className="text-xs sm:text-sm text-zinc-400 mt-0.5">
-            Oversee progress billings, VAT compliance, and cash flow liquidity.
+            Manage Running Account (RA) bills, CIDA SBD-02 statutory retentions, 18% VAT & 2.5% SSCL schedules in Sri Lankan Rupees.
           </p>
         </div>
 
@@ -95,49 +103,49 @@ export default function FinancePage() {
           className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#0038B8] to-[#1D4ED8] hover:from-[#1D4ED8] hover:to-[#2563EB] text-white text-xs font-bold shadow-lg shadow-blue-900/40 border border-blue-400/40 flex items-center gap-2 self-start sm:self-auto transition-all"
         >
           <Plus className="w-4 h-4 text-[#FFB800]" />
-          <span>Generate New Invoice</span>
+          <span>Issue Interim Certificate (IPC)</span>
         </button>
       </div>
 
-      {/* KPI Cards */}
+      {/* KPI Cards in LKR */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="p-4 rounded-xl bg-[#080e1c]/80 border border-white/10">
-          <span className="text-xs text-zinc-400">Total Billed</span>
+          <span className="text-xs text-zinc-400">Total Certified Invoiced</span>
           <div className="text-2xl font-extrabold text-white mt-1">
-            ${(totalInvoiced / 1000000).toFixed(2)}M
+            {formatLKR(totalInvoiced, true)}
           </div>
           <span className="text-[11px] text-zinc-400 mt-1 block">
-            {invoices.length} Total Issued Invoices
+            {invoices.length} Total Issued Certificates
           </span>
         </div>
 
         <div className="p-4 rounded-xl bg-[#080e1c]/80 border border-white/10">
-          <span className="text-xs text-zinc-400">Collections (Paid)</span>
+          <span className="text-xs text-zinc-400">Collections Received (Paid)</span>
           <div className="text-2xl font-extrabold text-emerald-400 mt-1">
-            ${(totalPaid / 1000000).toFixed(2)}M
+            {formatLKR(totalPaid, true)}
           </div>
           <span className="text-[11px] text-emerald-400/80 mt-1 block">
-            {Math.round((totalPaid / (totalInvoiced || 1)) * 100)}% Collection Rate
+            {Math.round((totalPaid / (totalInvoiced || 1)) * 100)}% Collection Efficiency
           </span>
         </div>
 
         <div className="p-4 rounded-xl bg-[#080e1c]/80 border border-white/10">
-          <span className="text-xs text-zinc-400">Pending Receivables</span>
+          <span className="text-xs text-zinc-400">Pending Employer Receivables</span>
           <div className="text-2xl font-extrabold text-amber-400 mt-1">
-            ${(totalPending / 1000000).toFixed(2)}M
+            {formatLKR(totalPending, true)}
           </div>
           <span className="text-[11px] text-zinc-400 mt-1 block">
-            Within 30-day payment term
+            Within 30-day FIDIC payment terms
           </span>
         </div>
 
         <div className="p-4 rounded-xl bg-[#080e1c]/80 border border-white/10">
-          <span className="text-xs text-zinc-400">Overdue Balances</span>
-          <div className="text-2xl font-extrabold text-red-400 mt-1">
-            ${(totalOverdue / 1000000).toFixed(2)}M
+          <span className="text-xs text-zinc-400">Total Retention Held</span>
+          <div className="text-2xl font-extrabold text-[#FFB800] mt-1">
+            {formatLKR(totalRetention, true)}
           </div>
-          <span className="text-[11px] text-red-400/80 mt-1 block">
-            Automated legal reminders active
+          <span className="text-[11px] text-zinc-400 mt-1 block">
+            Defect Liability Security (5%)
           </span>
         </div>
       </div>
@@ -168,22 +176,22 @@ export default function FinancePage() {
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search invoice # or client..."
+            placeholder="Search certificate #, client, or site..."
             className="w-full pl-9 pr-4 py-1.5 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:outline-none focus:border-[#FFB800]"
           />
         </div>
       </div>
 
-      {/* Invoices Table */}
+      {/* Invoices Table in LKR */}
       <div className="rounded-2xl bg-[#080e1c]/85 border border-white/10 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead className="bg-white/[0.03] text-zinc-400 font-mono text-[11px] border-b border-white/10 uppercase tracking-wider">
               <tr>
-                <th className="py-3.5 px-4">Invoice #</th>
-                <th className="py-3.5 px-4">Client & Project</th>
-                <th className="py-3.5 px-4">Due Date</th>
-                <th className="py-3.5 px-4 text-right">Total Amount</th>
+                <th className="py-3.5 px-4">Certificate / IPC #</th>
+                <th className="py-3.5 px-4">Employer & Project</th>
+                <th className="py-3.5 px-4">Payment Due</th>
+                <th className="py-3.5 px-4 text-right">Net Certified (LKR)</th>
                 <th className="py-3.5 px-4 text-center">Status</th>
                 <th className="py-3.5 px-4 text-right">Actions</th>
               </tr>
@@ -192,15 +200,18 @@ export default function FinancePage() {
               {filteredInvoices.map((inv) => (
                 <tr key={inv.id} className="hover:bg-white/[0.02] transition-colors">
                   <td className="py-3.5 px-4 font-mono font-bold text-white">
-                    {inv.invoiceNumber}
+                    <div>{inv.invoiceNumber}</div>
+                    {inv.ipcNumber && (
+                      <div className="text-[10px] text-blue-400 font-normal">{inv.ipcNumber}</div>
+                    )}
                   </td>
                   <td className="py-3.5 px-4">
                     <div className="font-semibold text-white">{inv.clientName}</div>
                     <div className="text-[11px] text-zinc-400">{inv.projectName}</div>
                   </td>
                   <td className="py-3.5 px-4 font-mono text-zinc-400">{inv.dueDate}</td>
-                  <td className="py-3.5 px-4 text-right font-extrabold text-white text-sm">
-                    ${inv.total.toLocaleString()}
+                  <td className="py-3.5 px-4 text-right font-extrabold text-[#FFB800] text-sm font-mono">
+                    {formatLKR(inv.total)}
                   </td>
                   <td className="py-3.5 px-4 text-center">
                     <span
@@ -232,7 +243,7 @@ export default function FinancePage() {
                         onClick={() => setSelectedInvoice(inv)}
                         className="px-2.5 py-1 rounded bg-white/5 hover:bg-white/10 border border-white/10 text-zinc-300 text-[11px] font-semibold transition-colors"
                       >
-                        Inspect
+                        Inspect IPC
                       </button>
                     </div>
                   </td>
@@ -241,7 +252,7 @@ export default function FinancePage() {
               {filteredInvoices.length === 0 && (
                 <tr>
                   <td colSpan={6} className="py-8 text-center text-zinc-400">
-                    No invoices matching current filter criteria.
+                    No payment certificates matching current filter criteria.
                   </td>
                 </tr>
               )}
@@ -250,16 +261,19 @@ export default function FinancePage() {
         </div>
       </div>
 
-      {/* Invoice Detail Modal */}
+      {/* Invoice Detail Modal in LKR */}
       {selectedInvoice && (
         <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
           <div className="w-full max-w-xl bg-[#091124] border border-white/15 rounded-2xl p-6 sm:p-8 space-y-6 animate-fadeIn">
             <div className="flex items-center justify-between border-b border-white/10 pb-4">
               <div>
-                <span className="text-xs font-mono text-[#FFB800]">CONTEC Enterprise Billing</span>
+                <span className="text-xs font-mono text-[#FFB800]">CONTEC Interim Payment Certificate</span>
                 <h3 className="text-xl font-bold text-white mt-0.5">
-                  Invoice {selectedInvoice.invoiceNumber}
+                  Certificate {selectedInvoice.invoiceNumber}
                 </h3>
+                {selectedInvoice.ipcNumber && (
+                  <span className="text-[11px] font-mono text-blue-300">{selectedInvoice.ipcNumber}</span>
+                )}
               </div>
               <button
                 onClick={() => setSelectedInvoice(null)}
@@ -271,25 +285,25 @@ export default function FinancePage() {
 
             <div className="grid grid-cols-2 gap-4 text-xs">
               <div>
-                <span className="text-zinc-400">Bill To:</span>
+                <span className="text-zinc-400">Employer / Developer:</span>
                 <div className="font-bold text-white mt-0.5">{selectedInvoice.clientName}</div>
                 <div className="text-zinc-300">{selectedInvoice.projectName}</div>
               </div>
               <div className="text-right">
-                <span className="text-zinc-400">Payment Terms:</span>
+                <span className="text-zinc-400">Settlement Terms:</span>
                 <div className="font-mono text-white mt-0.5">Due: {selectedInvoice.dueDate}</div>
                 <div className="text-emerald-400 font-bold uppercase">{selectedInvoice.status}</div>
               </div>
             </div>
 
-            {/* Line items */}
+            {/* Line items in LKR */}
             <div className="border border-white/10 rounded-xl overflow-hidden">
               <table className="w-full text-left text-xs">
                 <thead className="bg-white/5 text-zinc-400 font-mono text-[10px] uppercase">
                   <tr>
-                    <th className="p-3">Description</th>
+                    <th className="p-3">Work Package Description</th>
                     <th className="p-3 text-right">Qty</th>
-                    <th className="p-3 text-right">Amount</th>
+                    <th className="p-3 text-right">Amount (LKR)</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5 text-zinc-300">
@@ -298,7 +312,7 @@ export default function FinancePage() {
                       <td className="p-3 font-medium text-white">{it.description}</td>
                       <td className="p-3 text-right font-mono">{it.quantity}</td>
                       <td className="p-3 text-right font-mono font-bold text-white">
-                        ${it.amount.toLocaleString()}
+                        {formatLKR(it.amount)}
                       </td>
                     </tr>
                   ))}
@@ -306,16 +320,33 @@ export default function FinancePage() {
               </table>
             </div>
 
-            {/* Summary */}
-            <div className="space-y-1 text-xs text-right pt-2 border-t border-white/10">
-              <div className="text-zinc-400">
-                Subtotal: <span className="text-white font-mono">${selectedInvoice.subtotal.toLocaleString()}</span>
+            {/* Statutory CIDA & Tax Deductions Summary in LKR */}
+            <div className="space-y-1.5 text-xs text-right pt-2 border-t border-white/10">
+              <div className="text-zinc-400 flex justify-between">
+                <span>Gross Value of Work Done:</span>
+                <span className="text-white font-mono font-bold">{formatLKR(selectedInvoice.subtotal)}</span>
               </div>
-              <div className="text-zinc-400">
-                5% VAT / Tax: <span className="text-white font-mono">${selectedInvoice.tax.toLocaleString()}</span>
+              <div className="text-amber-400 flex justify-between">
+                <span>Less 5% Retention Withheld:</span>
+                <span className="font-mono">
+                  -{formatLKR(selectedInvoice.retentionDeducted || selectedInvoice.subtotal * 0.05)}
+                </span>
               </div>
-              <div className="text-base font-extrabold text-[#FFB800] pt-1">
-                Total: ${selectedInvoice.total.toLocaleString()}
+              <div className="text-blue-300 flex justify-between">
+                <span>Plus 2.5% Social Security Levy (SSCL):</span>
+                <span className="font-mono">
+                  +{formatLKR(selectedInvoice.ssclTax || selectedInvoice.subtotal * 0.025)}
+                </span>
+              </div>
+              <div className="text-blue-300 flex justify-between">
+                <span>Plus 18% Value Added Tax (VAT):</span>
+                <span className="font-mono">
+                  +{formatLKR(selectedInvoice.tax)}
+                </span>
+              </div>
+              <div className="text-base font-extrabold text-[#FFB800] pt-2 border-t border-white/10 flex justify-between">
+                <span>Net Certified Payment Due:</span>
+                <span className="font-mono text-lg">{formatLKR(selectedInvoice.total)}</span>
               </div>
             </div>
 
@@ -324,21 +355,21 @@ export default function FinancePage() {
                 onClick={() => setSelectedInvoice(null)}
                 className="px-4 py-2 rounded-xl bg-white/10 text-white text-xs font-semibold"
               >
-                Close Viewer
+                Close Certificate
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Create Invoice Modal */}
+      {/* Create Invoice Modal in LKR */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
           <div className="w-full max-w-lg bg-[#091124] border border-white/15 rounded-2xl p-6 space-y-4 animate-fadeIn">
             <div className="flex items-center justify-between border-b border-white/10 pb-3">
               <h3 className="text-lg font-bold text-white flex items-center gap-2">
                 <FileText className="w-4 h-4 text-[#FFB800]" />
-                <span>Issue Commercial Invoice</span>
+                <span>Issue Interim Payment Certificate (IPC)</span>
               </h3>
               <button onClick={() => setShowCreateModal(false)} className="text-zinc-400 hover:text-white">
                 ✕
@@ -347,31 +378,31 @@ export default function FinancePage() {
 
             <form onSubmit={handleCreateInvoice} className="space-y-3.5">
               <div>
-                <label className="block text-xs font-semibold text-zinc-300 mb-1">Client Entity</label>
+                <label className="block text-xs font-semibold text-zinc-300 mb-1">Employer / Developer Entity</label>
                 <input
                   type="text"
                   required
                   value={clientName}
                   onChange={(e) => setClientName(e.target.value)}
-                  placeholder="e.g. Astraea Holdings Ltd."
+                  placeholder="e.g. Port City Colombo Holdings"
                   className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white text-xs focus:outline-none focus:border-[#FFB800]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-zinc-300 mb-1">Project Code / Name</label>
+                <label className="block text-xs font-semibold text-zinc-300 mb-1">Project Assignment</label>
                 <input
                   type="text"
                   required
                   value={projectName}
                   onChange={(e) => setProjectName(e.target.value)}
-                  placeholder="e.g. Astraea Skyrise Tower"
+                  placeholder="e.g. Colombo Port City Marina Residences"
                   className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white text-xs focus:outline-none focus:border-[#FFB800]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-zinc-300 mb-1">Scope Description</label>
+                <label className="block text-xs font-semibold text-zinc-300 mb-1">Interim Scope Description</label>
                 <input
                   type="text"
                   required
@@ -382,17 +413,36 @@ export default function FinancePage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-zinc-300 mb-1">Base Billing ($ USD)</label>
+                <label className="block text-xs font-semibold text-zinc-300 mb-1">Gross Work Executed in Period (LKR)</label>
                 <input
                   type="number"
                   required
                   value={itemAmount}
                   onChange={(e) => setItemAmount(Number(e.target.value))}
-                  className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white text-xs focus:outline-none focus:border-[#FFB800]"
+                  className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white text-xs focus:outline-none focus:border-[#FFB800] font-mono"
                 />
-                <span className="text-[11px] text-zinc-400 mt-1 block">
-                  Applicable 5% VAT: ${(itemAmount * 0.05).toLocaleString()} • Net Due: ${(itemAmount * 1.05).toLocaleString()}
-                </span>
+                <div className="mt-2 p-2.5 rounded-lg bg-black/40 border border-white/10 text-[11px] space-y-1 text-zinc-300">
+                  <div className="flex justify-between">
+                    <span>Gross Work Executed:</span>
+                    <span className="font-mono text-white">{formatLKR(itemAmount)}</span>
+                  </div>
+                  <div className="flex justify-between text-amber-400">
+                    <span>Less 5% Retention:</span>
+                    <span className="font-mono">-{formatLKR(itemAmount * 0.05)}</span>
+                  </div>
+                  <div className="flex justify-between text-blue-300">
+                    <span>Plus 2.5% SSCL:</span>
+                    <span className="font-mono">+{formatLKR(itemAmount * 0.025)}</span>
+                  </div>
+                  <div className="flex justify-between text-blue-300">
+                    <span>Plus 18% VAT:</span>
+                    <span className="font-mono">+{formatLKR(itemAmount * 0.18)}</span>
+                  </div>
+                  <div className="flex justify-between font-bold text-white pt-1 border-t border-white/10">
+                    <span>Net Amount Due to Contractor:</span>
+                    <span className="font-mono text-[#FFB800]">{formatLKR(itemAmount * 1.155)}</span>
+                  </div>
+                </div>
               </div>
 
               <div className="flex justify-end gap-2 pt-3 border-t border-white/10">
@@ -407,7 +457,7 @@ export default function FinancePage() {
                   type="submit"
                   className="px-4 py-2 rounded-xl bg-[#0038B8] hover:bg-[#1D4ED8] text-white text-xs font-bold shadow-lg shadow-blue-900/40"
                 >
-                  Authorize & Issue
+                  Authorize & Issue IPC
                 </button>
               </div>
             </form>
@@ -417,4 +467,3 @@ export default function FinancePage() {
     </div>
   );
 }
-

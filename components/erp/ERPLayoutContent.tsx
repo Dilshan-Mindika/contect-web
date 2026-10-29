@@ -33,7 +33,7 @@ const NAV_ITEMS = [
   { label: 'Sites & Engineering', href: '/erp/projects', icon: HardHat, badge: '4 Sites' },
   { label: 'Plant & Machinery', href: '/erp/machinery', icon: Wrench, badge: 'Fleet' },
   { label: 'Site Daily Logs', href: '/erp/site-logs', icon: Activity, badge: 'Shift' },
-  { label: 'Finance & Invoicing', href: '/erp/finance', icon: CreditCard, badge: '$48.6M' },
+  { label: 'Finance & Invoicing', href: '/erp/finance', icon: CreditCard, badge: 'LKR 309M' },
   { label: 'Supply & Yard Stock', href: '/erp/inventory', icon: Boxes, badge: 'Alerts' },
   { label: 'Commercial CRM', href: '/erp/crm', icon: TrendingUp, badge: '5 Deals' },
   { label: 'HR & Workforce', href: '/erp/hr', icon: Users, badge: '184 Staff' },

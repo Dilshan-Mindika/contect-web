@@ -40,6 +40,22 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     'manage_projects',
     'manage_inventory',
   ],
+  QUANTITY_SURVEYOR: [
+    'view_financials',
+    'manage_invoices',
+    'manage_projects',
+  ],
+  SAFETY_ENGINEER: [
+    'manage_projects',
+    'view_audit_logs',
+  ],
+  PROJECT_DIRECTOR: [
+    'manage_projects',
+    'view_financials',
+    'manage_invoices',
+    'manage_inventory',
+    'view_audit_logs',
+  ],
 };
 
 // Enterprise Executive Personas

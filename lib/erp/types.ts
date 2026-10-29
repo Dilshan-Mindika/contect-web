@@ -4,7 +4,10 @@ export type UserRole =
   | 'OPERATIONS_HEAD'
   | 'HR_MANAGER'
   | 'SALES_DIRECTOR'
-  | 'PROJECT_ENGINEER';
+  | 'PROJECT_ENGINEER'
+  | 'QUANTITY_SURVEYOR'
+  | 'SAFETY_ENGINEER'
+  | 'PROJECT_DIRECTOR';
 
 export type Permission =
   | 'view_financials'
@@ -34,7 +37,7 @@ export interface CRMLead {
   clientName: string;
   company: string;
   projectType: string;
-  estimatedValue: number;
+  estimatedValue: number; // In LKR
   stage: LeadStage;
   probability: number;
   contactEmail: string;
@@ -42,6 +45,8 @@ export interface CRMLead {
   assignedTo: string;
   lastUpdated: string;
   notes: string;
+  cidaCategory?: string;
+  tenderDeadline?: string;
 }
 
 export type InvoiceStatus = 'PAID' | 'PENDING' | 'OVERDUE';
@@ -49,25 +54,30 @@ export type InvoiceStatus = 'PAID' | 'PENDING' | 'OVERDUE';
 export interface InvoiceItem {
   description: string;
   quantity: number;
-  rate: number;
-  amount: number;
+  rate: number; // In LKR
+  amount: number; // In LKR
 }
 
 export interface Invoice {
   id: string;
   invoiceNumber: string;
+  ipcNumber?: string; // Interim Payment Certificate #
   clientName: string;
   projectName: string;
   issueDate: string;
   dueDate: string;
   items: InvoiceItem[];
-  subtotal: number;
-  tax: number;
-  total: number;
+  subtotal: number; // In LKR
+  tax: number; // In LKR
+  ssclTax?: number; // Social Security Contribution Levy (2.5%) in LKR
+  retentionDeducted?: number; // Retention withheld (typically 5% - 10%) in LKR
+  advanceRecovery?: number; // Advance mobilization recovery in LKR
+  priceEscalation?: number; // CIDA formula price fluctuation in LKR
+  total: number; // Net payable in LKR
   status: InvoiceStatus;
 }
 
-export type ProjectPhase = 'DESIGN' | 'FOUNDATION' | 'STRUCTURAL' | 'INTERIOR' | 'HANDOVER';
+export type ProjectPhase = 'DESIGN' | 'PILING' | 'FOUNDATION' | 'STRUCTURAL' | 'MEP_ENVELOPE' | 'INTERIOR' | 'HANDOVER';
 export type TaskStatus = 'BACKLOG' | 'IN_PROGRESS' | 'REVIEW' | 'COMPLETED';
 export type TaskPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
 
@@ -86,14 +96,20 @@ export interface Project {
   name: string;
   client: string;
   location: string;
-  budget: number;
-  spent: number;
-  progress: number;
+  budget: number; // In LKR
+  spent: number; // In LKR
+  progress: number; // Percentage
   phase: ProjectPhase;
   siteEngineer: string;
   startDate: string;
   targetCompletion: string;
   tasks: ProjectTask[];
+  cidaClassification?: string;
+  plannedValueLkr?: number;
+  earnedValueLkr?: number;
+  cpi?: number; // Cost Performance Index (EV / AC)
+  spi?: number; // Schedule Performance Index (EV / PV)
+  ladAmountPerDayLkr?: number; // Liquidated & Ascertained Damages in LKR
 }
 
 export type StockStatus = 'OPTIMAL' | 'LOW_STOCK' | 'CRITICAL';
@@ -106,10 +122,12 @@ export interface InventoryItem {
   quantity: number;
   unit: string;
   minThreshold: number;
-  unitCost: number;
+  unitCost: number; // In LKR
   warehouseLocation: string;
   supplier: string;
   status: StockStatus;
+  millTestCertificateNo?: string;
+  qualityStandard?: string; // e.g. SLS 375 / BS 4449
 }
 
 export type POStatus = 'PENDING' | 'APPROVED' | 'DISPATCHED' | 'FULFILLED';
@@ -119,7 +137,7 @@ export interface PurchaseOrder {
   poNumber: string;
   supplier: string;
   date: string;
-  totalAmount: number;
+  totalAmount: number; // In LKR
   status: POStatus;
   itemsCount: number;
   approvedBy?: string;
@@ -135,10 +153,13 @@ export interface Employee {
   department: string;
   email: string;
   phone: string;
-  salary: number;
+  salary: number; // Monthly in LKR
+  annualPackageLkr?: number; // Annual in LKR
+  epfNo?: string;
   joinDate: string;
   status: EmployeeStatus;
   attendanceRate: number;
+  tradeCertification?: string;
 }
 
 export type LeaveStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
@@ -188,12 +209,14 @@ export interface AuditLog {
 // =============================================================================
 
 export type BOQSection =
+  | 'PRELIMINARIES'
   | 'EARTHWORK'
   | 'SUBSTRUCTURE'
   | 'SUPERSTRUCTURE'
   | 'MEP'
   | 'FACADE'
-  | 'FINISHES';
+  | 'FINISHES'
+  | 'INFRASTRUCTURE';
 
 export interface BOQItem {
   id: string;
@@ -202,8 +225,12 @@ export interface BOQItem {
   description: string;
   unit: string;
   quantity: number;
-  unitRate: number;
-  totalAmount: number;
+  unitRate: number; // In LKR
+  totalAmount: number; // In LKR
+  laborPct?: number; // Rate analysis %
+  materialPct?: number;
+  equipmentPct?: number;
+  overheadProfitPct?: number;
 }
 
 export type MachineryCategory =
@@ -211,7 +238,9 @@ export type MachineryCategory =
   | 'EXCAVATOR'
   | 'BOOM_PUMP'
   | 'BULLDOZER'
-  | 'GENERATOR';
+  | 'GENERATOR'
+  | 'SOIL_COMPACTOR'
+  | 'TIPPER_TRUCK';
 
 export type MachineryStatus = 'OPERATIONAL' | 'MAINTENANCE' | 'STANDBY' | 'REPAIR';
 
@@ -223,12 +252,29 @@ export interface MachineryFleet {
   assignedSite: string;
   operatorName: string;
   fuelCapacityPct: number;
+  fuelCapacityLiters?: number;
+  fuelConsumptionRateLph?: number; // Liters per hour
+  dailyHireRateLkr?: number; // In LKR/day
   operatingHours: number;
   nextServiceDate: string;
   status: MachineryStatus;
+  telemetrySignal?: 'STRONG' | 'MODERATE' | 'OFFLINE';
 }
 
 export type OSHAStatus = 'COMPLIANT' | 'OBSERVATION' | 'BREACH';
+
+export interface ConcreteCubeTest {
+  id: string;
+  sampleCode: string;
+  pourLocation: string;
+  concreteGrade: 'G25' | 'G30' | 'G35' | 'G40' | 'G50' | 'SCC';
+  castDate: string;
+  testAgeDays: 7 | 14 | 28;
+  targetStrengthMpa: number;
+  achievedStrengthMpa: number;
+  status: 'PASS' | 'PENDING' | 'FAIL';
+  testedByLab: string;
+}
 
 export interface SiteDailyLog {
   id: string;
@@ -237,13 +283,18 @@ export interface SiteDailyLog {
   logDate: string;
   weatherSummary: string;
   ambientTempC: number;
+  rainfallHours?: number;
   workforceCount: number;
+  skilledWorkersCount?: number;
+  unskilledWorkersCount?: number;
   concretePouredM3: number;
   slumpTestMm: number;
   safetyIncidents: number;
   oshaStatus: OSHAStatus;
+  toolboxTalkTopic?: string;
   supervisorNotes: string;
   supervisorName: string;
+  cubeTests?: ConcreteCubeTest[];
 }
 
 export type QuotationStatus = 'DRAFT' | 'ISSUED' | 'ACCEPTED' | 'REVISED' | 'DECLINED';
@@ -257,13 +308,18 @@ export interface ConstructionQuotation {
   projectScope: string;
   validUntil: string;
   boqItems: BOQItem[];
-  subtotal: number;
-  taxVat: number;
-  grandTotal: number;
-  retentionPct: number;
+  subtotal: number; // In LKR
+  ssclTax?: number; // SSCL @ 2.5% in LKR
+  taxVat: number; // VAT @ 18% in LKR
+  retentionPct: number; // Typically 5% or 10%
+  retentionAmount?: number; // In LKR
+  advancePaymentPct?: number; // Typically 20%
+  defectLiabilityMonths?: number; // Typically 12-24 months
+  grandTotal: number; // Total contract sum in LKR
   status: QuotationStatus;
   termsAndConditions: string;
   createdDate: string;
+  cidaGrading?: string;
 }
 
 export interface Subcontractor {
@@ -273,8 +329,10 @@ export interface Subcontractor {
   assignedProject: string;
   safetyRating: number;
   insuranceExpiry: string;
-  contractValue: number;
+  contractValue: number; // In LKR
   status: 'ACTIVE' | 'PENDING_AUDIT' | 'SUSPENDED';
+  cidaGrade?: string;
+  retentionHeldLkr?: number;
 }
 
 export interface WebsiteShowcaseProject {
@@ -286,6 +344,8 @@ export interface WebsiteShowcaseProject {
   description: string;
   completionYear: string;
   featured: boolean;
+  contractValueLkr?: number;
+  cidaRating?: string;
 }
 
 export interface WebsiteInquiry {

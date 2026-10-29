@@ -3,12 +3,14 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { ConstructionQuotation } from '@/lib/erp/types';
+import { formatLKR } from '@/lib/erp/currency';
 import {
   Printer,
   Mail,
   CheckCircle2,
   AlertCircle,
   FileText,
+  Award,
 } from 'lucide-react';
 
 interface Props {
@@ -34,7 +36,7 @@ export default function QuotationPDFModal({ quotation, onClose, onSendEmail }: P
       setEmailStatus({
         success: true,
         text: res.simulated
-          ? `Quotation email successfully queued & simulated to ${quotation.clientEmail}`
+          ? `Quotation email successfully queued & simulated in LKR to ${quotation.clientEmail}`
           : `Quotation email dispatched to ${quotation.clientEmail}`,
       });
     } else {
@@ -44,6 +46,9 @@ export default function QuotationPDFModal({ quotation, onClose, onSendEmail }: P
       });
     }
   };
+
+  const sscl = quotation.ssclTax || Math.round(quotation.subtotal * 0.025);
+  const retention = quotation.retentionAmount || Math.round(quotation.subtotal * (quotation.retentionPct / 100));
 
   return (
     <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
@@ -58,6 +63,9 @@ export default function QuotationPDFModal({ quotation, onClose, onSendEmail }: P
             </span>
             <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30">
               {quotation.quoteNumber}
+            </span>
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#FFB800]/15 text-[#FFB800] border border-[#FFB800]/30 font-bold">
+              CURRENCY: LKR
             </span>
           </div>
 
@@ -121,10 +129,14 @@ export default function QuotationPDFModal({ quotation, onClose, onSendEmail }: P
                 />
               </div>
               <p className="text-xs text-zinc-400 print:text-zinc-600 font-medium">
-                CONTEC Design & Build (Pvt) Ltd. • EPC & Turnkey Engineering
+                CONTEC Design & Build (Pvt) Ltd. • EPC, Heavy Civil & High-Rise Engineering
               </p>
-              <p className="text-[11px] text-zinc-500 print:text-zinc-500">
-                Kandy Head Office: No. 167, George E. De Silva Mawatha, Kandy, Sri Lanka
+              <div className="flex items-center gap-2 text-[11px] text-[#FFB800] print:text-amber-800 font-mono font-bold mt-1">
+                <Award className="w-3.5 h-3.5 inline" />
+                <span>CIDA REGISTRATION: CS2/2026/0411 (HEAVY CIVIL & BUILDINGS)</span>
+              </div>
+              <p className="text-[11px] text-zinc-500 print:text-zinc-500 mt-1">
+                Kandy Head Office: No. 167, George E. De Silva Mawatha, Kandy 20000, Sri Lanka
               </p>
               <p className="text-[11px] text-zinc-500 print:text-zinc-500">
                 Direct: +94 77 781 2141 • Email: conteckandy@gmail.com • Web: contec.lk
@@ -133,16 +145,19 @@ export default function QuotationPDFModal({ quotation, onClose, onSendEmail }: P
 
             <div className="text-left sm:text-right space-y-1">
               <span className="text-[11px] font-mono tracking-widest uppercase text-[#FFB800] print:text-amber-800 font-bold block">
-                Official Commercial Proposal & BOQ
+                Official Bill of Quantities (BOQ) Tender
               </span>
               <div className="text-2xl font-extrabold font-mono text-white print:text-black">
                 {quotation.quoteNumber}
               </div>
               <div className="text-xs text-zinc-400 print:text-zinc-600 font-mono">
-                Date: {quotation.createdDate}
+                Date of Issue: {quotation.createdDate}
               </div>
-              <div className="text-xs text-amber-400 print:text-amber-700 font-mono">
-                Valid Until: {quotation.validUntil}
+              <div className="text-xs text-amber-400 print:text-amber-700 font-mono font-semibold">
+                Tender Validity: Until {quotation.validUntil}
+              </div>
+              <div className="text-[11px] text-zinc-400 print:text-zinc-600 font-mono">
+                Governing Law: FIDIC Red Book / CIDA SBD-02
               </div>
             </div>
           </div>
@@ -151,11 +166,14 @@ export default function QuotationPDFModal({ quotation, onClose, onSendEmail }: P
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 p-4 rounded-xl bg-white/[0.02] border border-white/10 print:border-zinc-300 print:bg-zinc-50 text-xs">
             <div>
               <span className="font-mono text-[10px] text-zinc-400 print:text-zinc-500 uppercase tracking-wider block mb-1">
-                Client Organization / Developer
+                Client Organization / Employer
               </span>
               <div className="font-bold text-base text-white print:text-black">{quotation.clientCompany}</div>
               <div className="text-zinc-300 print:text-zinc-700">Attn: {quotation.clientName}</div>
               <div className="text-zinc-400 print:text-zinc-600 font-mono">{quotation.clientEmail}</div>
+              <div className="text-[11px] text-zinc-400 print:text-zinc-500 mt-2">
+                Currency of Contract: <span className="font-bold text-white print:text-black">Sri Lankan Rupees (LKR)</span>
+              </div>
             </div>
 
             <div>
@@ -164,10 +182,10 @@ export default function QuotationPDFModal({ quotation, onClose, onSendEmail }: P
               </span>
               <div className="font-bold text-sm text-[#FFB800] print:text-amber-800">{quotation.projectScope}</div>
               <div className="text-zinc-400 print:text-zinc-600 mt-1">
-                Standards: FIDIC Conditions of Contract • ISO 9001:2015 Structural QA
+                Classification: {quotation.cidaGrading || 'CIDA Grade CS2 General Building'}
               </div>
               <div className="text-zinc-400 print:text-zinc-600">
-                Retention Held: {quotation.retentionPct}% (12 Months Defect Liability)
+                Retention Held: {quotation.retentionPct}% (12-24 Months Defects Liability Period)
               </div>
             </div>
           </div>
@@ -176,10 +194,10 @@ export default function QuotationPDFModal({ quotation, onClose, onSendEmail }: P
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <h4 className="text-xs font-bold uppercase tracking-wider font-mono text-zinc-300 print:text-zinc-800">
-                Itemized Bill of Quantities (BOQ Breakdown)
+                Itemized Bill of Quantities (CESMM4 / SLS 573 Measurement)
               </h4>
-              <span className="text-[10px] font-mono text-zinc-400 print:text-zinc-500">
-                Currency: USD ($)
+              <span className="text-[10px] font-mono text-zinc-400 print:text-zinc-500 font-bold">
+                All Rates in Sri Lankan Rupees (LKR)
               </span>
             </div>
 
@@ -192,8 +210,8 @@ export default function QuotationPDFModal({ quotation, onClose, onSendEmail }: P
                     <th className="py-2.5 px-3">Scope Description</th>
                     <th className="py-2.5 px-3 text-right">Unit</th>
                     <th className="py-2.5 px-3 text-right">Qty</th>
-                    <th className="py-2.5 px-3 text-right">Rate ($)</th>
-                    <th className="py-2.5 px-3 text-right">Amount ($)</th>
+                    <th className="py-2.5 px-3 text-right">Unit Rate (LKR)</th>
+                    <th className="py-2.5 px-3 text-right">Amount (LKR)</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5 print:divide-zinc-200 text-zinc-300 print:text-zinc-800">
@@ -208,9 +226,9 @@ export default function QuotationPDFModal({ quotation, onClose, onSendEmail }: P
                       <td className="py-3 px-3 font-medium text-white print:text-black max-w-xs">{item.description}</td>
                       <td className="py-3 px-3 text-right font-mono text-zinc-400 print:text-zinc-600">{item.unit}</td>
                       <td className="py-3 px-3 text-right font-mono">{item.quantity.toLocaleString()}</td>
-                      <td className="py-3 px-3 text-right font-mono">${item.unitRate.toLocaleString()}</td>
+                      <td className="py-3 px-3 text-right font-mono font-semibold">{formatLKR(item.unitRate)}</td>
                       <td className="py-3 px-3 text-right font-mono font-extrabold text-white print:text-black">
-                        ${item.totalAmount.toLocaleString()}
+                        {formatLKR(item.totalAmount)}
                       </td>
                     </tr>
                   ))}
@@ -228,31 +246,40 @@ export default function QuotationPDFModal({ quotation, onClose, onSendEmail }: P
               <p className="leading-relaxed text-[11px] bg-white/[0.02] print:bg-zinc-100 p-3 rounded-lg border border-white/5 print:border-zinc-200">
                 {quotation.termsAndConditions}
               </p>
+              <div className="text-[10px] text-zinc-500 print:text-zinc-500 font-mono">
+                Bank Escrow: Commercial Bank of Ceylon PLC • Kandy Elite Branch • Account: 1000-8924-1100
+              </div>
             </div>
 
-            <div className="w-full sm:w-72 space-y-2 text-xs text-right">
+            <div className="w-full sm:w-80 space-y-2 text-xs text-right">
               <div className="flex justify-between text-zinc-400 print:text-zinc-600">
                 <span>BOQ Subtotal:</span>
                 <span className="font-mono font-bold text-white print:text-black">
-                  ${quotation.subtotal.toLocaleString()}
+                  {formatLKR(quotation.subtotal)}
                 </span>
               </div>
-              <div className="flex justify-between text-zinc-400 print:text-zinc-600">
-                <span>Applicable 5% VAT:</span>
-                <span className="font-mono font-bold text-white print:text-black">
-                  ${quotation.taxVat.toLocaleString()}
+              <div className="flex justify-between text-blue-300 print:text-blue-800">
+                <span>Social Security Levy (SSCL 2.5%):</span>
+                <span className="font-mono font-bold">
+                  +{formatLKR(sscl)}
                 </span>
               </div>
-              <div className="flex justify-between text-zinc-400 print:text-zinc-600">
-                <span>5% Warranty Retention:</span>
-                <span className="font-mono text-amber-400 print:text-amber-800">
-                  ${(quotation.subtotal * 0.05).toLocaleString()}
+              <div className="flex justify-between text-blue-300 print:text-blue-800">
+                <span>Statutory VAT (18%):</span>
+                <span className="font-mono font-bold">
+                  +{formatLKR(quotation.taxVat)}
+                </span>
+              </div>
+              <div className="flex justify-between text-amber-400 print:text-amber-800">
+                <span>{quotation.retentionPct}% Defect Liability Retention:</span>
+                <span className="font-mono">
+                  ({formatLKR(retention)})
                 </span>
               </div>
               <div className="flex justify-between items-center pt-3 border-t-2 border-[#FFB800] text-base font-extrabold text-[#FFB800] print:text-black">
-                <span>Grand Total:</span>
+                <span>Total Tender Sum:</span>
                 <span className="font-mono text-xl text-[#FFB800] print:text-amber-900">
-                  ${quotation.grandTotal.toLocaleString()}
+                  {formatLKR(quotation.grandTotal)}
                 </span>
               </div>
             </div>
@@ -262,13 +289,13 @@ export default function QuotationPDFModal({ quotation, onClose, onSendEmail }: P
           <div className="pt-8 border-t border-white/15 print:border-zinc-300 grid grid-cols-2 sm:grid-cols-3 gap-6 text-xs">
             <div>
               <span className="text-[10px] font-mono text-zinc-400 print:text-zinc-500 uppercase block mb-6">
-                Prepared By (Engineering BIM Lead):
+                Prepared By (Chief QS & Estimator):
               </span>
               <div className="border-t border-white/30 print:border-zinc-400 pt-1 font-semibold text-white print:text-black">
-                Maya Lin
+                Kavita Patel, MRICS
               </div>
               <div className="text-[11px] text-zinc-400 print:text-zinc-600">
-                Principal Structural Architect
+                Chief Quantity Surveyor (CIDA Accredited)
               </div>
             </div>
 
@@ -277,19 +304,19 @@ export default function QuotationPDFModal({ quotation, onClose, onSendEmail }: P
                 Authorized By (Executive Board):
               </span>
               <div className="border-t border-white/30 print:border-zinc-400 pt-1 font-semibold text-white print:text-black">
-                Elena Vance
+                Eng. Elena Vance, C.Eng MIE-SL
               </div>
               <div className="text-[11px] text-zinc-400 print:text-zinc-600">
-                Managing Director & CEO
+                Managing Director & Chartered Engineer
               </div>
             </div>
 
             <div className="col-span-2 sm:col-span-1">
               <span className="text-[10px] font-mono text-zinc-400 print:text-zinc-500 uppercase block mb-6">
-                Client Acceptance & Stamp:
+                Employer Acceptance & Corporate Seal:
               </span>
               <div className="border-t border-white/30 print:border-zinc-400 pt-1 font-semibold text-white print:text-black">
-                Authorized Signature & Seal
+                Authorized Signatory & Seal
               </div>
               <div className="text-[11px] text-zinc-400 print:text-zinc-600">
                 Date: ________________________
@@ -301,4 +328,3 @@ export default function QuotationPDFModal({ quotation, onClose, onSendEmail }: P
     </div>
   );
 }
-

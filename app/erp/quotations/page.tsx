@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useERP } from '@/lib/erp/AuthContext';
 import { ConstructionQuotation, BOQItem, BOQSection } from '@/lib/erp/types';
+import { formatLKR } from '@/lib/erp/currency';
 import QuotationPDFModal from '@/components/erp/QuotationPDFModal';
 import {
   FileText,
@@ -36,47 +37,59 @@ export default function QuotationsPage() {
   const [projectScope, setProjectScope] = useState('');
   const [validDays, setValidDays] = useState(30);
 
-  // BOQ items in creation form
+  // BOQ items in creation form (in realistic LKR)
   const [boqList, setBoqList] = useState<Omit<BOQItem, 'id'>[]>([
     {
-      itemCode: 'C-101',
+      itemCode: 'BILL-01',
+      section: 'PRELIMINARIES',
+      description: 'Site mobilization, laboratory setup, CAR insurance & QA facilities',
+      unit: 'item',
+      quantity: 1,
+      unitRate: 45000000,
+      totalAmount: 45000000,
+    },
+    {
+      itemCode: 'BILL-02',
       section: 'EARTHWORK',
-      description: 'Mass excavation & geotechnical shoring',
+      description: 'Mass excavation in rock/soil & secant pile diaphragm walls',
       unit: 'm³',
       quantity: 12000,
-      unitRate: 45,
-      totalAmount: 540000,
+      unitRate: 9500,
+      totalAmount: 114000000,
     },
     {
-      itemCode: 'C-102',
+      itemCode: 'BILL-03',
       section: 'SUBSTRUCTURE',
-      description: 'Reinforced concrete foundation raft and core walls',
+      description: 'Reinforced concrete foundation raft (G40) and shear core walls',
       unit: 'm³',
       quantity: 4500,
-      unitRate: 210,
-      totalAmount: 945000,
+      unitRate: 44000,
+      totalAmount: 198000000,
     },
     {
-      itemCode: 'C-103',
+      itemCode: 'BILL-04',
       section: 'SUPERSTRUCTURE',
-      description: 'Structural steel outriggers and composite deck slabs',
+      description: 'High-tensile Tor steel reinforcement BS 4449 G500 & formwork',
       unit: 'tons',
-      quantity: 1800,
-      unitRate: 850,
-      totalAmount: 1530000,
+      quantity: 650,
+      unitRate: 355000,
+      totalAmount: 230750000,
     },
   ]);
 
-  const [newItemCode, setNewItemCode] = useState('C-104');
+  const [newItemCode, setNewItemCode] = useState('BILL-05');
   const [newSection, setNewSection] = useState<BOQSection>('MEP');
   const [newDesc, setNewDesc] = useState('');
-  const [newUnit, setNewUnit] = useState('kit');
+  const [newUnit, setNewUnit] = useState('lot');
   const [newQty, setNewQty] = useState(1);
-  const [newRate, setNewRate] = useState(250000);
+  const [newRate, setNewRate] = useState(85000000);
 
+  // Sri Lankan Construction Tax Calculation
   const subtotal = boqList.reduce((acc, it) => acc + it.totalAmount, 0);
-  const tax = Math.round(subtotal * 0.05);
-  const grandTotal = subtotal + tax;
+  const ssclTax = Math.round(subtotal * 0.025); // 2.5% SSCL
+  const taxVat = Math.round(subtotal * 0.18); // 18% VAT
+  const retentionAmount = Math.round(subtotal * 0.05); // 5% Retention
+  const grandTotal = subtotal + ssclTax + taxVat;
 
   const handleAddBoqItem = (e: React.FormEvent) => {
     e.preventDefault();
@@ -95,7 +108,7 @@ export default function QuotationsPage() {
       },
     ]);
     setNewDesc('');
-    setNewItemCode(`C-${100 + boqList.length + 2}`);
+    setNewItemCode(`BILL-0${boqList.length + 2}`);
   };
 
   const handleRemoveBoqItem = (index: number) => {
@@ -114,17 +127,22 @@ export default function QuotationsPage() {
     addQuotation({
       clientCompany,
       clientName: clientName || clientCompany,
-      clientEmail: clientEmail || `procurement@${clientCompany.toLowerCase().replace(/[^a-z]/g, '')}.com`,
+      clientEmail: clientEmail || `tenders@${clientCompany.toLowerCase().replace(/[^a-z]/g, '')}.lk`,
       projectScope,
       validUntil: generateExpiryDate(validDays),
       boqItems: itemsWithIds,
       subtotal,
-      taxVat: tax,
-      grandTotal,
+      ssclTax,
+      taxVat,
       retentionPct: 5,
+      retentionAmount,
+      advancePaymentPct: 20,
+      defectLiabilityMonths: 24,
+      grandTotal,
       status: 'ISSUED',
+      cidaGrading: 'CIDA Grade CS2 (Specialist Heavy Civil & High-Rise)',
       termsAndConditions:
-        'Standard FIDIC commercial contract. Payment milestones: 10% Advance, 35% Substructure, 30% Superstructure, 20% MEP & Handover. 5% Retention held for 12 months.',
+        'Standard FIDIC Red Book / CIDA SBD-02 commercial contract. Payment milestones: 20% Advance against Bank Guarantee, 35% Substructure, 30% Superstructure, 15% MEP & Handover. 5% Retention held: 50% on Practical Completion Certificate (PCC) and 50% on Defects Liability Period expiry.',
     });
 
     setClientCompany('');
@@ -147,13 +165,16 @@ export default function QuotationsPage() {
         <div>
           <div className="flex items-center gap-2 text-xs font-mono text-[#FFB800] uppercase tracking-wider">
             <FileText className="w-4 h-4" />
-            <span>Commercial Tenders & Cost Estimation</span>
+            <span>Commercial Tenders & Cost Estimation (LKR)</span>
+            <span className="px-2 py-0.5 rounded text-[10px] bg-blue-500/20 text-blue-300 font-bold border border-blue-500/30">
+              CIDA CS2 STANDARDS
+            </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-white mt-1">
-            Construction Quotations & BOQ Generator
+            Construction Quotations & BOQ Estimating Engine
           </h1>
           <p className="text-xs sm:text-sm text-zinc-400 mt-0.5">
-            Generate itemized Bill of Quantities, FIDIC tender documentation, print PDF proposals, and dispatch to clients.
+            CESMM4 / SLS 573 Bill of Quantities generator, CIDA SBD-02 tax schedules, 1-click A4 PDF export, and direct email dispatch.
           </p>
         </div>
 
@@ -162,16 +183,16 @@ export default function QuotationsPage() {
           className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#0038B8] to-[#1D4ED8] hover:from-[#1D4ED8] hover:to-[#2563EB] text-white text-xs font-bold shadow-lg shadow-blue-900/40 border border-blue-400/40 flex items-center gap-2 self-start sm:self-auto transition-all"
         >
           <Plus className="w-4 h-4 text-[#FFB800]" />
-          <span>Generate New Quotation & BOQ</span>
+          <span>Generate New BOQ Tender (LKR)</span>
         </button>
       </div>
 
-      {/* KPI Cards */}
+      {/* KPI Cards in LKR */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="p-4 rounded-xl bg-[#080e1c]/80 border border-white/10">
           <span className="text-xs text-zinc-400">Total Tender Bids Value</span>
           <div className="text-2xl font-extrabold text-white mt-1">
-            ${(quotations.reduce((acc, q) => acc + q.grandTotal, 0) / 1000000).toFixed(2)}M
+            {formatLKR(quotations.reduce((acc, q) => acc + q.grandTotal, 0), true)}
           </div>
           <span className="text-[11px] text-zinc-400 mt-1 block">
             Across {quotations.length} active construction proposals
@@ -181,24 +202,23 @@ export default function QuotationsPage() {
         <div className="p-4 rounded-xl bg-[#080e1c]/80 border border-white/10">
           <span className="text-xs text-zinc-400">Tenders Accepted (Awarded)</span>
           <div className="text-2xl font-extrabold text-emerald-400 mt-1">
-            $
-            {(
+            {formatLKR(
               quotations
                 .filter((q) => q.status === 'ACCEPTED')
-                .reduce((acc, q) => acc + q.grandTotal, 0) / 1000000
-            ).toFixed(2)}
-            M
+                .reduce((acc, q) => acc + q.grandTotal, 0),
+              true
+            )}
           </div>
           <span className="text-[11px] text-emerald-400/80 mt-1 block">
-            Approved for mobilization
+            Approved for mobilization & advance guarantee
           </span>
         </div>
 
         <div className="p-4 rounded-xl bg-[#080e1c]/80 border border-white/10">
-          <span className="text-xs text-zinc-400">Standard Defect Retention Rate</span>
-          <div className="text-2xl font-extrabold text-[#FFB800] mt-1">5.0%</div>
+          <span className="text-xs text-zinc-400">Statutory Deductions & Retention</span>
+          <div className="text-2xl font-extrabold text-[#FFB800] mt-1">5.0% Retention</div>
           <span className="text-[11px] text-zinc-400 mt-1 block">
-            12-Month Post-Handover Warranty Period
+            Plus 18% VAT & 2.5% SSCL per Sri Lankan Construction Law
           </span>
         </div>
       </div>
@@ -210,7 +230,7 @@ export default function QuotationsPage() {
           type="text"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Search by quote #, client entity, or project scope..."
+          placeholder="Search by tender #, developer entity, or project scope..."
           className="w-full pl-9 pr-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:outline-none focus:border-[#FFB800]"
         />
       </div>
@@ -221,11 +241,11 @@ export default function QuotationsPage() {
           <table className="w-full text-left text-xs">
             <thead className="bg-white/[0.03] text-zinc-400 font-mono text-[11px] border-b border-white/10 uppercase tracking-wider">
               <tr>
-                <th className="py-3.5 px-4">Quote #</th>
+                <th className="py-3.5 px-4">Tender #</th>
                 <th className="py-3.5 px-4">Developer & Project Scope</th>
                 <th className="py-3.5 px-4">Validity Date</th>
                 <th className="py-3.5 px-4 text-center">BOQ Items</th>
-                <th className="py-3.5 px-4 text-right">Grand Total</th>
+                <th className="py-3.5 px-4 text-right">Tender Sum (LKR)</th>
                 <th className="py-3.5 px-4 text-center">Status</th>
                 <th className="py-3.5 px-4 text-right">Actions</th>
               </tr>
@@ -245,7 +265,7 @@ export default function QuotationsPage() {
                     </span>
                   </td>
                   <td className="py-3.5 px-4 text-right font-extrabold text-[#FFB800] text-sm font-mono">
-                    ${q.grandTotal.toLocaleString()}
+                    {formatLKR(q.grandTotal)}
                   </td>
                   <td className="py-3.5 px-4 text-center">
                     <span
@@ -274,7 +294,7 @@ export default function QuotationsPage() {
                         <button
                           onClick={() => updateQuotationStatus(q.id, 'ACCEPTED')}
                           className="px-2 py-1.5 rounded-lg bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-200 text-xs font-semibold border border-emerald-500/30 transition-colors"
-                          title="Mark Accepted / Won"
+                          title="Mark Accepted / Contract Awarded"
                         >
                           ✓
                         </button>
@@ -297,14 +317,14 @@ export default function QuotationsPage() {
         />
       )}
 
-      {/* MODAL: Generate New Construction Quotation & BOQ */}
+      {/* MODAL: Generate New Construction Quotation & BOQ in LKR */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 overflow-y-auto">
           <div className="w-full max-w-3xl bg-[#080f24] border border-white/20 rounded-2xl p-6 space-y-5 my-auto animate-fadeIn max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-white/10 pb-3">
               <h3 className="text-lg font-bold text-white flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-[#FFB800]" />
-                <span>Create Official Construction Proposal & BOQ</span>
+                <span>Create CIDA / FIDIC BOQ Tender Proposal (LKR)</span>
               </h3>
               <button onClick={() => setShowCreateModal(false)} className="text-zinc-400 hover:text-white">
                 ✕
@@ -320,17 +340,17 @@ export default function QuotationsPage() {
                     required
                     value={clientCompany}
                     onChange={(e) => setClientCompany(e.target.value)}
-                    placeholder="e.g. Apex Luxury Holdings"
+                    placeholder="e.g. Colombo Port City Holdings"
                     className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white text-xs focus:outline-none focus:border-[#FFB800]"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-zinc-300 mb-1">Client Contact Name</label>
+                  <label className="block text-xs font-semibold text-zinc-300 mb-1">Client Authorized Representative</label>
                   <input
                     type="text"
                     value={clientName}
                     onChange={(e) => setClientName(e.target.value)}
-                    placeholder="e.g. Director Tariq Mansour"
+                    placeholder="e.g. Eng. Sunil Jayawardena"
                     className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white text-xs focus:outline-none focus:border-[#FFB800]"
                   />
                 </div>
@@ -338,17 +358,17 @@ export default function QuotationsPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-zinc-300 mb-1">Contact Email Address</label>
+                  <label className="block text-xs font-semibold text-zinc-300 mb-1">Contact Email for Tender Dispatch</label>
                   <input
                     type="email"
                     value={clientEmail}
                     onChange={(e) => setClientEmail(e.target.value)}
-                    placeholder="name@corp.com"
+                    placeholder="procurement@client.lk"
                     className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white text-xs focus:outline-none focus:border-[#FFB800]"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-zinc-300 mb-1">Quotation Validity (Days)</label>
+                  <label className="block text-xs font-semibold text-zinc-300 mb-1">Tender Validity Period (Days)</label>
                   <input
                     type="number"
                     value={validDays}
@@ -359,26 +379,26 @@ export default function QuotationsPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-zinc-300 mb-1">Project Scope & Typology</label>
+                <label className="block text-xs font-semibold text-zinc-300 mb-1">Project Scope & Engineering Classification</label>
                 <input
                   type="text"
                   required
                   value={projectScope}
                   onChange={(e) => setProjectScope(e.target.value)}
-                  placeholder="e.g. 32-Story Parametric Commercial Tower & Piling"
+                  placeholder="e.g. 48-Story Cantilevered Skyscraper with Secant Piling & Marine Geotech"
                   className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white text-xs focus:outline-none focus:border-[#FFB800]"
                 />
               </div>
 
-              {/* Bill of Quantities Items Builder */}
+              {/* Bill of Quantities Items Builder in LKR */}
               <div className="p-4 rounded-xl bg-black/40 border border-white/10 space-y-3">
                 <span className="text-xs font-bold text-[#FFB800] uppercase tracking-wider block">
-                  Add Bill of Quantities (BOQ) Items
+                  Add Itemized Bill of Quantities (BOQ Breakdown in LKR)
                 </span>
 
                 <div className="grid grid-cols-1 sm:grid-cols-6 gap-2 text-xs">
                   <div>
-                    <label className="text-[10px] text-zinc-400">Code</label>
+                    <label className="text-[10px] text-zinc-400">Bill Ref</label>
                     <input
                       type="text"
                       value={newItemCode}
@@ -393,32 +413,34 @@ export default function QuotationsPage() {
                       onChange={(e) => setNewSection(e.target.value as BOQSection)}
                       className="w-full px-2 py-1.5 rounded bg-[#080e1c] border border-white/15 text-white text-xs"
                     >
+                      <option value="PRELIMINARIES">Preliminaries</option>
                       <option value="EARTHWORK">Earthwork</option>
                       <option value="SUBSTRUCTURE">Substructure</option>
                       <option value="SUPERSTRUCTURE">Superstructure</option>
-                      <option value="MEP">MEP</option>
-                      <option value="FACADE">Facade</option>
-                      <option value="FINISHES">Finishes</option>
+                      <option value="MEP">MEP Services</option>
+                      <option value="FACADE">Façade & Glazing</option>
+                      <option value="FINISHES">Architectural Finishes</option>
+                      <option value="INFRASTRUCTURE">Infrastructure</option>
                     </select>
                   </div>
                   <div className="sm:col-span-2">
-                    <label className="text-[10px] text-zinc-400">Description</label>
+                    <label className="text-[10px] text-zinc-400">Scope Description</label>
                     <input
                       type="text"
                       value={newDesc}
                       onChange={(e) => setNewDesc(e.target.value)}
-                      placeholder="e.g. Slump tested concrete core"
+                      placeholder="e.g. Grade 40 concrete pour with micro-silica"
                       className="w-full px-2 py-1.5 rounded bg-white/5 border border-white/15 text-white text-xs"
                     />
                   </div>
                   <div>
-                    <label className="text-[10px] text-zinc-400">Qty & Unit Rate ($)</label>
+                    <label className="text-[10px] text-zinc-400">Qty, Unit & Rate (LKR)</label>
                     <div className="flex gap-1">
                       <input
                         type="number"
                         value={newQty}
                         onChange={(e) => setNewQty(Number(e.target.value))}
-                        className="w-14 px-1 py-1.5 rounded bg-white/5 border border-white/15 text-white text-xs"
+                        className="w-14 px-1 py-1.5 rounded bg-white/5 border border-white/15 text-white text-xs font-mono"
                       />
                       <input
                         type="text"
@@ -430,7 +452,7 @@ export default function QuotationsPage() {
                         type="number"
                         value={newRate}
                         onChange={(e) => setNewRate(Number(e.target.value))}
-                        className="w-16 px-1 py-1.5 rounded bg-white/5 border border-white/15 text-white text-xs"
+                        className="w-24 px-1 py-1.5 rounded bg-white/5 border border-white/15 text-white text-xs font-mono"
                       />
                     </div>
                   </div>
@@ -440,12 +462,12 @@ export default function QuotationsPage() {
                       onClick={handleAddBoqItem}
                       className="w-full py-1.5 rounded bg-[#0038B8] hover:bg-blue-600 text-white font-bold text-xs"
                     >
-                      + Add
+                      + Add Item
                     </button>
                   </div>
                 </div>
 
-                {/* List of current items */}
+                {/* List of current items in LKR */}
                 <div className="space-y-1.5 pt-2 max-h-44 overflow-y-auto">
                   {boqList.map((item, idx) => (
                     <div
@@ -456,12 +478,12 @@ export default function QuotationsPage() {
                         <span className="font-mono text-[#FFB800]">{item.itemCode}</span>
                         <span className="text-zinc-300">{item.description}</span>
                         <span className="text-zinc-400 text-[10px]">
-                          ({item.quantity} {item.unit} @ ${item.unitRate})
+                          ({item.quantity} {item.unit} @ {formatLKR(item.unitRate)})
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="font-mono font-bold text-white">
-                          ${item.totalAmount.toLocaleString()}
+                          {formatLKR(item.totalAmount)}
                         </span>
                         <button
                           type="button"
@@ -476,16 +498,22 @@ export default function QuotationsPage() {
                 </div>
               </div>
 
-              {/* Cost Aggregation */}
+              {/* Sri Lankan Construction Tax Aggregation in LKR */}
               <div className="text-right space-y-1 text-xs border-t border-white/10 pt-3">
                 <div className="text-zinc-400">
-                  Subtotal: <span className="font-mono text-white font-bold">${subtotal.toLocaleString()}</span>
+                  BOQ Subtotal: <span className="font-mono text-white font-bold">{formatLKR(subtotal)}</span>
                 </div>
-                <div className="text-zinc-400">
-                  5% VAT: <span className="font-mono text-white font-bold">${tax.toLocaleString()}</span>
+                <div className="text-blue-300">
+                  Social Security Levy (2.5% SSCL): <span className="font-mono font-bold">+{formatLKR(ssclTax)}</span>
                 </div>
-                <div className="text-base font-extrabold text-[#FFB800]">
-                  Grand Total: ${grandTotal.toLocaleString()}
+                <div className="text-blue-300">
+                  Statutory VAT (18%): <span className="font-mono font-bold">+{formatLKR(taxVat)}</span>
+                </div>
+                <div className="text-amber-400">
+                  5% Warranty Retention to be Deducted: <span className="font-mono">({formatLKR(retentionAmount)})</span>
+                </div>
+                <div className="text-base font-extrabold text-[#FFB800] pt-1">
+                  Total Tender Sum: {formatLKR(grandTotal)}
                 </div>
               </div>
 
@@ -501,7 +529,7 @@ export default function QuotationsPage() {
                   type="submit"
                   className="px-4 py-2 rounded-xl bg-[#0038B8] hover:bg-[#1D4ED8] text-white text-xs font-bold shadow-lg shadow-blue-900/40"
                 >
-                  Authorize Tender Proposal
+                  Issue CIDA/FIDIC Tender Proposal
                 </button>
               </div>
             </form>
@@ -511,4 +539,3 @@ export default function QuotationsPage() {
     </div>
   );
 }
-

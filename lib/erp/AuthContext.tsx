@@ -246,7 +246,7 @@ export function ERPProvider({ children }: { children: React.ReactNode }) {
       invoiceNumber: nextNumber,
     };
     setInvoices((prev) => [newInvoice, ...prev]);
-    logAuditEvent('INVOICE_ISSUED', 'FINANCE', `Issued invoice ${newInvoice.invoiceNumber} for ${newInvoice.clientName} ($${newInvoice.total.toLocaleString()})`);
+    logAuditEvent('INVOICE_ISSUED', 'FINANCE', `Issued invoice ${newInvoice.invoiceNumber} for ${newInvoice.clientName} (LKR ${newInvoice.total.toLocaleString()})`);
   };
 
   const updateInvoiceStatus = (id: string, status: InvoiceStatus) => {
@@ -303,7 +303,7 @@ export function ERPProvider({ children }: { children: React.ReactNode }) {
       date: new Date().toISOString().split('T')[0],
     };
     setPurchaseOrders((prev) => [newPO, ...prev]);
-    logAuditEvent('PURCHASE_ORDER_ISSUED', 'INVENTORY', `Issued ${newPO.poNumber} to ${newPO.supplier} ($${newPO.totalAmount.toLocaleString()})`);
+    logAuditEvent('PURCHASE_ORDER_ISSUED', 'INVENTORY', `Issued ${newPO.poNumber} to ${newPO.supplier} (LKR ${newPO.totalAmount.toLocaleString()})`);
   };
 
   const updatePOStatus = (id: string, status: POStatus) => {
@@ -369,7 +369,7 @@ export function ERPProvider({ children }: { children: React.ReactNode }) {
       createdDate: new Date().toISOString().split('T')[0],
     };
     setQuotations((prev) => [newQuote, ...prev]);
-    logAuditEvent('QUOTATION_GENERATED', 'BOQ', `Generated official construction tender ${newQuote.quoteNumber} for ${newQuote.clientCompany} ($${newQuote.grandTotal.toLocaleString()})`);
+    logAuditEvent('QUOTATION_GENERATED', 'BOQ', `Generated official construction tender ${newQuote.quoteNumber} for ${newQuote.clientCompany} (LKR ${newQuote.grandTotal.toLocaleString()})`);
   };
 
   const updateQuotationStatus = (id: string, status: QuotationStatus) => {

@@ -2,11 +2,13 @@
 
 import React, { useState } from 'react';
 import { useERP } from '@/lib/erp/AuthContext';
+import { formatLKR } from '@/lib/erp/currency';
 import {
   Boxes,
   Plus,
   Search,
   Truck,
+  FileCheck,
 } from 'lucide-react';
 
 export default function InventoryPage() {
@@ -22,10 +24,10 @@ export default function InventoryPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [showPOModal, setShowPOModal] = useState(false);
 
-  // Form State for PO
+  // Form State for PO in LKR
   const [supplier, setSupplier] = useState('');
-  const [totalAmount, setTotalAmount] = useState(75000);
-  const [itemsCount, setItemsCount] = useState(25);
+  const [totalAmount, setTotalAmount] = useState(14500000); // LKR 14.5M default
+  const [itemsCount, setItemsCount] = useState(50);
 
   const filteredInventory = inventory.filter(
     (item) =>
@@ -63,13 +65,13 @@ export default function InventoryPage() {
         <div>
           <div className="flex items-center gap-2 text-xs font-mono text-[#FFB800] uppercase tracking-wider">
             <Boxes className="w-4 h-4" />
-            <span>Procurement & Material Supply Chain</span>
+            <span>Procurement, Raw Materials Stockpile & POs (LKR)</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-white mt-1">
-            Material Master & Purchase Orders
+            Raw Materials Stockpile & Purchase Orders
           </h1>
           <p className="text-xs sm:text-sm text-zinc-400 mt-0.5">
-            Real-time yard inventory levels, seismic hardware tracking, and automated supplier replenishment.
+            Tor steel rebar stock (BS 4449 G500B), Tokyo Super cement bags, ready-mix concrete ($m^3$), M-Sand, and multi-tier PO approvals in LKR.
           </p>
         </div>
 
@@ -78,19 +80,19 @@ export default function InventoryPage() {
           className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#0038B8] to-[#1D4ED8] hover:from-[#1D4ED8] hover:to-[#2563EB] text-white text-xs font-bold shadow-lg shadow-blue-900/40 border border-blue-400/40 flex items-center gap-2 self-start sm:self-auto transition-all"
         >
           <Plus className="w-4 h-4 text-[#FFB800]" />
-          <span>Issue Purchase Order (PO)</span>
+          <span>Issue Purchase Order (LKR)</span>
         </button>
       </div>
 
-      {/* KPI Cards */}
+      {/* KPI Cards in LKR */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="p-4 rounded-xl bg-[#080e1c]/80 border border-white/10">
-          <span className="text-xs text-zinc-400">Total Yard Valuation</span>
-          <div className="text-2xl font-extrabold text-white mt-1">
-            ${(totalInventoryValuation / 1000000).toFixed(2)}M
+          <span className="text-xs text-zinc-400">Total Stockpile Valuation</span>
+          <div className="text-2xl font-extrabold text-white mt-1 font-mono">
+            {formatLKR(totalInventoryValuation, true)}
           </div>
           <span className="text-[11px] text-zinc-400 mt-1 block">
-            Across {inventory.length} structural SKU categories
+            Across {inventory.length} heavy civil SKU categories
           </span>
         </div>
 
@@ -101,24 +103,20 @@ export default function InventoryPage() {
               lowStockCount > 0 ? 'text-amber-400' : 'text-emerald-400'
             }`}
           >
-            {lowStockCount} Items
+            {lowStockCount} Items Below Threshold
           </div>
           <span className="text-[11px] text-zinc-400 mt-1 block">
-            Automated threshold notifications
+            Automatic supplier replenishment trigger
           </span>
         </div>
 
         <div className="p-4 rounded-xl bg-[#080e1c]/80 border border-white/10">
           <span className="text-xs text-zinc-400">Active Purchase Orders</span>
-          <div className="text-2xl font-extrabold text-[#FFB800] mt-1">
-            {purchaseOrders.length} POs
+          <div className="text-2xl font-extrabold text-[#FFB800] mt-1 font-mono">
+            {purchaseOrders.length} POs ({formatLKR(purchaseOrders.reduce((acc, p) => acc + p.totalAmount, 0), true)})
           </div>
           <span className="text-[11px] text-zinc-400 mt-1 block">
-            Total Value: $
-            {(
-              purchaseOrders.reduce((acc, p) => acc + p.totalAmount, 0) / 1000000
-            ).toFixed(2)}
-            M
+            Multi-tier executive approval pipeline
           </span>
         </div>
       </div>
@@ -166,12 +164,12 @@ export default function InventoryPage() {
               <table className="w-full text-left text-xs">
                 <thead className="bg-white/[0.03] text-zinc-400 font-mono text-[11px] border-b border-white/10 uppercase tracking-wider">
                   <tr>
-                    <th className="py-3.5 px-4">SKU & Material</th>
-                    <th className="py-3.5 px-4">Warehouse Location</th>
+                    <th className="py-3.5 px-4">SKU & Material Specification</th>
+                    <th className="py-3.5 px-4">Warehouse / Stockyard</th>
                     <th className="py-3.5 px-4 text-center">Available Stock</th>
-                    <th className="py-3.5 px-4 text-right">Unit Cost</th>
+                    <th className="py-3.5 px-4 text-right">Unit Rate (LKR)</th>
                     <th className="py-3.5 px-4 text-center">Status</th>
-                    <th className="py-3.5 px-4 text-right">Adjustment</th>
+                    <th className="py-3.5 px-4 text-right">Quick Stock Disp.</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5 text-zinc-300">
@@ -179,19 +177,37 @@ export default function InventoryPage() {
                     <tr key={item.id} className="hover:bg-white/[0.02] transition-colors">
                       <td className="py-3.5 px-4">
                         <div className="font-semibold text-white">{item.name}</div>
-                        <div className="text-[11px] font-mono text-zinc-400">
-                          {item.sku} • {item.category}
+                        <div className="text-[11px] font-mono text-zinc-400 flex items-center gap-2 mt-0.5">
+                          <span>{item.sku}</span>
+                          <span>•</span>
+                          <span className="text-blue-300">{item.category}</span>
+                          {item.qualityStandard && (
+                            <>
+                              <span>•</span>
+                              <span className="text-emerald-400 text-[10px]">{item.qualityStandard}</span>
+                            </>
+                          )}
                         </div>
+                        {item.millTestCertificateNo && (
+                          <div className="text-[10px] text-zinc-400 font-mono mt-0.5 flex items-center gap-1">
+                            <FileCheck className="w-3 h-3 text-[#FFB800]" />
+                            <span>MTC: {item.millTestCertificateNo}</span>
+                          </div>
+                        )}
                       </td>
-                      <td className="py-3.5 px-4 text-zinc-300">{item.warehouseLocation}</td>
+                      <td className="py-3.5 px-4 text-zinc-300">
+                        <div>{item.warehouseLocation}</div>
+                        <div className="text-[10px] text-zinc-400 font-mono">Supplier: {item.supplier}</div>
+                      </td>
                       <td className="py-3.5 px-4 text-center font-mono font-bold text-white">
-                        {item.quantity} {item.unit}
+                        {item.quantity.toLocaleString()} {item.unit}
                         <div className="text-[10px] text-zinc-400 font-normal">
-                          Min: {item.minThreshold} {item.unit}
+                          Min Safety: {item.minThreshold.toLocaleString()} {item.unit}
                         </div>
                       </td>
                       <td className="py-3.5 px-4 text-right font-mono font-bold text-white">
-                        ${item.unitCost.toLocaleString()}
+                        <div>{formatLKR(item.unitCost)}</div>
+                        <div className="text-[10px] text-zinc-400 font-normal">per {item.unit}</div>
                       </td>
                       <td className="py-3.5 px-4 text-center">
                         <span
@@ -211,14 +227,14 @@ export default function InventoryPage() {
                           <button
                             onClick={() => adjustStock(item.id, -10)}
                             className="px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-white font-mono text-xs border border-white/10"
-                            title="Dispatch 10 units"
+                            title="Issue 10 units to site"
                           >
                             -10
                           </button>
                           <button
                             onClick={() => adjustStock(item.id, 50)}
                             className="px-2 py-1 rounded bg-[#0038B8]/40 hover:bg-[#0038B8] text-white font-mono text-xs border border-blue-500/30"
-                            title="Receive 50 units"
+                            title="Receive 50 units into stockyard"
                           >
                             +50
                           </button>
@@ -233,7 +249,7 @@ export default function InventoryPage() {
         </div>
       )}
 
-      {/* TAB 2: Purchase Orders */}
+      {/* TAB 2: Purchase Orders in LKR */}
       {activeTab === 'ORDERS' && (
         <div className="rounded-2xl bg-[#080e1c]/85 border border-white/10 overflow-hidden">
           <div className="overflow-x-auto">
@@ -243,7 +259,7 @@ export default function InventoryPage() {
                   <th className="py-3.5 px-4">PO Number</th>
                   <th className="py-3.5 px-4">Supplier Entity</th>
                   <th className="py-3.5 px-4">Issue Date</th>
-                  <th className="py-3.5 px-4 text-right">Total Amount</th>
+                  <th className="py-3.5 px-4 text-right">Total Amount (LKR)</th>
                   <th className="py-3.5 px-4 text-center">Workflow State</th>
                   <th className="py-3.5 px-4 text-right">Action</th>
                 </tr>
@@ -256,11 +272,11 @@ export default function InventoryPage() {
                     </td>
                     <td className="py-3.5 px-4">
                       <div className="font-semibold text-white">{po.supplier}</div>
-                      <div className="text-[11px] text-zinc-400">{po.itemsCount} SKU units</div>
+                      <div className="text-[11px] text-zinc-400">{po.itemsCount} Units</div>
                     </td>
                     <td className="py-3.5 px-4 font-mono text-zinc-400">{po.date}</td>
-                    <td className="py-3.5 px-4 text-right font-extrabold text-white text-sm">
-                      ${po.totalAmount.toLocaleString()}
+                    <td className="py-3.5 px-4 text-right font-extrabold text-[#FFB800] text-sm font-mono">
+                      {formatLKR(po.totalAmount)}
                     </td>
                     <td className="py-3.5 px-4 text-center">
                       <span
@@ -301,7 +317,7 @@ export default function InventoryPage() {
                         </button>
                       )}
                       {po.status === 'FULFILLED' && (
-                        <span className="text-[11px] text-zinc-400">Inventory Logged</span>
+                        <span className="text-[11px] text-zinc-400">Inventory GRN Logged</span>
                       )}
                     </td>
                   </tr>
@@ -312,14 +328,14 @@ export default function InventoryPage() {
         </div>
       )}
 
-      {/* Modal: Issue PO */}
+      {/* Modal: Issue PO in LKR */}
       {showPOModal && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
           <div className="w-full max-w-lg bg-[#091124] border border-white/15 rounded-2xl p-6 space-y-4 animate-fadeIn">
             <div className="flex items-center justify-between border-b border-white/10 pb-3">
               <h3 className="text-lg font-bold text-white flex items-center gap-2">
                 <Truck className="w-4 h-4 text-[#FFB800]" />
-                <span>Issue Supplier Purchase Order</span>
+                <span>Issue Supplier Purchase Order (LKR)</span>
               </h3>
               <button onClick={() => setShowPOModal(false)} className="text-zinc-400 hover:text-white">
                 ✕
@@ -334,21 +350,24 @@ export default function InventoryPage() {
                   required
                   value={supplier}
                   onChange={(e) => setSupplier(e.target.value)}
-                  placeholder="e.g. Emirates Steel Arkan"
+                  placeholder="e.g. Ceylon Heavy Steel Ltd or Tokyo Super Cement"
                   className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white text-xs focus:outline-none focus:border-[#FFB800]"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-zinc-300 mb-1">Total PO Amount ($ USD)</label>
+                  <label className="block text-xs font-semibold text-zinc-300 mb-1">Total PO Amount (LKR)</label>
                   <input
                     type="number"
                     required
                     value={totalAmount}
                     onChange={(e) => setTotalAmount(Number(e.target.value))}
-                    className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white text-xs focus:outline-none focus:border-[#FFB800]"
+                    className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white text-xs focus:outline-none focus:border-[#FFB800] font-mono"
                   />
+                  <span className="text-[10px] text-[#FFB800] font-mono mt-0.5 block">
+                    {formatLKR(totalAmount)}
+                  </span>
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-zinc-300 mb-1">Item Units Count</label>
@@ -374,7 +393,7 @@ export default function InventoryPage() {
                   type="submit"
                   className="px-4 py-2 rounded-xl bg-[#0038B8] hover:bg-[#1D4ED8] text-white text-xs font-bold shadow-lg shadow-blue-900/40"
                 >
-                  Issue PO
+                  Issue Purchase Order
                 </button>
               </div>
             </form>
@@ -384,4 +403,3 @@ export default function InventoryPage() {
     </div>
   );
 }
-

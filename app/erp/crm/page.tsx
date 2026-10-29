@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useERP } from '@/lib/erp/AuthContext';
 import { LeadStage } from '@/lib/erp/types';
+import { formatLKR } from '@/lib/erp/currency';
 import {
   TrendingUp,
   Plus,
@@ -10,14 +11,15 @@ import {
   Mail,
   Phone,
   Sparkles,
+  Award,
 } from 'lucide-react';
 
 const STAGES: { key: LeadStage; label: string; color: string }[] = [
   { key: 'NEW', label: 'Inbound Inquiry', color: 'border-zinc-500/40 text-zinc-300' },
   { key: 'QUALIFIED', label: 'BIM Feasibility', color: 'border-blue-500/40 text-blue-300' },
-  { key: 'PROPOSAL', label: 'Commercial Proposal', color: 'border-purple-500/40 text-purple-300' },
+  { key: 'PROPOSAL', label: 'Commercial BOQ', color: 'border-purple-500/40 text-purple-300' },
   { key: 'NEGOTIATION', label: 'Contract Negotiation', color: 'border-amber-500/40 text-amber-300' },
-  { key: 'WON', label: 'Commissioned (Won)', color: 'border-emerald-500/40 text-emerald-300' },
+  { key: 'WON', label: 'Awarded / Won', color: 'border-emerald-500/40 text-emerald-300' },
 ];
 
 export default function CRMPage() {
@@ -25,14 +27,15 @@ export default function CRMPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
 
-  // Form State
+  // Form State in LKR
   const [clientName, setClientName] = useState('');
   const [company, setCompany] = useState('');
   const [projectType, setProjectType] = useState('');
-  const [estimatedValue, setEstimatedValue] = useState(15000000);
+  const [estimatedValue, setEstimatedValue] = useState(1850000000); // LKR 1.85 Billion default
   const [contactEmail, setContactEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [notes, setNotes] = useState('');
+  const [cidaCategory, setCidaCategory] = useState('Building & Civil (CIDA CS2)');
 
   const filteredLeads = leads.filter(
     (l) =>
@@ -57,10 +60,12 @@ export default function CRMPage() {
       estimatedValue: Number(estimatedValue),
       stage: 'NEW',
       probability: 30,
-      contactEmail: contactEmail || `procurement@${company.toLowerCase().replace(/[^a-z]/g, '')}.com`,
-      phone: phone || '+1 (555) 019-2000',
-      assignedTo: user?.name || 'Julian Voss',
-      notes: notes || 'New engineering tender opportunity recorded.',
+      contactEmail: contactEmail || `tenders@${company.toLowerCase().replace(/[^a-z]/g, '')}.lk`,
+      phone: phone || '+94 11 234 5678',
+      assignedTo: user?.name || 'Julian Voss (Commercial Director)',
+      notes: notes || 'New engineering tender opportunity recorded in CRM pipeline.',
+      cidaCategory,
+      tenderDeadline: '2026-11-30',
     });
     setClientName('');
     setCompany('');
@@ -76,13 +81,13 @@ export default function CRMPage() {
         <div>
           <div className="flex items-center gap-2 text-xs font-mono text-[#FFB800] uppercase tracking-wider">
             <TrendingUp className="w-4 h-4" />
-            <span>Commercial Business Development & CRM</span>
+            <span>Commercial Business Development & Tenders (LKR)</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-white mt-1">
-            Contract Pipeline & Client Deals
+            Commercial Deals & Tender Pipeline
           </h1>
           <p className="text-xs sm:text-sm text-zinc-400 mt-0.5">
-            Manage multi-million dollar structural tenders, commercial feasibility, and turnkey awards.
+            Manage multi-billion rupee infrastructure tenders, CIDA CS2 feasibility assessments, and turnkey project awards.
           </p>
         </div>
 
@@ -91,16 +96,16 @@ export default function CRMPage() {
           className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#0038B8] to-[#1D4ED8] hover:from-[#1D4ED8] hover:to-[#2563EB] text-white text-xs font-bold shadow-lg shadow-blue-900/40 border border-blue-400/40 flex items-center gap-2 self-start sm:self-auto transition-all"
         >
           <Plus className="w-4 h-4 text-[#FFB800]" />
-          <span>Register New Tender</span>
+          <span>Register New Tender (LKR)</span>
         </button>
       </div>
 
-      {/* Metrics Header Cards */}
+      {/* Metrics Header Cards in LKR */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="p-4 rounded-xl bg-[#080e1c]/80 border border-white/10">
           <span className="text-xs text-zinc-400">Total Unweighted Pipeline</span>
-          <div className="text-2xl font-extrabold text-white mt-1">
-            ${(totalPipeline / 1000000).toFixed(1)}M
+          <div className="text-2xl font-extrabold text-white mt-1 font-mono">
+            {formatLKR(totalPipeline, true)}
           </div>
           <span className="text-[11px] text-zinc-400 mt-1 block">
             Across {leads.length} active enterprise proposals
@@ -108,28 +113,27 @@ export default function CRMPage() {
         </div>
 
         <div className="p-4 rounded-xl bg-[#080e1c]/80 border border-white/10">
-          <span className="text-xs text-zinc-400">Probability-Weighted Revenue</span>
-          <div className="text-2xl font-extrabold text-emerald-400 mt-1">
-            ${(weightedPipeline / 1000000).toFixed(1)}M
+          <span className="text-xs text-zinc-400">Probability-Weighted Forecast</span>
+          <div className="text-2xl font-extrabold text-emerald-400 mt-1 font-mono">
+            {formatLKR(weightedPipeline, true)}
           </div>
           <span className="text-[11px] text-zinc-400 mt-1 block">
-            Projected EBITDA forecast
+            Weighted conversion projection in LKR
           </span>
         </div>
 
         <div className="p-4 rounded-xl bg-[#080e1c]/80 border border-white/10">
           <span className="text-xs text-zinc-400">Awarded Contracts (Won)</span>
-          <div className="text-2xl font-extrabold text-[#FFB800] mt-1">
-            $
-            {(
+          <div className="text-2xl font-extrabold text-[#FFB800] mt-1 font-mono">
+            {formatLKR(
               leads
                 .filter((l) => l.stage === 'WON')
-                .reduce((acc, l) => acc + l.estimatedValue, 0) / 1000000
-            ).toFixed(1)}
-            M
+                .reduce((acc, l) => acc + l.estimatedValue, 0),
+              true
+            )}
           </div>
           <span className="text-[11px] text-zinc-400 mt-1 block">
-            Successfully transferred to Field Operations
+            Transferred to Field Site Operations
           </span>
         </div>
       </div>
@@ -146,7 +150,7 @@ export default function CRMPage() {
         />
       </div>
 
-      {/* Pipeline Board Columns */}
+      {/* Pipeline Board Columns in LKR */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         {STAGES.map((col) => {
           const colLeads = filteredLeads.filter((l) => l.stage === col.key);
@@ -166,11 +170,11 @@ export default function CRMPage() {
                     {colLeads.length}
                   </span>
                 </div>
-                <div className="text-[11px] text-zinc-400 mt-1">
-                  ${(colValue / 1000000).toFixed(1)}M Total
+                <div className="text-[11px] text-zinc-400 mt-1 font-mono font-bold">
+                  {formatLKR(colValue, true)} Total
                 </div>
 
-                {/* Cards */}
+                {/* Cards in LKR */}
                 <div className="space-y-3 mt-3">
                   {colLeads.map((lead) => (
                     <div
@@ -190,9 +194,16 @@ export default function CRMPage() {
                         {lead.projectType}
                       </p>
 
-                      <div className="text-sm font-extrabold text-white">
-                        ${(lead.estimatedValue / 1000000).toFixed(2)}M
+                      <div className="text-sm font-extrabold text-[#FFB800] font-mono">
+                        {formatLKR(lead.estimatedValue)}
                       </div>
+
+                      {lead.cidaCategory && (
+                        <div className="text-[9px] font-mono text-zinc-400 bg-white/5 px-1.5 py-0.5 rounded flex items-center gap-1">
+                          <Award className="w-2.5 h-2.5 text-[#FFB800]" />
+                          <span>{lead.cidaCategory}</span>
+                        </div>
+                      )}
 
                       <div className="text-[10px] text-zinc-400 space-y-1 pt-1 border-t border-white/5">
                         <div className="flex items-center gap-1.5 truncate">
@@ -207,7 +218,7 @@ export default function CRMPage() {
 
                       {/* Stage Mover Selector */}
                       <div className="pt-2 border-t border-white/5 flex items-center justify-between">
-                        <span className="text-[10px] text-zinc-400">Advance Stage:</span>
+                        <span className="text-[10px] text-zinc-400">Advance:</span>
                         <select
                           value={lead.stage}
                           onChange={(e) => updateLeadStage(lead.id, e.target.value as LeadStage)}
@@ -236,14 +247,14 @@ export default function CRMPage() {
         })}
       </div>
 
-      {/* Modal: Register New Tender */}
+      {/* Modal: Register New Tender in LKR */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
           <div className="w-full max-w-lg bg-[#091124] border border-white/15 rounded-2xl p-6 space-y-4 animate-fadeIn">
             <div className="flex items-center justify-between border-b border-white/10 pb-3">
               <h3 className="text-lg font-bold text-white flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-[#FFB800]" />
-                <span>Register Prospective Commercial Tender</span>
+                <span>Register Prospective Commercial Tender (LKR)</span>
               </h3>
               <button onClick={() => setShowAddModal(false)} className="text-zinc-400 hover:text-white">
                 ✕
@@ -258,7 +269,7 @@ export default function CRMPage() {
                   required
                   value={company}
                   onChange={(e) => setCompany(e.target.value)}
-                  placeholder="e.g. Pacific Trans-Urban Consortium"
+                  placeholder="e.g. Port City Luxury Developments PLC"
                   className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white text-xs focus:outline-none focus:border-[#FFB800]"
                 />
               </div>
@@ -270,29 +281,31 @@ export default function CRMPage() {
                   required
                   value={projectType}
                   onChange={(e) => setProjectType(e.target.value)}
-                  placeholder="e.g. Geothermal Luxury High-Rise"
+                  placeholder="e.g. 36-Story High-Rise Ocean Suites & Marina"
                   className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white text-xs focus:outline-none focus:border-[#FFB800]"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-zinc-300 mb-1">Estimated Value ($ USD)</label>
+                  <label className="block text-xs font-semibold text-zinc-300 mb-1">Estimated Tender Value (LKR)</label>
                   <input
                     type="number"
                     required
                     value={estimatedValue}
                     onChange={(e) => setEstimatedValue(Number(e.target.value))}
-                    className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white text-xs focus:outline-none focus:border-[#FFB800]"
+                    className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white text-xs focus:outline-none focus:border-[#FFB800] font-mono"
                   />
+                  <span className="text-[10px] text-[#FFB800] font-mono mt-0.5 block">
+                    {formatLKR(estimatedValue)}
+                  </span>
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-zinc-300 mb-1">Client Contact Name</label>
+                  <label className="block text-xs font-semibold text-zinc-300 mb-1">CIDA Category</label>
                   <input
                     type="text"
-                    value={clientName}
-                    onChange={(e) => setClientName(e.target.value)}
-                    placeholder="e.g. Sarah Jenkins"
+                    value={cidaCategory}
+                    onChange={(e) => setCidaCategory(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white text-xs focus:outline-none focus:border-[#FFB800]"
                   />
                 </div>
@@ -300,12 +313,12 @@ export default function CRMPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-zinc-300 mb-1">Corporate Email</label>
+                  <label className="block text-xs font-semibold text-zinc-300 mb-1">Corporate Tender Email</label>
                   <input
                     type="email"
                     value={contactEmail}
                     onChange={(e) => setContactEmail(e.target.value)}
-                    placeholder="name@corp.com"
+                    placeholder="tenders@developer.lk"
                     className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white text-xs focus:outline-none focus:border-[#FFB800]"
                   />
                 </div>
@@ -315,7 +328,7 @@ export default function CRMPage() {
                     type="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    placeholder="+1 (555) 000-0000"
+                    placeholder="+94 11 200 0000"
                     className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white text-xs focus:outline-none focus:border-[#FFB800]"
                   />
                 </div>
@@ -333,7 +346,7 @@ export default function CRMPage() {
                   type="submit"
                   className="px-4 py-2 rounded-xl bg-[#0038B8] hover:bg-[#1D4ED8] text-white text-xs font-bold shadow-lg shadow-blue-900/40"
                 >
-                  Commit Tender
+                  Commit Tender to Pipeline
                 </button>
               </div>
             </form>
@@ -343,4 +356,3 @@ export default function CRMPage() {
     </div>
   );
 }
-

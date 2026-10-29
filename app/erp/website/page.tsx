@@ -4,12 +4,14 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useERP } from '@/lib/erp/AuthContext';
+import { formatLKR } from '@/lib/erp/currency';
 import {
   Globe,
   Plus,
   Trash2,
   ExternalLink,
   Sparkles,
+  Coins,
 } from 'lucide-react';
 
 export default function WebsiteManagementPage() {
@@ -30,6 +32,7 @@ export default function WebsiteManagementPage() {
   const [location, setLocation] = useState('');
   const [imageUrl, setImageUrl] = useState('https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&auto=format&fit=crop&q=80');
   const [description, setDescription] = useState('');
+  const [contractValueLkr, setContractValueLkr] = useState(2500000000);
   const completionYear = '2026';
   const [featured, setFeatured] = useState(true);
 
@@ -39,11 +42,13 @@ export default function WebsiteManagementPage() {
     addWebsiteProject({
       title,
       category,
-      location: location || 'Colombo Financial City',
+      location: location || 'Colombo Port City, Sri Lanka',
       imageUrl,
-      description: description || 'Parametric luxury structural development engineered by CONTEC.',
+      description: description || 'Parametric luxury structural development engineered by CONTEC Design & Build.',
       completionYear,
       featured,
+      contractValueLkr: Number(contractValueLkr),
+      cidaRating: 'CIDA CS2',
     });
     setTitle('');
     setDescription('');
@@ -57,13 +62,13 @@ export default function WebsiteManagementPage() {
         <div>
           <div className="flex items-center gap-2 text-xs font-mono text-[#FFB800] uppercase tracking-wider">
             <Globe className="w-4 h-4" />
-            <span>Website Management & Corporate CMS</span>
+            <span>Public Website CMS & Inbound Inquiries (LKR)</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-white mt-1">
-            Public Website CMS & Inbound Inquiries
+            Website CMS & Inbound Lead Management
           </h1>
           <p className="text-xs sm:text-sm text-zinc-400 mt-0.5">
-            Manage showcase portfolio items, review client requests from /contact, and configure corporate contact channels.
+            Manage showcase portfolio items with LKR project valuations, review client requests from /contact, and configure corporate contact channels.
           </p>
         </div>
 
@@ -82,7 +87,7 @@ export default function WebsiteManagementPage() {
             className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#0038B8] to-[#1D4ED8] hover:from-[#1D4ED8] hover:to-[#2563EB] text-white text-xs font-bold shadow-lg shadow-blue-900/40 border border-blue-400/40 flex items-center gap-1.5 transition-all"
           >
             <Plus className="w-4 h-4 text-[#FFB800]" />
-            <span>Add Showcase Project</span>
+            <span>Add Showcase Project (LKR)</span>
           </button>
         </div>
       </div>
@@ -142,7 +147,7 @@ export default function WebsiteManagementPage() {
                   />
                   {p.featured && (
                     <span className="absolute top-3 left-3 text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#FFB800] text-black font-extrabold shadow-md">
-                      Featured on Homepage
+                      Featured Showcase
                     </span>
                   )}
                   <span className="absolute bottom-3 right-3 text-[10px] font-mono px-2 py-0.5 rounded bg-black/80 text-white border border-white/20">
@@ -151,12 +156,26 @@ export default function WebsiteManagementPage() {
                 </div>
 
                 <div className="p-5 space-y-2">
-                  <div className="text-[11px] font-mono text-blue-300 uppercase tracking-wider">
-                    {p.category}
+                  <div className="flex items-center justify-between text-[11px] font-mono">
+                    <span className="text-blue-300 uppercase tracking-wider">{p.category}</span>
+                    {p.cidaRating && (
+                      <span className="text-[#FFB800] bg-white/5 px-1.5 py-0.5 rounded border border-white/10">
+                        {p.cidaRating}
+                      </span>
+                    )}
                   </div>
+
                   <h3 className="text-base font-bold text-white group-hover:text-[#FFB800] transition-colors">
                     {p.title}
                   </h3>
+
+                  {p.contractValueLkr && (
+                    <div className="text-xs font-mono font-bold text-[#FFB800] flex items-center gap-1">
+                      <Coins className="w-3 h-3" />
+                      <span>Contract Sum: {formatLKR(p.contractValueLkr, true)}</span>
+                    </div>
+                  )}
+
                   <p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed">
                     {p.description}
                   </p>
@@ -181,7 +200,7 @@ export default function WebsiteManagementPage() {
         </div>
       )}
 
-      {/* TAB 2: Incoming Inquiries */}
+      {/* TAB 2: Incoming Inquiries in LKR */}
       {activeTab === 'INQUIRIES' && (
         <div className="rounded-2xl bg-[#080e1c]/85 border border-white/10 overflow-hidden">
           <div className="overflow-x-auto">
@@ -239,7 +258,7 @@ export default function WebsiteManagementPage() {
                           Mark Contacted
                         </button>
                       ) : (
-                        <span className="text-[11px] text-zinc-400">Processed</span>
+                        <span className="text-[11px] text-zinc-400 font-mono">Acknowledged</span>
                       )}
                     </td>
                   </tr>
@@ -305,7 +324,7 @@ export default function WebsiteManagementPage() {
         </div>
       )}
 
-      {/* MODAL: Add Showcase Project */}
+      {/* MODAL: Add Showcase Project in LKR */}
       {showAddProjectModal && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3">
           <div className="w-full max-w-lg bg-[#080f24] border border-white/20 rounded-2xl p-6 space-y-4 animate-fadeIn">
@@ -327,7 +346,7 @@ export default function WebsiteManagementPage() {
                   required
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="e.g. Apex Marine Harbor Towers"
+                  placeholder="e.g. Colombo Port City Ocean Marina"
                   className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white text-xs focus:outline-none focus:border-[#FFB800]"
                 />
               </div>
@@ -347,15 +366,25 @@ export default function WebsiteManagementPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-zinc-300 mb-1">Location</label>
+                  <label className="block text-xs font-semibold text-zinc-300 mb-1">Contract Sum (LKR)</label>
                   <input
-                    type="text"
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                    placeholder="e.g. Kandy Hillside Sanctuary"
-                    className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white text-xs"
+                    type="number"
+                    value={contractValueLkr}
+                    onChange={(e) => setContractValueLkr(Number(e.target.value))}
+                    className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white text-xs font-mono"
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-zinc-300 mb-1">Location</label>
+                <input
+                  type="text"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  placeholder="e.g. Port City Marina Sector 1"
+                  className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white text-xs"
+                />
               </div>
 
               <div>
@@ -414,4 +443,3 @@ export default function WebsiteManagementPage() {
     </div>
   );
 }
-
