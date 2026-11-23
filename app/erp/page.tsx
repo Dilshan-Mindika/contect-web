@@ -20,6 +20,18 @@ import {
   Award,
   CheckCircle2,
   ShieldCheck,
+  Building2,
+  DollarSign,
+  UserCheck,
+  Truck,
+  Package,
+  Layers,
+  FileSpreadsheet,
+  AlertTriangle,
+  FolderLock,
+  Landmark,
+  Scale,
+  Briefcase,
 } from 'lucide-react';
 
 export default function ERPDashboardPage() {
@@ -33,6 +45,16 @@ export default function ERPDashboardPage() {
     siteLogs,
     addInvoice,
     addLead,
+    activeCompany,
+    setActiveCompany,
+    companies,
+    cidaIpcs,
+    threeWayMatches,
+    musterRolls,
+    budgetBaselines,
+    glAccounts,
+    vaultDocuments,
+    safetyInspections,
   } = useERP();
 
   // Quick Action Modal States
@@ -49,25 +71,54 @@ export default function ERPDashboardPage() {
   const [leadProject, setLeadProject] = useState('');
   const [leadValue, setLeadValue] = useState(1850000000); // 1.85B LKR default
 
+  // Active Company Context Details
+  const compA = companies.find((c) => c.id === 'COMP_A');
+  const compB = companies.find((c) => c.id === 'COMP_B');
+
+  // Filtered metrics by activeCompany
+  const filteredProjects = projects.filter(
+    (p) => activeCompany === 'CONSOLIDATED' || (p as { companyId?: string }).companyId === activeCompany || (!((p as { companyId?: string }).companyId) && activeCompany === 'COMP_A')
+  );
+
+  const filteredInvoices = invoices.filter(
+    (inv) => activeCompany === 'CONSOLIDATED' || (inv as { companyId?: string }).companyId === activeCompany || (!((inv as { companyId?: string }).companyId) && activeCompany === 'COMP_A')
+  );
+
+  const filteredIPCs = cidaIpcs.filter(
+    (ipc: { companyId: string }) => activeCompany === 'CONSOLIDATED' || ipc.companyId === activeCompany
+  );
+
+  const filteredMachinery = machinery.filter(
+    (m) => activeCompany === 'CONSOLIDATED' || (m as { companyId?: string }).companyId === activeCompany || (activeCompany === 'COMP_B')
+  );
+
+  const filteredMuster = musterRolls.filter(
+    (m) => activeCompany === 'CONSOLIDATED' || m.companyId === activeCompany
+  );
+
+  const filteredDocs = vaultDocuments.filter(
+    (d) => activeCompany === 'CONSOLIDATED' || d.companyId === activeCompany
+  );
+
   // Compute live aggregates in LKR
-  const totalInvoiced = invoices.reduce((acc, inv) => acc + inv.total, 0);
-  const totalPaid = invoices
+  const totalInvoiced = filteredInvoices.reduce((acc, inv) => acc + inv.total, 0);
+  const totalPaid = filteredInvoices
     .filter((inv) => inv.status === 'PAID')
     .reduce((acc, inv) => acc + inv.total, 0);
-  const totalPending = invoices
+  const totalPending = filteredInvoices
     .filter((inv) => inv.status !== 'PAID')
     .reduce((acc, inv) => acc + inv.total, 0);
 
-  const totalProjectBudget = projects.reduce((acc, p) => acc + p.budget, 0);
-  const totalProjectSpent = projects.reduce((acc, p) => acc + p.spent, 0);
+  const totalProjectBudget = filteredProjects.reduce((acc, p) => acc + p.budget, 0);
+  const totalProjectSpent = filteredProjects.reduce((acc, p) => acc + p.spent, 0);
   const pipelineValuation = leads.reduce((acc, l) => acc + l.estimatedValue, 0);
 
   // Construction domain metrics
   const totalWorkforceOnSite = siteLogs.reduce((acc, s) => acc + s.workforceCount, 0);
   const totalConcretePoured = siteLogs.reduce((acc, s) => acc + s.concretePouredM3, 0);
-  const operationalMachinery = machinery.filter((m) => m.status === 'OPERATIONAL').length;
+  const operationalMachinery = filteredMachinery.filter((m) => m.status === 'OPERATIONAL').length;
   const avgFleetFuel = Math.round(
-    machinery.reduce((acc, m) => acc + m.fuelCapacityPct, 0) / (machinery.length || 1)
+    filteredMachinery.reduce((acc, m) => acc + m.fuelCapacityPct, 0) / (filteredMachinery.length || 1)
   );
 
   const handleCreateInvoice = (e: React.FormEvent) => {
@@ -123,18 +174,22 @@ export default function ERPDashboardPage() {
       {/* Executive Welcome & Live Action Bar */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-white/10">
         <div>
-          <div className="flex items-center gap-2 text-xs font-mono text-[#FFB800] uppercase tracking-wider">
+          <div className="flex items-center gap-2 text-xs font-mono text-[#FFB800] uppercase tracking-wider flex-wrap">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>CONTEC Enterprise Operations & Site Command</span>
+            <span>CONTEC Multi-Company Construction ERP</span>
             <span className="px-2 py-0.5 rounded text-[10px] bg-blue-500/20 text-blue-300 border border-blue-500/30 font-bold">
-              CIDA GRADE CS2
+              {activeCompany === 'COMP_A'
+                ? 'Company A: Contec Engineering (CIDA CS2)'
+                : activeCompany === 'COMP_B'
+                ? 'Company B: Contec Heavy Infra (CIDA EM1)'
+                : 'CONSOLIDATED GROUP VIEW (COMPANIES A + B)'}
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-white mt-1">
             Executive Command Hub • {user?.name}
           </h1>
           <p className="text-xs sm:text-sm text-zinc-400 mt-0.5">
-            Role: <span className="text-blue-300 font-semibold">{user?.title}</span> • All financial and operational figures standardized in <span className="text-[#FFB800] font-semibold">Sri Lankan Rupees (LKR)</span>
+            Role: <span className="text-blue-300 font-semibold">{user?.title}</span> • All monetary values standardized in <span className="text-[#FFB800] font-semibold">Sri Lankan Rupees (LKR)</span>
           </p>
         </div>
 
@@ -162,6 +217,63 @@ export default function ERPDashboardPage() {
           >
             <Sparkles className="w-3.5 h-3.5 text-[#FFB800]" />
             <span>Add Tender Deal</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Multi-Company Context Quick Switcher Banner */}
+      <div className="p-4 rounded-2xl bg-[#080e1c]/90 border border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 rounded-xl bg-[#0038B8]/20 border border-blue-500/30 text-blue-400">
+            <Building2 className="w-5 h-5" />
+          </div>
+          <div>
+            <div className="text-xs text-zinc-400 font-mono">Current Reporting Scope</div>
+            <div className="text-sm font-bold text-white flex items-center gap-2">
+              <span>
+                {activeCompany === 'COMP_A'
+                  ? 'Company A: Contec Engineering & Construction (Pvt) Ltd'
+                  : activeCompany === 'COMP_B'
+                  ? 'Company B: Contec Heavy Infra & Equipment (Pvt) Ltd'
+                  : 'Consolidated Enterprise Group View'}
+              </span>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold">
+                Audit Ready
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setActiveCompany('COMP_A')}
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              activeCompany === 'COMP_A'
+                ? 'bg-[#0038B8] text-white shadow-md shadow-blue-900/40'
+                : 'bg-white/5 hover:bg-white/10 text-zinc-400'
+            }`}
+          >
+            Company A (Civil CS2)
+          </button>
+          <button
+            onClick={() => setActiveCompany('COMP_B')}
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              activeCompany === 'COMP_B'
+                ? 'bg-amber-600 text-white shadow-md shadow-amber-900/40'
+                : 'bg-white/5 hover:bg-white/10 text-zinc-400'
+            }`}
+          >
+            Company B (Plant EM1)
+          </button>
+          <button
+            onClick={() => setActiveCompany('CONSOLIDATED')}
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              activeCompany === 'CONSOLIDATED'
+                ? 'bg-purple-600 text-white shadow-md shadow-purple-900/40'
+                : 'bg-white/5 hover:bg-white/10 text-zinc-400'
+            }`}
+          >
+            🏢 Consolidated Group
           </button>
         </div>
       </div>
@@ -205,13 +317,13 @@ export default function ERPDashboardPage() {
             </div>
             <div className="flex items-center gap-1.5 mt-1 text-xs text-zinc-300">
               <Activity className="w-3.5 h-3.5 text-blue-400" />
-              <span>{projects.length} Active Mega-Sites</span>
+              <span>{filteredProjects.length} Active Mega-Sites</span>
             </div>
           </div>
           <div className="mt-3 pt-3 border-t border-white/5 flex items-center justify-between text-[11px] text-zinc-400">
             <span>Executed: {formatLKR(totalProjectSpent, true)}</span>
             <span className="text-emerald-400 font-semibold">
-              {Math.round((totalProjectSpent / totalProjectBudget) * 100)}% Physical Progress
+              {totalProjectBudget > 0 ? Math.round((totalProjectSpent / totalProjectBudget) * 100) : 0}% Physical Progress
             </span>
           </div>
         </div>
@@ -257,7 +369,7 @@ export default function ERPDashboardPage() {
             </div>
           </div>
           <div className="mt-3 pt-3 border-t border-white/5 flex items-center justify-between text-[11px] text-zinc-400">
-            <span>Fleet: {operationalMachinery}/{machinery.length} Active</span>
+            <span>Fleet: {operationalMachinery}/{filteredMachinery.length} Active</span>
             <span className="text-emerald-400">Zero Harm (0 LTIR)</span>
           </div>
         </div>
@@ -306,6 +418,280 @@ export default function ERPDashboardPage() {
         </div>
       </div>
 
+      {/* ======================================================================= */}
+      {/* 12 CORE MODULES DIRECT COCKPIT TILES */}
+      {/* ======================================================================= */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-extrabold text-white flex items-center gap-2">
+              <Layers className="w-5 h-5 text-[#FFB800]" />
+              <span>12 Core Construction ERP Modules</span>
+            </h2>
+            <p className="text-xs text-zinc-400">
+              Fully integrated enterprise systems aligned with FIDIC, CIDA Directive 102/2024, and Sri Lanka statutory regulations.
+            </p>
+          </div>
+          <span className="text-xs font-mono text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-1 rounded-lg">
+            12 of 12 Online
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {/* Module 01 */}
+          <Link
+            href="/erp/company"
+            className="p-4 rounded-xl bg-[#080e1c]/80 border border-white/10 hover:border-blue-500/50 hover:bg-[#0c162e] transition-all space-y-2 group"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-mono text-[#FFB800] font-bold">MODULE 01</span>
+              <Building2 className="w-4 h-4 text-zinc-400 group-hover:text-blue-400 transition-colors" />
+            </div>
+            <div className="font-bold text-white text-sm group-hover:text-blue-300 transition-colors">
+              Company & Administration
+            </div>
+            <p className="text-[11px] text-zinc-400 line-clamp-2">
+              2 Corporate profiles, BR/TIN/VAT, Directors, Bank Accounts & Approval Matrix.
+            </p>
+            <div className="pt-2 border-t border-white/5 flex items-center justify-between text-[10px] text-zinc-400">
+              <span className="text-emerald-400 font-semibold">2 Registered Entities</span>
+              <ArrowRight className="w-3 h-3 text-zinc-500 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </Link>
+
+          {/* Module 02 */}
+          <Link
+            href="/erp/projects"
+            className="p-4 rounded-xl bg-[#080e1c]/80 border border-white/10 hover:border-blue-500/50 hover:bg-[#0c162e] transition-all space-y-2 group"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-mono text-[#FFB800] font-bold">MODULE 02</span>
+              <HardHat className="w-4 h-4 text-zinc-400 group-hover:text-blue-400 transition-colors" />
+            </div>
+            <div className="font-bold text-white text-sm group-hover:text-blue-300 transition-colors">
+              Project Management & Cockpit
+            </div>
+            <p className="text-[11px] text-zinc-400 line-clamp-2">
+              360° Site Cockpit, Gantt schedules, EVM SPI/CPI, Variations & Handover checklists.
+            </p>
+            <div className="pt-2 border-t border-white/5 flex items-center justify-between text-[10px] text-zinc-400">
+              <span className="text-blue-300 font-semibold">{filteredProjects.length} Active Mega-Sites</span>
+              <ArrowRight className="w-3 h-3 text-zinc-500 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </Link>
+
+          {/* Module 03 */}
+          <Link
+            href="/erp/finance"
+            className="p-4 rounded-xl bg-[#080e1c]/80 border border-white/10 hover:border-blue-500/50 hover:bg-[#0c162e] transition-all space-y-2 group"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-mono text-[#FFB800] font-bold">MODULE 03</span>
+              <Landmark className="w-4 h-4 text-zinc-400 group-hover:text-blue-400 transition-colors" />
+            </div>
+            <div className="font-bold text-white text-sm group-hover:text-blue-300 transition-colors">
+              Accounting & Finance (GL)
+            </div>
+            <p className="text-[11px] text-zinc-400 line-clamp-2">
+              Double-entry GL, Cash/Bank books, Journal vouchers, Fixed assets & P&L statements.
+            </p>
+            <div className="pt-2 border-t border-white/5 flex items-center justify-between text-[10px] text-zinc-400">
+              <span className="text-emerald-400 font-semibold">{glAccounts.length} Chart Accounts</span>
+              <ArrowRight className="w-3 h-3 text-zinc-500 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </Link>
+
+          {/* Module 04 */}
+          <Link
+            href="/erp/hr"
+            className="p-4 rounded-xl bg-[#080e1c]/80 border border-white/10 hover:border-blue-500/50 hover:bg-[#0c162e] transition-all space-y-2 group"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-mono text-[#FFB800] font-bold">MODULE 04</span>
+              <Briefcase className="w-4 h-4 text-zinc-400 group-hover:text-blue-400 transition-colors" />
+            </div>
+            <div className="font-bold text-white text-sm group-hover:text-blue-300 transition-colors">
+              HR & Corporate Workforce
+            </div>
+            <p className="text-[11px] text-zinc-400 line-clamp-2">
+              Staff directories, Site assignments, EPF (12%+8%) & ETF (3%) payroll computations.
+            </p>
+            <div className="pt-2 border-t border-white/5 flex items-center justify-between text-[10px] text-zinc-400">
+              <span className="text-purple-300 font-semibold">EPF/ETF Compliant</span>
+              <ArrowRight className="w-3 h-3 text-zinc-500 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </Link>
+
+          {/* Module 05 */}
+          <Link
+            href="/erp/site-labour"
+            className="p-4 rounded-xl bg-[#080e1c]/80 border border-white/10 hover:border-blue-500/50 hover:bg-[#0c162e] transition-all space-y-2 group"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-mono text-[#FFB800] font-bold">MODULE 05</span>
+              <UserCheck className="w-4 h-4 text-zinc-400 group-hover:text-blue-400 transition-colors" />
+            </div>
+            <div className="font-bold text-white text-sm group-hover:text-blue-300 transition-colors">
+              Site Labour Management
+            </div>
+            <p className="text-[11px] text-zinc-400 line-clamp-2">
+              Daily site muster rolls, 15-day wage cycle, 6-step audit & fingerprint verification.
+            </p>
+            <div className="pt-2 border-t border-white/5 flex items-center justify-between text-[10px] text-zinc-400">
+              <span className="text-amber-400 font-semibold">{filteredMuster.length} Muster Records</span>
+              <ArrowRight className="w-3 h-3 text-zinc-500 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </Link>
+
+          {/* Module 06 */}
+          <Link
+            href="/erp/procurement"
+            className="p-4 rounded-xl bg-[#080e1c]/80 border border-white/10 hover:border-blue-500/50 hover:bg-[#0c162e] transition-all space-y-2 group"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-mono text-[#FFB800] font-bold">MODULE 06</span>
+              <Scale className="w-4 h-4 text-zinc-400 group-hover:text-blue-400 transition-colors" />
+            </div>
+            <div className="font-bold text-white text-sm group-hover:text-blue-300 transition-colors">
+              Procurement & Purchasing
+            </div>
+            <p className="text-[11px] text-zinc-400 line-clamp-2">
+              Requisitions (PR), RFQs, Purchase Orders (PO), and mandatory 3-Way Match GRN audit.
+            </p>
+            <div className="pt-2 border-t border-white/5 flex items-center justify-between text-[10px] text-zinc-400">
+              <span className="text-emerald-400 font-semibold">3-Way Match Active</span>
+              <ArrowRight className="w-3 h-3 text-zinc-500 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </Link>
+
+          {/* Module 07 */}
+          <Link
+            href="/erp/inventory"
+            className="p-4 rounded-xl bg-[#080e1c]/80 border border-white/10 hover:border-blue-500/50 hover:bg-[#0c162e] transition-all space-y-2 group"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-mono text-[#FFB800] font-bold">MODULE 07</span>
+              <Package className="w-4 h-4 text-zinc-400 group-hover:text-blue-400 transition-colors" />
+            </div>
+            <div className="font-bold text-white text-sm group-hover:text-blue-300 transition-colors">
+              Inventory & Multi-Store
+            </div>
+            <p className="text-[11px] text-zinc-400 line-clamp-2">
+              Central & Site stores, Material Issue Notes (MIN), transfers & wastage thresholds.
+            </p>
+            <div className="pt-2 border-t border-white/5 flex items-center justify-between text-[10px] text-zinc-400">
+              <span className="text-blue-300 font-semibold">Multi-Store Tracking</span>
+              <ArrowRight className="w-3 h-3 text-zinc-500 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </Link>
+
+          {/* Module 08 */}
+          <Link
+            href="/erp/machinery"
+            className="p-4 rounded-xl bg-[#080e1c]/80 border border-white/10 hover:border-blue-500/50 hover:bg-[#0c162e] transition-all space-y-2 group"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-mono text-[#FFB800] font-bold">MODULE 08</span>
+              <Truck className="w-4 h-4 text-zinc-400 group-hover:text-blue-400 transition-colors" />
+            </div>
+            <div className="font-bold text-white text-sm group-hover:text-blue-300 transition-colors">
+              Plant & Machinery Fleet
+            </div>
+            <p className="text-[11px] text-zinc-400 line-clamp-2">
+              Heavy equipment telematics, fuel consumption @ LKR 370/L, log sheets & plant hire.
+            </p>
+            <div className="pt-2 border-t border-white/5 flex items-center justify-between text-[10px] text-zinc-400">
+              <span className="text-amber-400 font-semibold">{filteredMachinery.length} Fleet Units</span>
+              <ArrowRight className="w-3 h-3 text-zinc-500 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </Link>
+
+          {/* Module 09 */}
+          <Link
+            href="/erp/budgeting"
+            className="p-4 rounded-xl bg-[#080e1c]/80 border border-white/10 hover:border-blue-500/50 hover:bg-[#0c162e] transition-all space-y-2 group"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-mono text-[#FFB800] font-bold">MODULE 09</span>
+              <DollarSign className="w-4 h-4 text-zinc-400 group-hover:text-blue-400 transition-colors" />
+            </div>
+            <div className="font-bold text-white text-sm group-hover:text-blue-300 transition-colors">
+              Project Budgeting & EVM
+            </div>
+            <p className="text-[11px] text-zinc-400 line-clamp-2">
+              BOQ original baseline, revised budget, committed costs, CV, SV, and EVM metrics.
+            </p>
+            <div className="pt-2 border-t border-white/5 flex items-center justify-between text-[10px] text-zinc-400">
+              <span className="text-emerald-400 font-semibold">CPI 1.04 • SPI 0.98</span>
+              <ArrowRight className="w-3 h-3 text-zinc-500 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </Link>
+
+          {/* Module 10 */}
+          <Link
+            href="/erp/contracts"
+            className="p-4 rounded-xl bg-[#080e1c]/80 border border-white/10 hover:border-blue-500/50 hover:bg-[#0c162e] transition-all space-y-2 group"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-mono text-[#FFB800] font-bold">MODULE 10</span>
+              <FileSpreadsheet className="w-4 h-4 text-zinc-400 group-hover:text-blue-400 transition-colors" />
+            </div>
+            <div className="font-bold text-white text-sm group-hover:text-blue-300 transition-colors">
+              Government Contracts & IPC
+            </div>
+            <p className="text-[11px] text-zinc-400 line-clamp-2">
+              SBD-02/04 Government contracts & CIDA Directive 102/2024 Interim Payment Certificates.
+            </p>
+            <div className="pt-2 border-t border-white/5 flex items-center justify-between text-[10px] text-zinc-400">
+              <span className="text-blue-300 font-semibold">{filteredIPCs.length} CIDA 102 Claims</span>
+              <ArrowRight className="w-3 h-3 text-zinc-500 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </Link>
+
+          {/* Module 11 */}
+          <Link
+            href="/erp/safety"
+            className="p-4 rounded-xl bg-[#080e1c]/80 border border-white/10 hover:border-blue-500/50 hover:bg-[#0c162e] transition-all space-y-2 group"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-mono text-[#FFB800] font-bold">MODULE 11</span>
+              <ShieldAlert className="w-4 h-4 text-zinc-400 group-hover:text-blue-400 transition-colors" />
+            </div>
+            <div className="font-bold text-white text-sm group-hover:text-blue-300 transition-colors">
+              Health, Safety & HSE
+            </div>
+            <p className="text-[11px] text-zinc-400 line-clamp-2">
+              Site safety audits, green tag scaffolding, PPE issuance registry, and zero-harm LTIR logs.
+            </p>
+            <div className="pt-2 border-t border-white/5 flex items-center justify-between text-[10px] text-zinc-400">
+              <span className="text-emerald-400 font-semibold">0.0 LTIR • Safe Sites</span>
+              <ArrowRight className="w-3 h-3 text-zinc-500 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </Link>
+
+          {/* Module 12 */}
+          <Link
+            href="/erp/audit"
+            className="p-4 rounded-xl bg-[#080e1c]/80 border border-white/10 hover:border-blue-500/50 hover:bg-[#0c162e] transition-all space-y-2 group"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-mono text-[#FFB800] font-bold">MODULE 12</span>
+              <FolderLock className="w-4 h-4 text-zinc-400 group-hover:text-blue-400 transition-colors" />
+            </div>
+            <div className="font-bold text-white text-sm group-hover:text-blue-300 transition-colors">
+              Document Vault & Audit
+            </div>
+            <p className="text-[11px] text-zinc-400 line-clamp-2">
+              Central electronic document vault, SHA-256 tamper verification & immutable audit trail.
+            </p>
+            <div className="pt-2 border-t border-white/5 flex items-center justify-between text-[10px] text-zinc-400">
+              <span className="text-purple-300 font-semibold">{filteredDocs.length} Vault Documents</span>
+              <ArrowRight className="w-3 h-3 text-zinc-500 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </Link>
+        </div>
+      </div>
+
       {/* Middle Section: Project Health Matrix & Live Audit Stream */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left 2 Cols: Active Construction Mega-Sites */}
@@ -330,7 +716,7 @@ export default function ERPDashboardPage() {
           </div>
 
           <div className="space-y-4">
-            {projects.map((project) => (
+            {filteredProjects.map((project) => (
               <div
                 key={project.id}
                 className="p-4 rounded-xl bg-white/[0.02] hover:bg-white/[0.04] border border-white/5 transition-all space-y-3"

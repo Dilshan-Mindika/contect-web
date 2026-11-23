@@ -58,10 +58,33 @@ async function seed() {
       console.log('[CONTEC SEEDER] All construction tables created or verified.');
     }
 
-    // 3. Clear existing seed data to ensure fresh state
-    console.log('[CONTEC SEEDER] Seeding core enterprise data in Sri Lankan Rupees (LKR)...');
+    // 2.1 Safely add company_id column if table already existed without it
+    const tablesToMigrate = ['projects', 'machinery_fleet', 'invoices', 'construction_quotations', 'subcontractors', 'inventory_materials', 'site_daily_logs', 'audit_logs'];
+    for (const tbl of tablesToMigrate) {
+      try {
+        const [cols] = await connection.query(`SHOW COLUMNS FROM \`${tbl}\` LIKE 'company_id';`);
+        if (!cols || cols.length === 0) {
+          const defaultComp = tbl === 'machinery_fleet' ? 'COMP_B' : 'COMP_A';
+          await connection.query(`ALTER TABLE \`${tbl}\` ADD COLUMN \`company_id\` VARCHAR(32) DEFAULT '${defaultComp}' AFTER \`id\`;`);
+          console.log(`[CONTEC SEEDER] Added 'company_id' column to '${tbl}'.`);
+        }
+      } catch (e) {
+        // Table might not exist or already updated
+      }
+    }
 
-    // Users
+    console.log('[CONTEC SEEDER] Seeding multi-company enterprise data in Sri Lankan Rupees (LKR)...');
+
+    // 1. Companies Master (Company A & Company B)
+    await connection.query(`
+      INSERT INTO companies (id, name, registration_number, tin, vat_number, cida_grade, address, contact_email, phone, currency)
+      VALUES 
+      ('COMP_A', 'Contec Engineering & Construction (Pvt) Ltd', 'PV-00249811', 'TIN-10928374-0001', 'VAT-10928374-7000', 'Grade CS2 (Major Civil & Building Contractor)', 'No. 45, Alfred Place, Colombo 03, Sri Lanka', 'director@contec.lk', '+94 11 257 8900', 'LKR'),
+      ('COMP_B', 'Contec Heavy Infra & Equipment (Pvt) Ltd', 'PV-00299104', 'TIN-20984712-0002', 'VAT-20984712-7000', 'Grade EM1 / C1 (Plant, Heavy Machinery & Earthmoving)', 'No. 12/B, Industrial Zone, Peliyagoda, Sri Lanka', 'plant@contec.lk', '+94 11 294 5600', 'LKR')
+      ON DUPLICATE KEY UPDATE name=VALUES(name), cida_grade=VALUES(cida_grade);
+    `);
+
+    // 2. Executive Users & Signatories
     await connection.query(`
       INSERT INTO users (id, name, email, role, title, department, avatar, password_hash)
       VALUES 
@@ -76,111 +99,76 @@ async function seed() {
       ON DUPLICATE KEY UPDATE name=VALUES(name), title=VALUES(title);
     `);
 
-    // Projects in LKR
+    // 3. Projects in LKR
     await connection.query(`
-      INSERT INTO projects (id, code, name, client, location, budget, spent, progress, phase, site_engineer, start_date, target_completion)
+      INSERT INTO projects (id, company_id, code, name, client, location, budget, spent, progress, phase, site_engineer, start_date, target_completion)
       VALUES 
-      ('prj-01', 'CNT-PRJ-241', 'Colombo Port City Marina Residences', 'Port City Colombo Holdings', 'Port City Marine Drive, Colombo 01', 3850000000.00, 1463000000.00, 38, 'FOUNDATION', 'Eng. Maya Lin (Chartered Structural Eng)', '2026-04-10', '2027-12-15'),
-      ('prj-02', 'CNT-PRJ-198', 'Kandy Hills Scenic Resort & Convention Hub', 'Kandy Scenic Sanctuaries Pvt Ltd', 'George E. De Silva Mawatha, Kandy', 2250000000.00, 1462500000.00, 65, 'STRUCTURAL', 'Eng. Marcus Chen & Eng. Elena Vance', '2025-08-01', '2027-03-30'),
-      ('prj-03', 'CNT-PRJ-310', 'Nuwara Eliya High-Altitude Eco Pavilion', 'Nuwara Eliya Eco Ventures', 'Pedro Estate Ridge, Nuwara Eliya', 680000000.00, 598400000.00, 88, 'INTERIOR', 'Eng. David Okafor (BIM Coordinator)', '2025-02-15', '2026-12-20'),
-      ('prj-04', 'CNT-PRJ-405', 'Central Expressway Viaduct & Bridge Section', 'Road Development Authority (RDA)', 'Kurunegala-Kandy Section 3, Sri Lanka', 5200000000.00, 936000000.00, 18, 'FOUNDATION', 'Eng. Tariq Mansour (Lead Geotech Eng)', '2026-07-01', '2029-06-30')
+      ('prj-01', 'COMP_A', 'CNT-PRJ-241', 'Colombo Port City Marina Residences', 'Port City Colombo Holdings', 'Port City Marine Drive, Colombo 01', 3850000000.00, 1463000000.00, 38, 'FOUNDATION', 'Eng. Maya Lin (Chartered Structural Eng)', '2026-04-10', '2027-12-15'),
+      ('prj-02', 'COMP_A', 'CNT-PRJ-198', 'Kandy Hills Scenic Resort & Convention Hub', 'Kandy Scenic Sanctuaries Pvt Ltd', 'George E. De Silva Mawatha, Kandy', 2250000000.00, 1462500000.00, 65, 'STRUCTURAL', 'Eng. Marcus Chen & Eng. Elena Vance', '2025-08-01', '2027-03-30'),
+      ('prj-03', 'COMP_A', 'CNT-PRJ-310', 'Nuwara Eliya High-Altitude Eco Pavilion', 'Nuwara Eliya Eco Ventures', 'Pedro Estate Ridge, Nuwara Eliya', 680000000.00, 598400000.00, 88, 'INTERIOR', 'Eng. David Okafor (BIM Coordinator)', '2025-02-15', '2026-12-20'),
+      ('prj-04', 'COMP_A', 'CNT-PRJ-405', 'Central Expressway Viaduct & Bridge Section', 'Road Development Authority (RDA)', 'Kurunegala-Kandy Section 3, Sri Lanka', 5200000000.00, 936000000.00, 18, 'FOUNDATION', 'Eng. Tariq Mansour (Lead Geotech Eng)', '2026-07-01', '2029-06-30')
       ON DUPLICATE KEY UPDATE budget=VALUES(budget), spent=VALUES(spent), progress=VALUES(progress);
     `);
 
-    // BOQ Items in LKR
+    // 4. Chart of Accounts & General Ledger in LKR
     await connection.query(`
-      INSERT INTO boq_items (id, project_id, item_code, section, description, unit, quantity, unit_rate, total_amount)
+      INSERT INTO general_ledger_accounts (id, company_id, code, name, category, sub_category, balance_lkr, is_active)
       VALUES 
-      ('boq-01', 'prj-01', 'BILL-01', 'EARTHWORK', 'Deep marine excavation, secant pile diaphragm walls & rock anchors', 'm³', 45000.00, 9500.00, 427500000.00),
-      ('boq-02', 'prj-01', 'BILL-02', 'SUBSTRUCTURE', 'Mass concrete raft foundation C40/50 with micro-silica', 'm³', 16000.00, 44000.00, 704000000.00),
-      ('boq-03', 'prj-02', 'BILL-03', 'SUPERSTRUCTURE', 'High-tensile BS 4449 G500 rebar & post-tensioned slabs', 'tons', 3800.00, 355000.00, 1349000000.00),
-      ('boq-04', 'prj-02', 'BILL-04', 'FACADE', 'Double skin unitized low-E curved architectural curtain walling', 'm²', 14500.00, 78000.00, 1131000000.00),
-      ('boq-05', 'prj-03', 'BILL-05', 'MEP', 'Intelligent BMS, variable refrigerant HVAC & solar pumps', 'lot', 1.00, 750000000.00, 750000000.00)
-      ON DUPLICATE KEY UPDATE total_amount=VALUES(total_amount);
+      ('gl-a-1010', 'COMP_A', '1010', 'Commercial Bank - Main Operational Current A/C', 'ASSETS', 'CASH_AND_EQUIVALENTS', 285400000.00, TRUE),
+      ('gl-a-1020', 'COMP_A', '1020', 'Hatton National Bank - Client Escrow Retention A/C', 'ASSETS', 'CASH_AND_EQUIVALENTS', 120500000.00, TRUE),
+      ('gl-a-1100', 'COMP_A', '1100', 'Accounts Receivable - Certified Client IPC Claims', 'ASSETS', 'ACCOUNTS_RECEIVABLE', 412000000.00, TRUE),
+      ('gl-a-4010', 'COMP_A', '4010', 'Contract Revenue - Certified Civil & Building Works', 'INCOME', 'OPERATING_REVENUE', 1463000000.00, TRUE),
+      ('gl-b-1010', 'COMP_B', '1010', 'Sampath Bank - Plant & Fleet Operating A/C', 'ASSETS', 'CASH_AND_EQUIVALENTS', 145000000.00, TRUE),
+      ('gl-b-1510', 'COMP_B', '1510', 'Heavy Construction Machinery & Tower Crane Fleet', 'ASSETS', 'FIXED_ASSETS', 1280000000.00, TRUE),
+      ('gl-b-4010', 'COMP_B', '4010', 'Plant & Equipment Hire / Leasing Revenue', 'INCOME', 'OPERATING_REVENUE', 342000000.00, TRUE)
+      ON DUPLICATE KEY UPDATE balance_lkr=VALUES(balance_lkr);
     `);
 
-    // Plant & Machinery Fleet
+    // 5. Site Labour Daily Muster Rolls
     await connection.query(`
-      INSERT INTO machinery_fleet (id, asset_id, equipment_name, category, assigned_site_id, operator_name, fuel_capacity_pct, operating_hours, next_service_date, status)
+      INSERT INTO daily_labour_muster (id, company_id, project_id, project_code, muster_date, total_present, total_skilled, total_unskilled, approved_by, status)
       VALUES 
-      ('mach-01', 'TC-280-01', 'Liebherr 280 EC-H 16 Litronic High-Rise Tower Crane', 'TOWER_CRANE', 'prj-01', 'Sunil Wickramasinghe (Certified Operator)', 92, 1420.5, '2026-11-20', 'OPERATIONAL'),
-      ('mach-02', 'EX-349-04', 'Caterpillar 349D Heavy Hydraulic Excavator (49 Ton)', 'EXCAVATOR', 'prj-01', 'Chaminda Silva', 68, 2180.0, '2026-11-05', 'OPERATIONAL'),
-      ('mach-03', 'BP-42M-02', 'Putzmeister BSF 42-5.16H High-Pressure Boom Pump', 'BOOM_PUMP', 'prj-01', 'Nihal Fernando', 45, 890.2, '2026-10-30', 'MAINTENANCE'),
-      ('mach-04', 'DZ-D85-01', 'Komatsu D85EX-18 Heavy Earthmoving Crawler Dozer', 'BULLDOZER', 'prj-04', 'Prasanna Bandara', 84, 3200.4, '2026-12-15', 'OPERATIONAL'),
-      ('mach-05', 'GEN-500K-03', 'Cummins C500D5e 500kVA Heavy Acoustic Prime Power Generator', 'GENERATOR', 'prj-02', 'Site Electrical Crew', 79, 640.0, '2027-01-10', 'STANDBY')
-      ON DUPLICATE KEY UPDATE status=VALUES(status), fuel_capacity_pct=VALUES(fuel_capacity_pct);
+      ('mst-01', 'COMP_A', 'prj-01', 'CNT-PRJ-241', '2026-10-28', 86, 52, 34, 'Eng. Maya Lin (Chartered Structural Eng)', 'APPROVED'),
+      ('mst-02', 'COMP_A', 'prj-02', 'CNT-PRJ-198', '2026-10-28', 68, 40, 28, 'Eng. Marcus Chen (VP Ops)', 'APPROVED'),
+      ('mst-03', 'COMP_B', 'prj-04', 'CNT-PRJ-405', '2026-10-28', 35, 25, 10, 'Plant Ops Manager (Comp B)', 'APPROVED')
+      ON DUPLICATE KEY UPDATE total_present=VALUES(total_present);
     `);
 
-    // Site Daily Logs
+    // 6. CIDA Directive 102/2024 Interim Payment Certificates
     await connection.query(`
-      INSERT INTO site_daily_logs (id, project_id, log_date, weather_summary, ambient_temp_celsius, workforce_count, concrete_poured_m3, slump_test_mm, safety_incidents, osha_compliance_status, supervisor_notes)
+      INSERT INTO cida_ipcs (id, company_id, project_id, project_code, ipc_number, period_end, cumulative_gross_lkr, net_certified_lkr, status)
       VALUES 
-      ('log-site-01', 'prj-01', '2026-10-28', 'Partly Cloudy, 30°C, Wind 14 km/h SW', 30.2, 86, 420.00, 120.0, 0, 'COMPLIANT', 'Level B2 foundation raft pour completed smoothly. 14 ready-mix trucks discharged from Insee Peliyagoda plant. 6 cube samples taken for 7-day and 28-day testing.'),
-      ('log-site-02', 'prj-02', '2026-10-28', 'Intermittent Rain, 24°C, Wind 6 km/h NE', 24.0, 68, 160.00, 110.0, 0, 'COMPLIANT', 'Tower crane operational after morning rain cleared. Level 4 concrete columns poured with Tokyo Super G35 mix. Rain delay of 1.5 hrs logged.')
-      ON DUPLICATE KEY UPDATE concrete_poured_m3=VALUES(concrete_poured_m3);
+      ('ipc-a-01', 'COMP_A', 'prj-01', 'CNT-PRJ-241', 'A-IPC-014', '2026-10-25', 1463000000.00, 168800000.00, 'CERTIFIED_BY_CONSULTANT'),
+      ('ipc-a-02', 'COMP_A', 'prj-02', 'CNT-PRJ-198', 'A-IPC-008', '2026-10-20', 1462500000.00, 92840000.00, 'CERTIFIED_BY_CONSULTANT'),
+      ('ipc-b-01', 'COMP_B', 'prj-04', 'CNT-PRJ-405', 'B-IPC-003', '2026-10-15', 385000000.00, 48200000.00, 'SUBMITTED_TO_EMPLOYER')
+      ON DUPLICATE KEY UPDATE net_certified_lkr=VALUES(net_certified_lkr);
     `);
 
-    // Construction Quotations in LKR
+    // 7. Central Document Vault with SHA-256 Hashes
     await connection.query(`
-      INSERT INTO construction_quotations (id, quote_number, client_name, client_company, client_email, project_scope, valid_until, subtotal, tax_vat, grand_total, retention_pct, status, terms_and_conditions)
+      INSERT INTO vault_documents (id, company_id, document_ref_number, title, category, related_entity_id, file_format, file_size_kb, upload_date, uploaded_by, is_confidential, sha256_hash)
       VALUES 
-      ('quote-01', 'CNT-QT-2026-401', 'Port City Luxury Developments PLC', 'Port City Colombo Holdings', 'tenders@portcity-developments.lk', 'Turnkey Design & Build EPC Contract - High-Rise Ocean Residences & Substructure', '2026-12-31', 4456500000.00, 802170000.00, 5370082500.00, 5, 'ISSUED', 'Governed under FIDIC Red Book 2017 & CIDA SBD-02. 20% Advance against unconditional Bank Guarantee. 5% Retention held.'),
-      ('quote-02', 'CNT-QT-2026-402', 'Kandy Scenic Sanctuaries Pvt Ltd', 'Central Hills Hospitality Group', 'projects@centralhills.lk', 'Hillside Eco-Resort & Multi-Tier Panoramic Conference Center', '2026-11-30', 1818500000.00, 327330000.00, 2191292500.00, 5, 'ACCEPTED', 'All structural works executed under CIDA SBD-02 conditions of contract. 5% retention for 12 months DLP.')
-      ON DUPLICATE KEY UPDATE grand_total=VALUES(grand_total), status=VALUES(status);
-    `);
-
-    // Invoices / Interim Payment Certificates in LKR
-    await connection.query(`
-      INSERT INTO invoices (id, invoice_number, client_name, project_name, issue_date, due_date, subtotal, tax, total, status)
-      VALUES 
-      ('inv-1001', 'CNT-IPC-2026-089', 'Port City Colombo Holdings', 'Colombo Port City Marina Residences', '2026-10-15', '2026-11-15', 160000000.00, 28800000.00, 168800000.00, 'PAID'),
-      ('inv-1002', 'CNT-IPC-2026-090', 'Kandy Scenic Sanctuaries Pvt Ltd', 'Kandy Hills Scenic Resort & Convention Hub', '2026-10-20', '2026-11-20', 88000000.00, 15840000.00, 92840000.00, 'PENDING'),
-      ('inv-1003', 'CNT-IPC-2026-091', 'Nuwara Eliya Eco Ventures', 'Nuwara Eliya High-Altitude Eco Pavilion', '2026-09-10', '2026-10-10', 45000000.00, 8100000.00, 47475000.00, 'OVERDUE')
-      ON DUPLICATE KEY UPDATE total=VALUES(total), status=VALUES(status);
-    `);
-
-    // Subcontractors in LKR
-    await connection.query(`
-      INSERT INTO subcontractors (id, trade_name, specialty, assigned_project_id, safety_rating, insurance_expiry, contract_value, status)
-      VALUES 
-      ('sub-01', 'Access Geotech & Piling Lanka Ltd', 'Secant Piling, Slurry Diaphragm Walls & Soil Nailing', 'prj-01', 4.9, '2027-08-30', 480000000.00, 'ACTIVE'),
-      ('sub-02', 'Sanken MEP Engineering Services', '3-Phase High Voltage, Intelligent BMS & Fire Suppression', 'prj-01', 4.8, '2027-05-15', 395000000.00, 'ACTIVE'),
-      ('sub-03', 'Sierra Civil Works & Asphalt Solutions', 'Heavy Earthmoving, Road Realignment & Drainage', 'prj-04', 4.7, '2027-01-20', 620000000.00, 'ACTIVE')
-      ON DUPLICATE KEY UPDATE status=VALUES(status);
-    `);
-
-    // Raw Materials Inventory in LKR
-    await connection.query(`
-      INSERT INTO inventory_materials (id, sku, name, category, quantity, unit, min_threshold, unit_cost, warehouse_location, status)
-      VALUES 
-      ('inv-item-01', 'STEEL-RB-500B', 'High-Yield Deformed Tor Steel (BS 4449 G500B / SLS 375: 25mm)', 'Structural Steel', 480.00, 'Metric Tons', 120.00, 345000.00, 'Central Stockyard Alpha - Kandy', 'OPTIMAL'),
-      ('inv-item-02', 'CEM-OPC-50', 'Ordinary Portland Cement (SLS 107 Grade 42.5N, 50kg Bags)', 'Cementitious', 2400.00, 'Bags', 1000.00, 2350.00, 'Covered Cement Depot 2 - Port City', 'LOW_STOCK'),
-      ('inv-item-03', 'CONC-G40-PUMP', 'Ready-Mix Concrete Grade 40 (G40 Micro-Silica Mix)', 'Ready-Mix Concrete', 850.00, 'm³', 300.00, 42500.00, 'Batching Plant Dispatch - Peliyagoda Hub', 'OPTIMAL'),
-      ('inv-item-04', 'SAND-M-CUBE', 'Manufactured River Sand (M-Sand Graded for Structural Concrete)', 'Aggregates', 340.00, 'Cubes', 100.00, 28500.00, 'Aggregate Stockyard - Peradeniya', 'OPTIMAL'),
-      ('inv-item-05', 'PLY-FILM-18', 'Phenolic Film-Faced Marine Shuttering Plywood (18mm, 8x4 ft)', 'Formwork', 1150.00, 'Sheets', 300.00, 9500.00, 'Timber & Formwork Yard - Peliyagoda', 'OPTIMAL')
-      ON DUPLICATE KEY UPDATE quantity=VALUES(quantity), unit_cost=VALUES(unit_cost);
-    `);
-
-    // Website Showcase Projects
-    await connection.query(`
-      INSERT INTO website_showcase (id, title, category, location, image_url, description, completion_year, featured, display_order)
-      VALUES 
-      ('web-prj-01', 'The Skyrise Marina Tower', 'Commercial High-Rise', 'Port City Colombo, Sri Lanka', 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800', 'A 54-story parametric skyscraper engineered with deep sea secant piling, aerodynamic wind dampers, and BIPV solar skin.', '2026', TRUE, 1),
-      ('web-prj-02', 'Kandy Ridge Luxury Sanctuary', 'Luxury Hospitality', 'Hunnasgiriya Ridge, Kandy', 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800', 'Turnkey off-grid cantilevered luxury pavilion cluster crafted with pre-stressed structural concrete and locally sourced mass timber.', '2025', TRUE, 2),
-      ('web-prj-03', 'Central Viaduct Expressway Bridge', 'Civil Infrastructure', 'Central Province Corridor, Sri Lanka', 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800', 'Post-tensioned segmental concrete box girder bridge spanning 2.8 km of rugged montane terrain.', '2026', FALSE, 3)
+      ('doc-01', 'COMP_A', 'A-CNT-2026-001', 'Colombo Port City Marina Residences Master Contract Agreement (FIDIC)', 'CONTRACT', 'CNT-PRJ-241', 'PDF', 18450, '2026-04-10', 'Eng. Elena Vance', TRUE, '7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069'),
+      ('doc-02', 'COMP_A', 'A-IPC-CERT-014', 'IPC #014 Consultant Certified Valuation & Retention Schedule', 'CIDA_IPC', 'CNT-PRJ-241', 'PDF', 4200, '2026-10-26', 'Kavita Patel (Chief QS)', FALSE, '3c59dc048e8850243be8079a5c74d079'),
+      ('doc-03', 'COMP_A', 'A-TAX-VAT-Q3-26', 'Inland Revenue Department VAT & SSCL Q3/2026 Clearance Return', 'TAX_RETURN', 'VAT-10928374-7000', 'PDF', 2850, '2026-10-15', 'Arthur Sterling (CFO)', TRUE, 'c28a5840f0d393693e50668b0b973ef4'),
+      ('doc-04', 'COMP_B', 'B-FLEET-CAT-349', 'Caterpillar 349D Excavator Telematics Calibration & Safety Certificate', 'CONTRACT', 'EX-349-04', 'PDF', 3100, '2026-09-12', 'Plant Fleet Director', FALSE, '9a0364b9e99bb480dd25e1f0284c8555'),
+      ('doc-05', 'COMP_B', 'B-PV-2026-0089', 'Lanka IOC Bulk Auto Diesel Delivery Voucher (12,000L @ LKR 370/L)', 'PAYMENT_VOUCHER', 'B-PV-0089', 'PDF', 1250, '2026-10-27', 'Site Fuel Logistics', FALSE, 'e3b0c44298fc1c149afbf4c8996fb924')
       ON DUPLICATE KEY UPDATE title=VALUES(title);
     `);
 
-    // Website Inquiries in LKR
+    // 8. Plant & Machinery Fleet
     await connection.query(`
-      INSERT INTO website_inquiries (id, client_name, email, phone, project_type, budget_range, message, status)
+      INSERT INTO machinery_fleet (id, company_id, asset_id, equipment_name, category, assigned_site_id, operator_name, fuel_capacity_pct, operating_hours, next_service_date, status)
       VALUES 
-      ('inq-01', 'Dr. Tariq Mansour', 't.mansour@gulf-invest.ae', '+971 50 892 1100', 'Commercial Mixed-Use Hospital Complex', 'LKR 1.5B - 3.5B', 'Seeking turnkey design & build EPC partner for a 12-story seismic-resistant medical center in Colombo 07.', 'NEW'),
-      ('inq-02', 'Kirsten Vestergaard', 'kirsten@nordic-dwellings.dk', '+45 32 99 80 12', 'Eco-Resort Timber Pavilion Cluster', 'LKR 650M - 1.2B', 'Requesting preliminary BOQ and parametric structural engineering consultation for a coastal sanctuary in Tangalle.', 'CONTACTED')
-      ON DUPLICATE KEY UPDATE status=VALUES(status);
+      ('mach-01', 'COMP_B', 'TC-280-01', 'Liebherr 280 EC-H 16 Litronic High-Rise Tower Crane', 'TOWER_CRANE', 'prj-01', 'Sunil Wickramasinghe (Certified Operator)', 92, 1420.5, '2026-11-20', 'OPERATIONAL'),
+      ('mach-02', 'COMP_B', 'EX-349-04', 'Caterpillar 349D Heavy Hydraulic Excavator (49 Ton)', 'EXCAVATOR', 'prj-01', 'Chaminda Silva', 68, 2180.0, '2026-11-05', 'OPERATIONAL'),
+      ('mach-03', 'COMP_B', 'BP-42M-02', 'Putzmeister BSF 42-5.16H High-Pressure Boom Pump', 'BOOM_PUMP', 'prj-01', 'Nihal Fernando', 45, 890.2, '2026-10-30', 'MAINTENANCE'),
+      ('mach-04', 'COMP_B', 'DZ-D85-01', 'Komatsu D85EX-18 Heavy Earthmoving Crawler Dozer', 'BULLDOZER', 'prj-04', 'Prasanna Bandara', 84, 3200.4, '2026-12-15', 'OPERATIONAL'),
+      ('mach-05', 'COMP_B', 'GEN-500K-03', 'Cummins C500D5e 500kVA Heavy Acoustic Prime Power Generator', 'GENERATOR', 'prj-02', 'Site Electrical Crew', 79, 640.0, '2027-01-10', 'STANDBY')
+      ON DUPLICATE KEY UPDATE status=VALUES(status), fuel_capacity_pct=VALUES(fuel_capacity_pct);
     `);
 
-    console.log('[CONTEC SEEDER] Database seeding successfully completed in LKR!');
+    console.log('[CONTEC SEEDER] Database seeding successfully completed in LKR for both Company A and Company B!');
   } catch (err) {
     console.error('[CONTEC SEEDER ERROR]', err.message);
     console.log(`[CONTEC SEEDER NOTE] If MySQL server is offline, verify MySQL service is running on port ${dbConfig.port}. The application continues to run seamlessly with built-in resilient fallback.`);

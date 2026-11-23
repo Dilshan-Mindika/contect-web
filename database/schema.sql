@@ -1,12 +1,27 @@
 -- =============================================================================
 -- CONTEC Design & Build — Enterprise Construction ERP & BMS MySQL Schema
--- Version: 4.2.0 (Civil, Structural, BOQ, Plant & Machinery, Website CMS)
+-- Version: 5.0.0 (Multi-Company, 12 Core Modules, CIDA Directive 102/2024, LKR)
 -- =============================================================================
 
 CREATE DATABASE IF NOT EXISTS contec_erp CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE contec_erp;
 
--- 1. Executive Users & RBAC Matrix
+-- 1. Companies & Legal Entities (Multi-Company Architecture)
+CREATE TABLE IF NOT EXISTS companies (
+    id VARCHAR(32) PRIMARY KEY,
+    name VARCHAR(200) NOT NULL,
+    registration_number VARCHAR(64) NOT NULL UNIQUE,
+    tin VARCHAR(64) NOT NULL,
+    vat_number VARCHAR(64) NOT NULL,
+    cida_grade VARCHAR(64) NOT NULL,
+    address TEXT NOT NULL,
+    contact_email VARCHAR(160) NOT NULL,
+    phone VARCHAR(40) NOT NULL,
+    currency VARCHAR(10) DEFAULT 'LKR',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+-- 2. Executive Users & RBAC Matrix
 CREATE TABLE IF NOT EXISTS users (
     id VARCHAR(64) PRIMARY KEY,
     name VARCHAR(120) NOT NULL,
@@ -20,9 +35,10 @@ CREATE TABLE IF NOT EXISTS users (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
--- 2. Master Construction Sites & Mega-Projects
+-- 3. Master Construction Sites & Mega-Projects
 CREATE TABLE IF NOT EXISTS projects (
     id VARCHAR(64) PRIMARY KEY,
+    company_id VARCHAR(32) DEFAULT 'COMP_A',
     code VARCHAR(32) NOT NULL UNIQUE,
     name VARCHAR(200) NOT NULL,
     client VARCHAR(160) NOT NULL,
@@ -37,12 +53,12 @@ CREATE TABLE IF NOT EXISTS projects (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
--- 3. Bill of Quantities (BOQ) & Structural Cost Elements
+-- 4. Bill of Quantities (BOQ) & Structural Cost Elements
 CREATE TABLE IF NOT EXISTS boq_items (
     id VARCHAR(64) PRIMARY KEY,
     project_id VARCHAR(64) NOT NULL,
     item_code VARCHAR(32) NOT NULL,
-    section ENUM('EARTHWORK', 'SUBSTRUCTURE', 'SUPERSTRUCTURE', 'MEP', 'FACADE', 'FINISHES') NOT NULL,
+    section ENUM('PRELIMINARIES', 'EARTHWORK', 'SUBSTRUCTURE', 'SUPERSTRUCTURE', 'MEP', 'FACADE', 'FINISHES', 'INFRASTRUCTURE') NOT NULL,
     description TEXT NOT NULL,
     unit VARCHAR(20) NOT NULL,
     quantity DECIMAL(12, 2) NOT NULL,
@@ -51,10 +67,11 @@ CREATE TABLE IF NOT EXISTS boq_items (
     FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- 4. Site Daily Construction Logs (Weather, Concrete Pours, Safety/OSHA)
+-- 5. Site Daily Construction Logs (Weather, Concrete Pours, Safety/OSHA)
 CREATE TABLE IF NOT EXISTS site_daily_logs (
     id VARCHAR(64) PRIMARY KEY,
     project_id VARCHAR(64) NOT NULL,
+    company_id VARCHAR(32) DEFAULT 'COMP_A',
     log_date DATE NOT NULL,
     weather_summary VARCHAR(100) NOT NULL,
     ambient_temp_celsius DECIMAL(4, 1) NOT NULL,
@@ -68,9 +85,10 @@ CREATE TABLE IF NOT EXISTS site_daily_logs (
     FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- 5. Heavy Plant & Machinery Fleet Operations
+-- 6. Heavy Plant & Machinery Fleet Operations
 CREATE TABLE IF NOT EXISTS machinery_fleet (
     id VARCHAR(64) PRIMARY KEY,
+    company_id VARCHAR(32) DEFAULT 'COMP_B',
     asset_id VARCHAR(32) NOT NULL UNIQUE,
     equipment_name VARCHAR(160) NOT NULL,
     category ENUM('TOWER_CRANE', 'EXCAVATOR', 'BOOM_PUMP', 'BULLDOZER', 'GENERATOR') NOT NULL,
@@ -84,9 +102,10 @@ CREATE TABLE IF NOT EXISTS machinery_fleet (
     FOREIGN KEY (assigned_site_id) REFERENCES projects(id) ON DELETE SET NULL
 ) ENGINE=InnoDB;
 
--- 6. Construction Quotations & Commercial Tenders
+-- 7. Construction Quotations & Commercial Tenders
 CREATE TABLE IF NOT EXISTS construction_quotations (
     id VARCHAR(64) PRIMARY KEY,
+    company_id VARCHAR(32) DEFAULT 'COMP_A',
     quote_number VARCHAR(32) NOT NULL UNIQUE,
     client_name VARCHAR(160) NOT NULL,
     client_company VARCHAR(160) NOT NULL,
@@ -102,9 +121,10 @@ CREATE TABLE IF NOT EXISTS construction_quotations (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
--- 7. Commercial Progress Invoices
+-- 8. Commercial Progress Invoices
 CREATE TABLE IF NOT EXISTS invoices (
     id VARCHAR(64) PRIMARY KEY,
+    company_id VARCHAR(32) DEFAULT 'COMP_A',
     invoice_number VARCHAR(32) NOT NULL UNIQUE,
     client_name VARCHAR(160) NOT NULL,
     project_name VARCHAR(200) NOT NULL,
@@ -117,9 +137,10 @@ CREATE TABLE IF NOT EXISTS invoices (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
--- 8. Subcontractor Trade Partners
+-- 9. Subcontractor Trade Partners
 CREATE TABLE IF NOT EXISTS subcontractors (
     id VARCHAR(64) PRIMARY KEY,
+    company_id VARCHAR(32) DEFAULT 'COMP_A',
     trade_name VARCHAR(160) NOT NULL,
     specialty VARCHAR(120) NOT NULL,
     assigned_project_id VARCHAR(64),
@@ -131,9 +152,10 @@ CREATE TABLE IF NOT EXISTS subcontractors (
     FOREIGN KEY (assigned_project_id) REFERENCES projects(id) ON DELETE SET NULL
 ) ENGINE=InnoDB;
 
--- 9. Yard Material Inventory & Heavy Stock
+-- 10. Yard Material Inventory & Heavy Stock
 CREATE TABLE IF NOT EXISTS inventory_materials (
     id VARCHAR(64) PRIMARY KEY,
+    company_id VARCHAR(32) DEFAULT 'COMP_A',
     sku VARCHAR(64) NOT NULL UNIQUE,
     name VARCHAR(200) NOT NULL,
     category VARCHAR(100) NOT NULL,
@@ -146,7 +168,81 @@ CREATE TABLE IF NOT EXISTS inventory_materials (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
--- 10. Website CMS Showcase Projects & Dynamic Content
+-- 11. Chart of Accounts & General Ledger (Double-Entry GL)
+CREATE TABLE IF NOT EXISTS general_ledger_accounts (
+    id VARCHAR(64) PRIMARY KEY,
+    company_id VARCHAR(32) NOT NULL,
+    code VARCHAR(32) NOT NULL,
+    name VARCHAR(160) NOT NULL,
+    category ENUM('ASSETS', 'LIABILITIES', 'EQUITY', 'INCOME', 'EXPENSES') NOT NULL,
+    sub_category VARCHAR(80),
+    balance_lkr DECIMAL(15, 2) DEFAULT 0.00,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+-- 12. Site Labour Daily Muster Rolls (15-Day Wages & Fingerprint Audit)
+CREATE TABLE IF NOT EXISTS daily_labour_muster (
+    id VARCHAR(64) PRIMARY KEY,
+    company_id VARCHAR(32) NOT NULL,
+    project_id VARCHAR(64) NOT NULL,
+    project_code VARCHAR(32) NOT NULL,
+    muster_date DATE NOT NULL,
+    total_present INT NOT NULL,
+    total_skilled INT NOT NULL,
+    total_unskilled INT NOT NULL,
+    approved_by VARCHAR(120) NOT NULL,
+    status VARCHAR(32) DEFAULT 'APPROVED',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+-- 13. CIDA Directive 102/2024 Interim Payment Certificates (IPC)
+CREATE TABLE IF NOT EXISTS cida_ipcs (
+    id VARCHAR(64) PRIMARY KEY,
+    company_id VARCHAR(32) NOT NULL,
+    project_id VARCHAR(64) NOT NULL,
+    project_code VARCHAR(32) NOT NULL,
+    ipc_number VARCHAR(32) NOT NULL,
+    period_end DATE NOT NULL,
+    cumulative_gross_lkr DECIMAL(15, 2) NOT NULL,
+    net_certified_lkr DECIMAL(15, 2) NOT NULL,
+    status VARCHAR(32) DEFAULT 'CERTIFIED_BY_CONSULTANT',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+-- 14. Central Document Vault (DMS & SHA-256 Provenance)
+CREATE TABLE IF NOT EXISTS vault_documents (
+    id VARCHAR(64) PRIMARY KEY,
+    company_id VARCHAR(32) NOT NULL,
+    document_ref_number VARCHAR(64) NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    category VARCHAR(64) NOT NULL,
+    related_entity_id VARCHAR(64),
+    file_format VARCHAR(16) NOT NULL,
+    file_size_kb INT NOT NULL,
+    upload_date DATE NOT NULL,
+    uploaded_by VARCHAR(120) NOT NULL,
+    is_confidential BOOLEAN DEFAULT FALSE,
+    sha256_hash VARCHAR(64) DEFAULT '7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+-- 15. Security Audit & Transaction Log
+CREATE TABLE IF NOT EXISTS audit_logs (
+    id VARCHAR(64) PRIMARY KEY,
+    company_id VARCHAR(32) DEFAULT 'COMP_A',
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    actor_name VARCHAR(120) NOT NULL,
+    actor_email VARCHAR(160) NOT NULL,
+    role VARCHAR(50) NOT NULL,
+    action VARCHAR(80) NOT NULL,
+    module VARCHAR(50) NOT NULL,
+    details TEXT NOT NULL,
+    ip_address VARCHAR(45),
+    severity ENUM('INFO', 'WARNING', 'CRITICAL') DEFAULT 'INFO'
+) ENGINE=InnoDB;
+
+-- 16. Website CMS Showcase Projects & Dynamic Content
 CREATE TABLE IF NOT EXISTS website_showcase (
     id VARCHAR(64) PRIMARY KEY,
     title VARCHAR(200) NOT NULL,
@@ -160,7 +256,7 @@ CREATE TABLE IF NOT EXISTS website_showcase (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
--- 11. Website Inquiries (Incoming leads from /contact)
+-- 17. Website Inquiries (Incoming leads from /contact)
 CREATE TABLE IF NOT EXISTS website_inquiries (
     id VARCHAR(64) PRIMARY KEY,
     client_name VARCHAR(120) NOT NULL,
@@ -173,21 +269,7 @@ CREATE TABLE IF NOT EXISTS website_inquiries (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
--- 12. Security Audit & Transaction Log
-CREATE TABLE IF NOT EXISTS audit_logs (
-    id VARCHAR(64) PRIMARY KEY,
-    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    actor_name VARCHAR(120) NOT NULL,
-    actor_email VARCHAR(160) NOT NULL,
-    role VARCHAR(50) NOT NULL,
-    action VARCHAR(80) NOT NULL,
-    module VARCHAR(50) NOT NULL,
-    details TEXT NOT NULL,
-    ip_address VARCHAR(45),
-    severity ENUM('INFO', 'WARNING', 'CRITICAL') DEFAULT 'INFO'
-) ENGINE=InnoDB;
-
--- 13. Email Dispatch & Notification Outbox
+-- 18. Email Dispatch & Notification Outbox
 CREATE TABLE IF NOT EXISTS email_outbox (
     id VARCHAR(64) PRIMARY KEY,
     recipient_email VARCHAR(160) NOT NULL,
@@ -198,4 +280,3 @@ CREATE TABLE IF NOT EXISTS email_outbox (
     sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     response_message VARCHAR(255)
 ) ENGINE=InnoDB;
-

@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useERP } from '@/lib/erp/AuthContext';
 import { MachineryStatus } from '@/lib/erp/types';
-import { formatLKR } from '@/lib/erp/currency';
+import { formatLKR, formatLKRFull } from '@/lib/erp/currency';
 import {
   Wrench,
   Search,
@@ -14,12 +14,35 @@ import {
   Calendar,
   Radio,
   Coins,
+  ShieldCheck,
+  Plus,
+  CheckCircle2,
+  AlertTriangle,
+  Building2,
+  DollarSign,
 } from 'lucide-react';
 
 export default function MachineryPage() {
-  const { machinery, updateMachineryStatus } = useERP();
+  const {
+    machinery,
+    updateMachineryStatus,
+    fuelLogs,
+    addFuelLog,
+    activeCompany,
+    projects,
+    companies,
+  } = useERP();
+
+  const [activeTab, setActiveTab] = useState<'FLEET' | 'FUEL' | 'ALLOCATION' | 'MAINTENANCE'>('FLEET');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('ALL');
+  const [showFuelModal, setShowFuelModal] = useState(false);
+
+  // Fuel Form
+  const [fuelMachineryId, setFuelMachineryId] = useState(machinery[0]?.id || 'eq-01');
+  const [fuelLiters, setFuelLiters] = useState(250);
+  const [fuelProject, setFuelProject] = useState(projects[0]?.code || 'CNT-PRJ-241');
+  const [fuelHours, setFuelHours] = useState(4850);
 
   const categories = [
     'ALL',
@@ -28,245 +51,446 @@ export default function MachineryPage() {
     'BOOM_PUMP',
     'BULLDOZER',
     'GENERATOR',
+    'TIPPER_TRUCK',
   ];
 
   const filteredMachinery = machinery.filter((m) => {
+    const matchesCompany = activeCompany === 'CONSOLIDATED' || !m.companyId || m.companyId === activeCompany;
     const matchesCat = selectedCategory === 'ALL' || m.category === selectedCategory;
     const matchesSearch =
       m.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       m.assetId.toLowerCase().includes(searchTerm.toLowerCase()) ||
       m.assignedSite.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesCat && matchesSearch;
+    return matchesCompany && matchesCat && matchesSearch;
   });
 
-  const operationalCount = machinery.filter((m) => m.status === 'OPERATIONAL').length;
-  const maintenanceCount = machinery.filter((m) => m.status === 'MAINTENANCE').length;
-  const totalFleetHours = machinery.reduce((acc, m) => acc + m.operatingHours, 0);
-  const totalDailyFleetCostLkr = machinery.reduce((acc, m) => acc + (m.dailyHireRateLkr || 95000), 0);
+  const operationalCount = filteredMachinery.filter((m) => m.status === 'OPERATIONAL').length;
+  const maintenanceCount = filteredMachinery.filter((m) => m.status === 'MAINTENANCE').length;
+  const totalFleetHours = filteredMachinery.reduce((acc, m) => acc + m.operatingHours, 0);
+  const totalDailyFleetCostLkr = filteredMachinery.reduce((acc, m) => acc + (m.dailyHireRateLkr || 95000), 0);
+
+  const handleRecordFuel = (e: React.FormEvent) => {
+    e.preventDefault();
+    const mac = machinery.find((m) => m.id === fuelMachineryId) || machinery[0];
+    const cost = Number(fuelLiters) * 370;
+
+    addFuelLog({
+      machineryId: mac.id,
+      companyId: mac.companyId || 'COMP_B',
+      assetId: mac.assetId,
+      date: new Date().toISOString().split('T')[0],
+      litersIssued: Number(fuelLiters),
+      fuelRatePerLiterLkr: 370,
+      totalFuelCostLkr: cost,
+      odometerOrHours: Number(fuelHours),
+      projectId: fuelProject,
+    });
+
+    setShowFuelModal(false);
+  };
+
+  const currentComp = companies.find((c) => c.id === activeCompany);
 
   return (
-    <div className="space-y-6 animate-fadeIn">
+    <div className="space-y-6 animate-fadeIn pb-12">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
         <div>
           <div className="flex items-center gap-2 text-xs font-mono text-[#FFB800] uppercase tracking-wider">
             <Wrench className="w-4 h-4" />
-            <span>Heavy Plant, Telematics & Fuel Management (LKR)</span>
+            <span>Module 08 • Heavy Plant & Machinery Fleet Telematics</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-white mt-1">
-            Plant & Machinery Fleet Telemetry
+            Equipment Fleet, Fuel Telemetry & Inter-Company Hire
           </h1>
           <p className="text-xs sm:text-sm text-zinc-400 mt-0.5">
-            Tower cranes, hydraulic excavators, Putzmeister pumps, auto diesel fuel consumption (LKR 370/L), and preventive maintenance schedules.
+            Manage heavy plant, Auto Diesel fuel burn (@ LKR 370/L), service schedules, daily hire rates, and equipment cost allocation for {activeCompany === 'CONSOLIDATED' ? 'All Companies' : currentComp?.tradeName}.
           </p>
         </div>
+
+        <button
+          onClick={() => setShowFuelModal(true)}
+          className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 to-yellow-600 text-white text-xs font-bold shadow-lg border border-amber-400/40 flex items-center gap-2 self-start sm:self-auto transition-all"
+        >
+          <Fuel className="w-4 h-4 text-white" />
+          <span>Record Fuel Tanker Discharge</span>
+        </button>
       </div>
 
-      {/* KPI Cards in LKR */}
+      {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="p-4 rounded-xl bg-[#080e1c]/80 border border-white/10">
-          <span className="text-xs text-zinc-400">Total Machinery Assets</span>
+          <span className="text-xs text-zinc-400">Total Fleet Assets</span>
           <div className="text-2xl font-extrabold text-white mt-1">
-            {machinery.length} Heavy Units
+            {filteredMachinery.length} Heavy Units
           </div>
-          <span className="text-[11px] text-zinc-400 mt-1 block">
-            Liebherr, CAT, Putzmeister, Komatsu, Cummins
+          <span className="text-[11px] text-emerald-400 font-mono mt-1 block">
+            {operationalCount} Units Field Active • {maintenanceCount} In Yard
           </span>
         </div>
 
         <div className="p-4 rounded-xl bg-[#080e1c]/80 border border-white/10">
-          <span className="text-xs text-zinc-400">Operational Readiness</span>
-          <div className="text-2xl font-extrabold text-emerald-400 mt-1">
-            {Math.round((operationalCount / (machinery.length || 1)) * 100)}% Active
+          <span className="text-xs text-zinc-400">Total Cumulative Fleet Hours</span>
+          <div className="text-2xl font-extrabold text-blue-300 mt-1">
+            {totalFleetHours.toLocaleString()} Hours
           </div>
-          <span className="text-[11px] text-emerald-400/80 mt-1 block">
-            {operationalCount} Units Deployed on Sites
+          <span className="text-[11px] text-zinc-400 mt-1 block">
+            Telemetry GPS Synced
           </span>
         </div>
 
         <div className="p-4 rounded-xl bg-[#080e1c]/80 border border-white/10">
-          <span className="text-xs text-zinc-400">Daily Fleet Cost (LKR)</span>
-          <div className="text-2xl font-extrabold text-[#FFB800] mt-1 font-mono">
-            {formatLKR(totalDailyFleetCostLkr)}/day
+          <span className="text-xs text-zinc-400">Daily Fleet Revenue Capacity</span>
+          <div className="text-2xl font-extrabold text-[#FFB800] mt-1">
+            {formatLKR(totalDailyFleetCostLkr)} / day
           </div>
           <span className="text-[11px] text-zinc-400 mt-1 block">
-            Internal equipment cost allocation
+            Wet & Dry Hire Rates in LKR
           </span>
         </div>
 
         <div className="p-4 rounded-xl bg-[#080e1c]/80 border border-white/10">
-          <span className="text-xs text-zinc-400">Cumulative Fleet Hours</span>
-          <div className="text-2xl font-extrabold text-blue-400 mt-1 font-mono">
-            {totalFleetHours.toLocaleString()} Hrs
+          <span className="text-xs text-zinc-400">Automotive Diesel Tariff</span>
+          <div className="text-2xl font-extrabold text-amber-400 mt-1">
+            LKR 370 / L
           </div>
           <span className="text-[11px] text-zinc-400 mt-1 block">
-            {maintenanceCount} Unit in scheduled PM overhaul
+            Official Ceylon Petroleum Standard
           </span>
         </div>
       </div>
 
-      {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 max-w-full">
-          {categories.map((cat) => (
+      {/* Navigation Sub-Tabs */}
+      <div className="flex items-center gap-2 border-b border-white/10 overflow-x-auto pb-1">
+        {[
+          { key: 'FLEET', label: '01. Heavy Fleet Registry', icon: Wrench },
+          { key: 'FUEL', label: '02. Diesel Fuel Telematics (@ LKR 370/L)', icon: Fuel },
+          { key: 'ALLOCATION', label: '03. Project Allocation & Inter-Company Hire', icon: Building2 },
+          { key: 'MAINTENANCE', label: '04. Preventive Service & Licences', icon: ShieldCheck },
+        ].map((tab) => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.key;
+          return (
             <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${
-                selectedCategory === cat
-                  ? 'bg-[#0038B8] text-white'
-                  : 'bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white'
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key as any)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                isActive
+                  ? 'bg-blue-600/30 border border-blue-400 text-white'
+                  : 'text-zinc-400 hover:text-white hover:bg-white/5 border border-transparent'
               }`}
             >
-              {cat.replace('_', ' ')}
+              <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#FFB800]' : 'text-zinc-400'}`} />
+              <span>{tab.label}</span>
             </button>
-          ))}
-        </div>
-
-        <div className="relative w-full sm:w-64">
-          <Search className="w-4 h-4 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search equipment ID or site..."
-            className="w-full pl-9 pr-4 py-1.5 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:outline-none focus:border-[#FFB800]"
-          />
-        </div>
-      </div>
-
-      {/* Machinery Cards Grid in LKR */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredMachinery.map((item) => {
-          const fuelTankLiters = item.fuelCapacityLiters || 600;
-          const currentLiters = Math.round((fuelTankLiters * item.fuelCapacityPct) / 100);
-          const fuelValueLkr = currentLiters * 370; // Auto diesel @ LKR 370/L in Sri Lanka
-
-          return (
-            <div
-              key={item.id}
-              className="p-5 rounded-2xl bg-[#080e1c]/85 border border-white/10 space-y-4 hover:border-blue-500/30 transition-all shadow-md"
-            >
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30 font-bold">
-                      {item.assetId}
-                    </span>
-                    <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 flex items-center gap-1">
-                      <Radio className="w-2.5 h-2.5 animate-pulse" />
-                      GPS Telemetry
-                    </span>
-                  </div>
-                  <h3 className="font-bold text-white text-sm mt-1.5 line-clamp-1">{item.name}</h3>
-                </div>
-                <span
-                  className={`text-[10px] font-mono px-2.5 py-0.5 rounded-full font-bold ${
-                    item.status === 'OPERATIONAL'
-                      ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                      : item.status === 'MAINTENANCE'
-                      ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                      : 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
-                  }`}
-                >
-                  {item.status}
-                </span>
-              </div>
-
-              {/* Operating Details */}
-              <div className="space-y-2 text-xs text-zinc-300 bg-white/[0.02] p-3 rounded-xl border border-white/5">
-                <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-1.5 text-zinc-400">
-                    <MapPin className="w-3.5 h-3.5 text-blue-400" />
-                    <span>Assigned Site:</span>
-                  </span>
-                  <span className="font-semibold text-white truncate max-w-[170px]">
-                    {item.assignedSite}
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-1.5 text-zinc-400">
-                    <User className="w-3.5 h-3.5 text-amber-400" />
-                    <span>Certified Operator:</span>
-                  </span>
-                  <span className="font-medium text-white">{item.operatorName}</span>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-1.5 text-zinc-400">
-                    <Coins className="w-3.5 h-3.5 text-[#FFB800]" />
-                    <span>Daily Rate (LKR):</span>
-                  </span>
-                  <span className="font-mono font-bold text-[#FFB800]">
-                    {formatLKR(item.dailyHireRateLkr || 95000)}/day
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-1.5 text-zinc-400">
-                    <Clock className="w-3.5 h-3.5 text-purple-400" />
-                    <span>Engine Hours:</span>
-                  </span>
-                  <span className="font-mono font-bold text-white">
-                    {item.operatingHours.toLocaleString()} hrs
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-1.5 text-zinc-400">
-                    <Calendar className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>Next PM Service:</span>
-                  </span>
-                  <span className="font-mono text-zinc-300">{item.nextServiceDate}</span>
-                </div>
-              </div>
-
-              {/* Fuel Level Bar & LKR Telemetry */}
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between text-[11px]">
-                  <span className="text-zinc-400 flex items-center gap-1">
-                    <Fuel className="w-3 h-3 text-[#FFB800]" />
-                    <span>Diesel Tank ({currentLiters}L / {fuelTankLiters}L):</span>
-                  </span>
-                  <span className="font-mono font-bold text-white">{item.fuelCapacityPct}%</span>
-                </div>
-                <div className="w-full h-1.5 rounded-full bg-white/10 overflow-hidden">
-                  <div
-                    className={`h-full rounded-full transition-all duration-500 ${
-                      item.fuelCapacityPct > 50
-                        ? 'bg-emerald-400'
-                        : item.fuelCapacityPct > 20
-                        ? 'bg-amber-400'
-                        : 'bg-red-500'
-                    }`}
-                    style={{ width: `${item.fuelCapacityPct}%` }}
-                  />
-                </div>
-                <div className="flex items-center justify-between text-[10px] text-zinc-400 font-mono">
-                  <span>Consumption: ~{item.fuelConsumptionRateLph || 20} L/hr</span>
-                  <span className="text-blue-300">Fuel Value: {formatLKR(fuelValueLkr)}</span>
-                </div>
-              </div>
-
-              {/* Quick Status Selector */}
-              <div className="pt-2 border-t border-white/5 flex items-center justify-between text-xs">
-                <span className="text-zinc-400 text-[11px]">Operational State:</span>
-                <select
-                  value={item.status}
-                  onChange={(e) => updateMachineryStatus(item.id, e.target.value as MachineryStatus)}
-                  className="bg-black/80 border border-white/15 text-[11px] rounded px-2 py-1 text-white focus:outline-none"
-                >
-                  <option value="OPERATIONAL">Operational</option>
-                  <option value="MAINTENANCE">Maintenance</option>
-                  <option value="STANDBY">Standby</option>
-                  <option value="REPAIR">Repair</option>
-                </select>
-              </div>
-            </div>
           );
         })}
       </div>
+
+      {/* TAB 1: FLEET REGISTRY */}
+      {activeTab === 'FLEET' && (
+        <div className="space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-2 overflow-x-auto pb-1">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+                    selectedCategory === cat
+                      ? 'bg-white/15 text-white border border-white/20'
+                      : 'text-zinc-400 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  {cat.replace('_', ' ')}
+                </button>
+              ))}
+            </div>
+
+            <div className="relative w-full sm:w-64">
+              <Search className="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                placeholder="Search asset ID, crane, site..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#0038B8]"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredMachinery.map((m) => (
+              <div
+                key={m.id}
+                className="p-5 rounded-2xl bg-[#080e1c] border border-white/10 space-y-4 relative overflow-hidden"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                      {m.assetId}
+                    </span>
+                    <span className="text-[10px] font-mono text-zinc-400">
+                      {m.category.replace('_', ' ')}
+                    </span>
+                  </div>
+                  <span
+                    className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
+                      m.status === 'OPERATIONAL'
+                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                        : m.status === 'STANDBY'
+                        ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
+                        : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                    }`}
+                  >
+                    {m.status}
+                  </span>
+                </div>
+
+                <div>
+                  <h3 className="font-bold text-white text-base">{m.name}</h3>
+                  <div className="flex items-center gap-1.5 text-xs text-zinc-400 mt-1">
+                    <MapPin className="w-3.5 h-3.5 text-blue-400" />
+                    <span>{m.assignedSite}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-xs text-zinc-400 mt-0.5">
+                    <User className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Operator: {m.operatorName}</span>
+                  </div>
+                </div>
+
+                {/* Telematics Gauges */}
+                <div className="p-3 rounded-xl bg-black/40 border border-white/5 space-y-2">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-zinc-400 flex items-center gap-1">
+                      <Fuel className="w-3.5 h-3.5 text-amber-400" />
+                      <span>Fuel Tank Level:</span>
+                    </span>
+                    <span className="font-mono font-bold text-white">
+                      {m.fuelCapacityPct}% ({m.fuelCapacityLiters || 400}L)
+                    </span>
+                  </div>
+                  <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full ${
+                        m.fuelCapacityPct > 50
+                          ? 'bg-emerald-500'
+                          : m.fuelCapacityPct > 20
+                          ? 'bg-amber-500'
+                          : 'bg-red-500'
+                      }`}
+                      style={{ width: `${m.fuelCapacityPct}%` }}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between text-xs pt-1">
+                    <span className="text-zinc-400 flex items-center gap-1">
+                      <Clock className="w-3.5 h-3.5 text-blue-400" />
+                      <span>Meter Hours:</span>
+                    </span>
+                    <span className="font-mono font-bold text-white">
+                      {m.operatingHours.toLocaleString()} hrs
+                    </span>
+                  </div>
+                </div>
+
+                {/* Rates & Actions */}
+                <div className="pt-2 border-t border-white/5 flex items-center justify-between text-xs">
+                  <div>
+                    <span className="text-[10px] text-zinc-400 font-mono block">Daily Hire Rate</span>
+                    <span className="font-mono font-extrabold text-[#FFB800]">
+                      {formatLKR(m.dailyHireRateLkr || 95000)} / day
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-1">
+                    {m.status !== 'OPERATIONAL' ? (
+                      <button
+                        onClick={() => updateMachineryStatus(m.id, 'OPERATIONAL')}
+                        className="px-2.5 py-1 rounded-lg bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-300 text-[10px] font-bold"
+                      >
+                        Set Active
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => updateMachineryStatus(m.id, 'MAINTENANCE')}
+                        className="px-2.5 py-1 rounded-lg bg-amber-600/30 hover:bg-amber-600/50 text-amber-300 text-[10px] font-bold"
+                      >
+                        Service
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* TAB 2: FUEL LOGS */}
+      {activeTab === 'FUEL' && (
+        <div className="space-y-4">
+          <div className="rounded-2xl bg-[#080e1c] border border-white/10 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs text-left">
+                <thead className="bg-white/5 text-zinc-400 border-b border-white/10 font-mono">
+                  <tr>
+                    <th className="p-3">Discharge Date</th>
+                    <th className="p-3">Asset ID & Machine</th>
+                    <th className="p-3">Mega-Site</th>
+                    <th className="p-3 text-right">Liters Issued</th>
+                    <th className="p-3 text-right">Tariff (LKR/L)</th>
+                    <th className="p-3 text-right">Total Fuel Cost (LKR)</th>
+                    <th className="p-3 text-right">Engine Meter</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5 font-mono">
+                  {fuelLogs.map((fl) => (
+                    <tr key={fl.id} className="hover:bg-white/[0.02]">
+                      <td className="p-3 text-zinc-400">{fl.date}</td>
+                      <td className="p-3 font-bold text-white">{fl.assetId}</td>
+                      <td className="p-3 text-blue-300">{fl.projectId}</td>
+                      <td className="p-3 text-right text-white font-bold">{fl.litersIssued} L</td>
+                      <td className="p-3 text-right text-zinc-300">Rs. {fl.fuelRatePerLiterLkr}/L</td>
+                      <td className="p-3 text-right text-amber-400 font-bold">{formatLKR(fl.totalFuelCostLkr)}</td>
+                      <td className="p-3 text-right text-zinc-400">{fl.odometerOrHours} hrs</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 3: PROJECT ALLOCATION */}
+      {activeTab === 'ALLOCATION' && (
+        <div className="p-6 rounded-2xl bg-[#080e1c] border border-white/10 space-y-4">
+          <h3 className="font-bold text-white text-base">Inter-Company Machinery Hire & Fleet Mobilization</h3>
+          <p className="text-xs text-zinc-400">
+            Company B (Heavy Plant & Equipment) leases specialized tower cranes, hydraulic excavators, and concrete pumps to Company A mega-sites under approved wet/dry commercial plant hire agreements.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+            {filteredMachinery.map((m) => (
+              <div key={m.id} className="p-3.5 rounded-xl bg-white/[0.02] border border-white/5 text-xs space-y-1">
+                <div className="flex justify-between font-mono">
+                  <span className="font-bold text-white">{m.assetId}</span>
+                  <span className="text-[#FFB800]">{formatLKR(m.dailyHireRateLkr || 95000)}/day</span>
+                </div>
+                <div className="text-zinc-300 font-bold">{m.name}</div>
+                <div className="text-[10px] text-zinc-400">Deployed: {m.assignedSite}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* TAB 4: PREVENTIVE MAINTENANCE */}
+      {activeTab === 'MAINTENANCE' && (
+        <div className="p-6 rounded-2xl bg-[#080e1c] border border-white/10 space-y-4">
+          <h3 className="font-bold text-white text-base">Preventive Maintenance Schedules & Regulatory Licences</h3>
+          <p className="text-xs text-zinc-400">
+            Heavy plant equipment requires mandatory 250-hour engine oil changes, hydraulic filter overhauls, and annual Department of Motor Traffic (DMT) revenue license renewals.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+            {filteredMachinery.map((m) => (
+              <div key={m.id} className="p-4 rounded-xl bg-white/[0.02] border border-white/5 text-xs space-y-2">
+                <div className="flex justify-between">
+                  <span className="font-bold text-white">{m.name} ({m.assetId})</span>
+                  <span className="text-[10px] font-mono text-emerald-400">Licence Valid</span>
+                </div>
+                <div className="text-zinc-400 flex justify-between">
+                  <span>Next Scheduled Preventive Service:</span>
+                  <span className="font-mono text-amber-300 font-bold">{m.nextServiceDate}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* FUEL DISCHARGE MODAL */}
+      {showFuelModal && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="w-full max-w-md bg-[#080f24] border border-white/20 rounded-2xl p-6 space-y-4 animate-fadeIn">
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <h3 className="text-base font-bold text-white flex items-center gap-2">
+                <Fuel className="w-4 h-4 text-[#FFB800]" />
+                <span>Record Diesel Tanker Discharge</span>
+              </h3>
+              <button onClick={() => setShowFuelModal(false)} className="text-zinc-400 hover:text-white">✕</button>
+            </div>
+            <form onSubmit={handleRecordFuel} className="space-y-3.5 text-xs">
+              <div>
+                <label className="block font-semibold text-zinc-300 mb-1">Target Plant Asset</label>
+                <select
+                  value={fuelMachineryId}
+                  onChange={(e) => setFuelMachineryId(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl bg-[#080e1c] border border-white/15 text-white"
+                >
+                  {filteredMachinery.map((m) => (
+                    <option key={m.id} value={m.id}>{m.assetId} - {m.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block font-semibold text-zinc-300 mb-1">Discharge Liters</label>
+                <input
+                  type="number"
+                  value={fuelLiters}
+                  onChange={(e) => setFuelLiters(Number(e.target.value))}
+                  className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white font-mono"
+                  required
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-semibold text-zinc-300 mb-1">Mega-Site</label>
+                  <select
+                    value={fuelProject}
+                    onChange={(e) => setFuelProject(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-[#080e1c] border border-white/15 text-white"
+                  >
+                    {projects.map((p) => (
+                      <option key={p.id} value={p.code}>{p.code}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block font-semibold text-zinc-300 mb-1">Current Hour Meter</label>
+                  <input
+                    type="number"
+                    value={fuelHours}
+                    onChange={(e) => setFuelHours(Number(e.target.value))}
+                    className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white font-mono"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="p-3 rounded-xl bg-black/40 border border-white/5 text-[11px] font-mono">
+                <div className="text-zinc-400">Total Fuel Cost Debit:</div>
+                <div className="text-lg font-extrabold text-[#FFB800]">{formatLKR(Number(fuelLiters) * 370)}</div>
+                <div className="text-zinc-400 text-[10px]">Calculation: {fuelLiters} Liters × LKR 370.00 / L</div>
+              </div>
+              <div className="pt-3 border-t border-white/10 flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowFuelModal(false)}
+                  className="px-4 py-2 rounded-xl bg-white/5 text-zinc-300 text-xs"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs"
+                >
+                  Confirm Fuel Issue
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

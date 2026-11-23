@@ -2,241 +2,276 @@
 
 import React, { useState } from 'react';
 import { useERP } from '@/lib/erp/AuthContext';
-import { formatLKR } from '@/lib/erp/currency';
+import { formatLKR, formatLKRFull } from '@/lib/erp/currency';
 import {
   Boxes,
   Plus,
   Search,
   Truck,
   FileCheck,
+  AlertTriangle,
+  Building2,
+  FileText,
+  CheckCircle2,
+  ArrowRight,
+  ShieldCheck,
 } from 'lucide-react';
 
 export default function InventoryPage() {
   const {
     inventory,
-    purchaseOrders,
     adjustStock,
-    updatePOStatus,
-    addPurchaseOrder,
+    stores,
+    materialIssueNotes,
+    addMaterialIssueNote,
+    activeCompany,
+    projects,
+    companies,
   } = useERP();
 
-  const [activeTab, setActiveTab] = useState<'STOCK' | 'ORDERS'>('STOCK');
+  const [activeTab, setActiveTab] = useState<'STOCK' | 'STORES' | 'MIN' | 'TRANSFER'>('STOCK');
   const [searchTerm, setSearchTerm] = useState('');
-  const [showPOModal, setShowPOModal] = useState(false);
+  const [showMinModal, setShowMinModal] = useState(false);
 
-  // Form State for PO in LKR
-  const [supplier, setSupplier] = useState('');
-  const [totalAmount, setTotalAmount] = useState(14500000); // LKR 14.5M default
-  const [itemsCount, setItemsCount] = useState(50);
+  // MIN Form State
+  const [minProjectCode, setMinProjectCode] = useState(projects[0]?.code || 'CNT-PRJ-241');
+  const [minStoreCode, setMinStoreCode] = useState('ST-PORTCITY');
+  const [minReceiver, setMinReceiver] = useState('Eng. Maya Lin');
+  const [minSku, setMinSku] = useState(inventory[0]?.sku || 'STEEL-RB-500B');
+  const [minQty, setMinQty] = useState(10);
 
-  const filteredInventory = inventory.filter(
-    (item) =>
+  const filteredInventory = inventory.filter((item) => {
+    const matchesCompany = activeCompany === 'CONSOLIDATED' || !item.companyId || item.companyId === activeCompany;
+    const matchesSearch =
       item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.warehouseLocation.toLowerCase().includes(searchTerm.toLowerCase())
+      item.warehouseLocation.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesCompany && matchesSearch;
+  });
+
+  const filteredStores = stores.filter(
+    (st) => activeCompany === 'CONSOLIDATED' || st.companyId === activeCompany
   );
 
-  const totalInventoryValuation = inventory.reduce(
+  const filteredMins = materialIssueNotes.filter(
+    (min) => activeCompany === 'CONSOLIDATED' || min.companyId === activeCompany
+  );
+
+  const totalInventoryValuation = filteredInventory.reduce(
     (acc, it) => acc + it.quantity * it.unitCost,
     0
   );
-  const lowStockCount = inventory.filter(
+
+  const lowStockCount = filteredInventory.filter(
     (it) => it.status === 'LOW_STOCK' || it.status === 'CRITICAL'
   ).length;
 
-  const handleCreatePO = (e: React.FormEvent) => {
+  const handleCreateMin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!supplier) return;
-    addPurchaseOrder({
-      supplier,
-      totalAmount: Number(totalAmount),
-      status: 'PENDING',
-      itemsCount: Number(itemsCount),
+    const item = inventory.find((i) => i.sku === minSku) || inventory[0];
+    const unitRate = item.unitCost;
+    const amount = Number(minQty) * unitRate;
+
+    addMaterialIssueNote({
+      companyId: activeCompany === 'CONSOLIDATED' ? 'COMP_A' : activeCompany,
+      storeCode: minStoreCode,
+      projectId: projects.find((p) => p.code === minProjectCode)?.id || 'prj-01',
+      projectCode: minProjectCode,
+      issueDate: new Date().toISOString().split('T')[0],
+      storekeeperName: 'T. M. Nazeer (Storekeeper)',
+      receiverName: minReceiver,
+      items: [
+        {
+          itemSku: item.sku,
+          name: item.name,
+          qtyIssued: Number(minQty),
+          unit: item.unit,
+          unitRateLkr: unitRate,
+          amountLkr: amount,
+        },
+      ],
+      totalMaterialCostLkr: amount,
     });
-    setSupplier('');
-    setShowPOModal(false);
+
+    setShowMinModal(false);
   };
 
+  const currentComp = companies.find((c) => c.id === activeCompany);
+
   return (
-    <div className="space-y-6 animate-fadeIn">
+    <div className="space-y-6 animate-fadeIn pb-12">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
         <div>
           <div className="flex items-center gap-2 text-xs font-mono text-[#FFB800] uppercase tracking-wider">
             <Boxes className="w-4 h-4" />
-            <span>Procurement, Raw Materials Stockpile & POs (LKR)</span>
+            <span>Module 07 • Inventory, Multi-Store Warehouses & Material Issues</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-white mt-1">
-            Raw Materials Stockpile & Purchase Orders
+            Raw Material Stockpiles & Site Store Logistics
           </h1>
           <p className="text-xs sm:text-sm text-zinc-400 mt-0.5">
-            Tor steel rebar stock (BS 4449 G500B), Tokyo Super cement bags, ready-mix concrete ($m^3$), M-Sand, and multi-tier PO approvals in LKR.
+            Monitor Tor steel rebar, Tokyo Super cement, M-sand, multi-store stock transfers, and Material Issue Notes (MIN) for {activeCompany === 'CONSOLIDATED' ? 'All Companies' : currentComp?.tradeName}.
           </p>
         </div>
 
         <button
-          onClick={() => setShowPOModal(true)}
-          className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#0038B8] to-[#1D4ED8] hover:from-[#1D4ED8] hover:to-[#2563EB] text-white text-xs font-bold shadow-lg shadow-blue-900/40 border border-blue-400/40 flex items-center gap-2 self-start sm:self-auto transition-all"
+          onClick={() => setShowMinModal(true)}
+          className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-700 to-indigo-700 hover:from-blue-600 hover:to-indigo-600 text-white text-xs font-bold shadow-lg border border-blue-400/30 flex items-center gap-2 self-start sm:self-auto transition-all"
         >
           <Plus className="w-4 h-4 text-[#FFB800]" />
-          <span>Issue Purchase Order (LKR)</span>
+          <span>Issue Material Note (MIN)</span>
         </button>
       </div>
 
-      {/* KPI Cards in LKR */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      {/* KPI Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="p-4 rounded-xl bg-[#080e1c]/80 border border-white/10">
           <span className="text-xs text-zinc-400">Total Stockpile Valuation</span>
-          <div className="text-2xl font-extrabold text-white mt-1 font-mono">
+          <div className="text-2xl font-extrabold text-white mt-1">
             {formatLKR(totalInventoryValuation, true)}
           </div>
           <span className="text-[11px] text-zinc-400 mt-1 block">
-            Across {inventory.length} heavy civil SKU categories
+            Across {filteredStores.length} Storage Depots
           </span>
         </div>
 
         <div className="p-4 rounded-xl bg-[#080e1c]/80 border border-white/10">
-          <span className="text-xs text-zinc-400">Stock Reorder Alerts</span>
-          <div
-            className={`text-2xl font-extrabold mt-1 ${
-              lowStockCount > 0 ? 'text-amber-400' : 'text-emerald-400'
-            }`}
-          >
-            {lowStockCount} Items Below Threshold
+          <span className="text-xs text-zinc-400">Active Storage Network</span>
+          <div className="text-2xl font-extrabold text-blue-300 mt-1">
+            {filteredStores.length} Stores
           </div>
           <span className="text-[11px] text-zinc-400 mt-1 block">
-            Automatic supplier replenishment trigger
+            Bonded Warehouses & Site Stores
           </span>
         </div>
 
         <div className="p-4 rounded-xl bg-[#080e1c]/80 border border-white/10">
-          <span className="text-xs text-zinc-400">Active Purchase Orders</span>
-          <div className="text-2xl font-extrabold text-[#FFB800] mt-1 font-mono">
-            {purchaseOrders.length} POs ({formatLKR(purchaseOrders.reduce((acc, p) => acc + p.totalAmount, 0), true)})
+          <span className="text-xs text-zinc-400">Reorder Stock Alerts</span>
+          <div className="text-2xl font-extrabold text-amber-400 mt-1">
+            {lowStockCount} Items Low
+          </div>
+          <span className="text-[11px] text-amber-400/80 mt-1 block">
+            Below Buffer Safety Threshold
+          </span>
+        </div>
+
+        <div className="p-4 rounded-xl bg-[#080e1c]/80 border border-white/10">
+          <span className="text-xs text-zinc-400">Valuation Policy (LKAS 2)</span>
+          <div className="text-2xl font-extrabold text-[#FFB800] mt-1">
+            {currentComp?.inventoryValuation || 'FIFO'}
           </div>
           <span className="text-[11px] text-zinc-400 mt-1 block">
-            Multi-tier executive approval pipeline
+            First-In, First-Out Method
           </span>
         </div>
       </div>
 
-      {/* Tabs Switcher */}
-      <div className="flex items-center gap-2 p-1 rounded-xl bg-white/5 border border-white/10 self-start w-fit">
-        <button
-          onClick={() => setActiveTab('STOCK')}
-          className={`px-4 py-2 rounded-lg text-xs font-bold transition-colors ${
-            activeTab === 'STOCK'
-              ? 'bg-[#0038B8] text-white shadow-md'
-              : 'text-zinc-400 hover:text-white'
-          }`}
-        >
-          Stock Items Catalog ({inventory.length})
-        </button>
-        <button
-          onClick={() => setActiveTab('ORDERS')}
-          className={`px-4 py-2 rounded-lg text-xs font-bold transition-colors ${
-            activeTab === 'ORDERS'
-              ? 'bg-[#0038B8] text-white shadow-md'
-              : 'text-zinc-400 hover:text-white'
-          }`}
-        >
-          Purchase Orders ({purchaseOrders.length})
-        </button>
+      {/* Navigation Sub-Tabs */}
+      <div className="flex items-center gap-2 border-b border-white/10 overflow-x-auto pb-1">
+        {[
+          { key: 'STOCK', label: '01. Material Master Stockpiles', icon: Boxes },
+          { key: 'STORES', label: '02. Multi-Store Depots & Site Stores', icon: Building2 },
+          { key: 'MIN', label: '03. Material Issue Notes (MIN)', icon: FileText },
+          { key: 'TRANSFER', label: '04. Inter-Store Transfers & Wastage', icon: Truck },
+        ].map((tab) => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.key;
+          return (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key as any)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                isActive
+                  ? 'bg-blue-600/30 border border-blue-400 text-white'
+                  : 'text-zinc-400 hover:text-white hover:bg-white/5 border border-transparent'
+              }`}
+            >
+              <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#FFB800]' : 'text-zinc-400'}`} />
+              <span>{tab.label}</span>
+            </button>
+          );
+        })}
       </div>
 
-      {/* TAB 1: Stock Items Catalog */}
+      {/* TAB 1: MATERIAL MASTER */}
       {activeTab === 'STOCK' && (
         <div className="space-y-4">
-          <div className="relative max-w-md">
-            <Search className="w-4 h-4 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search material SKU, category, or yard..."
-              className="w-full pl-9 pr-4 py-1.5 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:outline-none focus:border-[#FFB800]"
-            />
+          <div className="flex items-center justify-between gap-4">
+            <div className="relative w-full sm:w-72">
+              <Search className="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                placeholder="Search SKU, steel, cement, depot..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#0038B8]"
+              />
+            </div>
           </div>
 
-          <div className="rounded-2xl bg-[#080e1c]/85 border border-white/10 overflow-hidden">
+          <div className="rounded-2xl bg-[#080e1c] border border-white/10 overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-white/[0.03] text-zinc-400 font-mono text-[11px] border-b border-white/10 uppercase tracking-wider">
+              <table className="w-full text-xs text-left">
+                <thead className="bg-white/5 text-zinc-400 border-b border-white/10 font-mono">
                   <tr>
-                    <th className="py-3.5 px-4">SKU & Material Specification</th>
-                    <th className="py-3.5 px-4">Warehouse / Stockyard</th>
-                    <th className="py-3.5 px-4 text-center">Available Stock</th>
-                    <th className="py-3.5 px-4 text-right">Unit Rate (LKR)</th>
-                    <th className="py-3.5 px-4 text-center">Status</th>
-                    <th className="py-3.5 px-4 text-right">Quick Stock Disp.</th>
+                    <th className="p-4">SKU Code</th>
+                    <th className="p-4">Material Spec & Quality Standard</th>
+                    <th className="p-4">Current Stock</th>
+                    <th className="p-4">Unit Rate (LKR)</th>
+                    <th className="p-4">Stock Valuation (LKR)</th>
+                    <th className="p-4">Storage Depot</th>
+                    <th className="p-4">Status</th>
+                    <th className="p-4 text-right">Quick Adjust</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/5 text-zinc-300">
+                <tbody className="divide-y divide-white/5 font-mono">
                   {filteredInventory.map((item) => (
-                    <tr key={item.id} className="hover:bg-white/[0.02] transition-colors">
-                      <td className="py-3.5 px-4">
-                        <div className="font-semibold text-white">{item.name}</div>
-                        <div className="text-[11px] font-mono text-zinc-400 flex items-center gap-2 mt-0.5">
-                          <span>{item.sku}</span>
-                          <span>•</span>
-                          <span className="text-blue-300">{item.category}</span>
-                          {item.qualityStandard && (
-                            <>
-                              <span>•</span>
-                              <span className="text-emerald-400 text-[10px]">{item.qualityStandard}</span>
-                            </>
-                          )}
+                    <tr key={item.id} className="hover:bg-white/[0.02]">
+                      <td className="p-4 font-bold text-blue-300">{item.sku}</td>
+                      <td className="p-4 font-sans">
+                        <div className="font-bold text-white text-sm">{item.name}</div>
+                        <div className="text-[10px] text-zinc-400 font-mono">
+                          Standard: {item.qualityStandard || 'SLS / BS Compliant'} • MTC: {item.millTestCertificateNo || 'Verified'}
                         </div>
-                        {item.millTestCertificateNo && (
-                          <div className="text-[10px] text-zinc-400 font-mono mt-0.5 flex items-center gap-1">
-                            <FileCheck className="w-3 h-3 text-[#FFB800]" />
-                            <span>MTC: {item.millTestCertificateNo}</span>
-                          </div>
-                        )}
                       </td>
-                      <td className="py-3.5 px-4 text-zinc-300">
-                        <div>{item.warehouseLocation}</div>
-                        <div className="text-[10px] text-zinc-400 font-mono">Supplier: {item.supplier}</div>
-                      </td>
-                      <td className="py-3.5 px-4 text-center font-mono font-bold text-white">
+                      <td className="p-4 font-bold text-white text-sm">
                         {item.quantity.toLocaleString()} {item.unit}
-                        <div className="text-[10px] text-zinc-400 font-normal">
-                          Min Safety: {item.minThreshold.toLocaleString()} {item.unit}
-                        </div>
                       </td>
-                      <td className="py-3.5 px-4 text-right font-mono font-bold text-white">
-                        <div>{formatLKR(item.unitCost)}</div>
-                        <div className="text-[10px] text-zinc-400 font-normal">per {item.unit}</div>
+                      <td className="p-4 text-zinc-300">{formatLKR(item.unitCost)} / {item.unit}</td>
+                      <td className="p-4 font-bold text-emerald-400 text-sm">
+                        {formatLKR(item.quantity * item.unitCost)}
                       </td>
-                      <td className="py-3.5 px-4 text-center">
+                      <td className="p-4 font-sans text-zinc-300 text-[11px]">{item.warehouseLocation}</td>
+                      <td className="p-4">
                         <span
-                          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-mono font-bold ${
+                          className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                             item.status === 'OPTIMAL'
-                              ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                              ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
                               : item.status === 'LOW_STOCK'
-                              ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                              : 'bg-red-500/20 text-red-300 border border-red-500/30'
+                              ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                              : 'bg-red-500/20 text-red-400 border border-red-500/30'
                           }`}
                         >
                           {item.status}
                         </span>
                       </td>
-                      <td className="py-3.5 px-4 text-right">
-                        <div className="flex items-center justify-end gap-1.5">
+                      <td className="p-4 text-right font-sans">
+                        <div className="flex items-center justify-end gap-1">
                           <button
                             onClick={() => adjustStock(item.id, -10)}
-                            className="px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-white font-mono text-xs border border-white/10"
-                            title="Issue 10 units to site"
+                            className="px-2 py-0.5 rounded bg-white/5 hover:bg-white/10 text-zinc-300 text-[10px]"
+                            title="Decrement 10 units"
                           >
                             -10
                           </button>
                           <button
-                            onClick={() => adjustStock(item.id, 50)}
-                            className="px-2 py-1 rounded bg-[#0038B8]/40 hover:bg-[#0038B8] text-white font-mono text-xs border border-blue-500/30"
-                            title="Receive 50 units into stockyard"
+                            onClick={() => adjustStock(item.id, 10)}
+                            className="px-2 py-0.5 rounded bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 text-[10px] font-bold"
+                            title="Increment 10 units"
                           >
-                            +50
+                            +10
                           </button>
                         </div>
                       </td>
@@ -249,151 +284,193 @@ export default function InventoryPage() {
         </div>
       )}
 
-      {/* TAB 2: Purchase Orders in LKR */}
-      {activeTab === 'ORDERS' && (
-        <div className="rounded-2xl bg-[#080e1c]/85 border border-white/10 overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-white/[0.03] text-zinc-400 font-mono text-[11px] border-b border-white/10 uppercase tracking-wider">
-                <tr>
-                  <th className="py-3.5 px-4">PO Number</th>
-                  <th className="py-3.5 px-4">Supplier Entity</th>
-                  <th className="py-3.5 px-4">Issue Date</th>
-                  <th className="py-3.5 px-4 text-right">Total Amount (LKR)</th>
-                  <th className="py-3.5 px-4 text-center">Workflow State</th>
-                  <th className="py-3.5 px-4 text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/5 text-zinc-300">
-                {purchaseOrders.map((po) => (
-                  <tr key={po.id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="py-3.5 px-4 font-mono font-bold text-white">
-                      {po.poNumber}
-                    </td>
-                    <td className="py-3.5 px-4">
-                      <div className="font-semibold text-white">{po.supplier}</div>
-                      <div className="text-[11px] text-zinc-400">{po.itemsCount} Units</div>
-                    </td>
-                    <td className="py-3.5 px-4 font-mono text-zinc-400">{po.date}</td>
-                    <td className="py-3.5 px-4 text-right font-extrabold text-[#FFB800] text-sm font-mono">
-                      {formatLKR(po.totalAmount)}
-                    </td>
-                    <td className="py-3.5 px-4 text-center">
-                      <span
-                        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-mono font-bold ${
-                          po.status === 'APPROVED' || po.status === 'FULFILLED'
-                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                            : po.status === 'DISPATCHED'
-                            ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
-                            : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                        }`}
-                      >
-                        {po.status}
+      {/* TAB 2: MULTI-STORE DEPOTS */}
+      {activeTab === 'STORES' && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {filteredStores.map((store) => (
+            <div key={store.id} className="p-5 rounded-2xl bg-[#080e1c] border border-white/10 space-y-4">
+              <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                <div>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-500/20 text-blue-300">
+                    {store.storeCode}
+                  </span>
+                  <h3 className="font-bold text-white text-base mt-1">{store.name}</h3>
+                </div>
+                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#FFB800]/20 text-[#FFB800]">
+                  {store.storeType === 'CENTRAL_WAREHOUSE' ? 'Central Bonded Depot' : 'Site Stockyard'}
+                </span>
+              </div>
+              <div className="space-y-2 text-xs">
+                <div className="flex justify-between py-1 border-b border-white/5">
+                  <span className="text-zinc-400">Physical Location:</span>
+                  <span className="text-white font-medium">{store.location}</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-white/5">
+                  <span className="text-zinc-400">Designated Storekeeper:</span>
+                  <span className="text-white font-medium">{store.storekeeperName}</span>
+                </div>
+                <div className="flex justify-between py-1 pt-2 font-bold text-sm">
+                  <span className="text-zinc-300">Total Yard Stock Valuation:</span>
+                  <span className="font-mono text-emerald-400">{formatLKR(store.totalValueLkr)}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* TAB 3: MATERIAL ISSUE NOTES (MIN) */}
+      {activeTab === 'MIN' && (
+        <div className="space-y-4">
+          <div className="p-4 rounded-xl bg-blue-950/20 border border-blue-500/20 text-xs text-blue-300">
+            <strong>Direct Project Cost Accounting Rule:</strong> Issuing materials immediately decrements store quantity balance and automatically posts a direct material expense debit into the target Mega-Project Cost Code.
+          </div>
+
+          <div className="space-y-3">
+            {filteredMins.map((min) => (
+              <div key={min.id} className="p-5 rounded-2xl bg-[#080e1c] border border-white/10 space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/10 pb-3">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono font-bold text-white text-base">{min.minNumber}</span>
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-500/20 text-blue-300">
+                        Site: {min.projectCode}
                       </span>
-                    </td>
-                    <td className="py-3.5 px-4 text-right">
-                      {po.status === 'PENDING' && (
-                        <button
-                          onClick={() => updatePOStatus(po.id, 'APPROVED')}
-                          className="px-3 py-1 rounded bg-emerald-600/30 hover:bg-emerald-600/50 border border-emerald-500/40 text-emerald-200 text-[11px] font-bold"
-                        >
-                          Approve PO
-                        </button>
-                      )}
-                      {po.status === 'APPROVED' && (
-                        <button
-                          onClick={() => updatePOStatus(po.id, 'DISPATCHED')}
-                          className="px-3 py-1 rounded bg-blue-600/30 hover:bg-blue-600/50 border border-blue-500/40 text-blue-200 text-[11px] font-bold"
-                        >
-                          Mark Dispatched
-                        </button>
-                      )}
-                      {po.status === 'DISPATCHED' && (
-                        <button
-                          onClick={() => updatePOStatus(po.id, 'FULFILLED')}
-                          className="px-3 py-1 rounded bg-purple-600/30 hover:bg-purple-600/50 border border-purple-500/40 text-purple-200 text-[11px] font-bold"
-                        >
-                          Receive to Yard
-                        </button>
-                      )}
-                      {po.status === 'FULFILLED' && (
-                        <span className="text-[11px] text-zinc-400">Inventory GRN Logged</span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                      <span className="text-xs text-zinc-400 font-mono">Date: {min.issueDate}</span>
+                    </div>
+                    <div className="text-xs text-zinc-300 mt-1">Store: {min.storeCode} • Issued by: {min.storekeeperName} • Received by: {min.receiverName}</div>
+                  </div>
+
+                  <div className="text-right">
+                    <span className="text-[10px] text-zinc-400 font-mono uppercase">Material Cost Debited</span>
+                    <div className="text-base font-extrabold text-[#FFB800] font-mono">{formatLKR(min.totalMaterialCostLkr)}</div>
+                  </div>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full text-xs text-left font-mono">
+                    <thead className="text-zinc-400 border-b border-white/5">
+                      <tr>
+                        <th className="pb-1 text-left">SKU Code & Material</th>
+                        <th className="pb-1 text-right">Qty Issued</th>
+                        <th className="pb-1 text-right">Unit Rate (LKR)</th>
+                        <th className="pb-1 text-right">Total Debit (LKR)</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-white/5">
+                      {min.items.map((it, idx) => (
+                        <tr key={idx}>
+                          <td className="py-1.5 font-sans font-bold text-white">{it.name} ({it.itemSku})</td>
+                          <td className="py-1.5 text-right text-emerald-400 font-bold">{it.qtyIssued} {it.unit}</td>
+                          <td className="py-1.5 text-right text-zinc-300">{formatLKR(it.unitRateLkr)}</td>
+                          <td className="py-1.5 text-right text-[#FFB800] font-bold">{formatLKR(it.amountLkr)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}
 
-      {/* Modal: Issue PO in LKR */}
-      {showPOModal && (
+      {/* TAB 4: TRANSFERS & WASTAGE */}
+      {activeTab === 'TRANSFER' && (
+        <div className="p-6 rounded-2xl bg-[#080e1c] border border-white/10 space-y-4">
+          <h3 className="font-bold text-white text-base">Store-to-Site Transfer Protocol & Wastage Tolerance</h3>
+          <p className="text-xs text-zinc-400">
+            All materials transferred between central stockpiles and project sites are sealed under Gate Pass authorization. Maximum allowable construction wastage tolerance is capped at <strong>2.5% on Rebar cutting</strong> and <strong>1.5% on Bulk Cement</strong>.
+          </p>
+          <div className="p-4 rounded-xl bg-white/[0.02] border border-white/5 text-xs text-zinc-300">
+            Current site cutting scrap is collected and recycled under CIDA green building specifications.
+          </div>
+        </div>
+      )}
+
+      {/* ISSUE MIN MODAL */}
+      {showMinModal && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="w-full max-w-lg bg-[#091124] border border-white/15 rounded-2xl p-6 space-y-4 animate-fadeIn">
+          <div className="w-full max-w-md bg-[#080f24] border border-white/20 rounded-2xl p-6 space-y-4 animate-fadeIn">
             <div className="flex items-center justify-between border-b border-white/10 pb-3">
-              <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                <Truck className="w-4 h-4 text-[#FFB800]" />
-                <span>Issue Supplier Purchase Order (LKR)</span>
+              <h3 className="text-base font-bold text-white flex items-center gap-2">
+                <FileText className="w-4 h-4 text-[#FFB800]" />
+                <span>Issue Material Note (MIN)</span>
               </h3>
-              <button onClick={() => setShowPOModal(false)} className="text-zinc-400 hover:text-white">
-                ✕
-              </button>
+              <button onClick={() => setShowMinModal(false)} className="text-zinc-400 hover:text-white">✕</button>
             </div>
-
-            <form onSubmit={handleCreatePO} className="space-y-3.5">
+            <form onSubmit={handleCreateMin} className="space-y-3.5 text-xs">
               <div>
-                <label className="block text-xs font-semibold text-zinc-300 mb-1">Supplier Entity</label>
-                <input
-                  type="text"
-                  required
-                  value={supplier}
-                  onChange={(e) => setSupplier(e.target.value)}
-                  placeholder="e.g. Ceylon Heavy Steel Ltd or Tokyo Super Cement"
-                  className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white text-xs focus:outline-none focus:border-[#FFB800]"
-                />
+                <label className="block font-semibold text-zinc-300 mb-1">Target Project Site</label>
+                <select
+                  value={minProjectCode}
+                  onChange={(e) => setMinProjectCode(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl bg-[#080e1c] border border-white/15 text-white"
+                >
+                  {projects.map((p) => (
+                    <option key={p.id} value={p.code}>{p.code} - {p.name}</option>
+                  ))}
+                </select>
               </div>
-
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-zinc-300 mb-1">Total PO Amount (LKR)</label>
-                  <input
-                    type="number"
-                    required
-                    value={totalAmount}
-                    onChange={(e) => setTotalAmount(Number(e.target.value))}
-                    className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white text-xs focus:outline-none focus:border-[#FFB800] font-mono"
-                  />
-                  <span className="text-[10px] text-[#FFB800] font-mono mt-0.5 block">
-                    {formatLKR(totalAmount)}
-                  </span>
+                  <label className="block font-semibold text-zinc-300 mb-1">Source Store</label>
+                  <select
+                    value={minStoreCode}
+                    onChange={(e) => setMinStoreCode(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-[#080e1c] border border-white/15 text-white"
+                  >
+                    {filteredStores.map((s) => (
+                      <option key={s.id} value={s.storeCode}>{s.storeCode}</option>
+                    ))}
+                  </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-zinc-300 mb-1">Item Units Count</label>
+                  <label className="block font-semibold text-zinc-300 mb-1">Receiver Name</label>
                   <input
-                    type="number"
+                    type="text"
+                    value={minReceiver}
+                    onChange={(e) => setMinReceiver(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white"
                     required
-                    value={itemsCount}
-                    onChange={(e) => setItemsCount(Number(e.target.value))}
-                    className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white text-xs focus:outline-none focus:border-[#FFB800]"
                   />
                 </div>
               </div>
-
-              <div className="flex justify-end gap-2 pt-3 border-t border-white/10">
+              <div>
+                <label className="block font-semibold text-zinc-300 mb-1">Material SKU</label>
+                <select
+                  value={minSku}
+                  onChange={(e) => setMinSku(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl bg-[#080e1c] border border-white/15 text-white font-mono"
+                >
+                  {filteredInventory.map((i) => (
+                    <option key={i.id} value={i.sku}>{i.sku} - {i.name} ({formatLKR(i.unitCost)} / {i.unit})</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block font-semibold text-zinc-300 mb-1">Quantity to Issue</label>
+                <input
+                  type="number"
+                  value={minQty}
+                  onChange={(e) => setMinQty(Number(e.target.value))}
+                  className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white font-mono"
+                  required
+                />
+              </div>
+              <div className="pt-3 border-t border-white/10 flex justify-end gap-2">
                 <button
                   type="button"
-                  onClick={() => setShowPOModal(false)}
-                  className="px-4 py-2 rounded-xl bg-white/5 text-zinc-300 text-xs font-semibold"
+                  onClick={() => setShowMinModal(false)}
+                  className="px-4 py-2 rounded-xl bg-white/5 text-zinc-300 text-xs"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-xl bg-[#0038B8] hover:bg-[#1D4ED8] text-white text-xs font-bold shadow-lg shadow-blue-900/40"
+                  className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs"
                 >
-                  Issue Purchase Order
+                  Confirm Issue & Debit Project Cost
                 </button>
               </div>
             </form>

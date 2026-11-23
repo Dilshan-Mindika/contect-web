@@ -961,3 +961,539 @@ export const INITIAL_WEBSITE_INQUIRIES: WebsiteInquiry[] = [
     status: 'CONTACTED',
   },
 ];
+
+// =============================================================================
+// MULTI-COMPANY INITIAL MASTER DATA & 12 CORE MODULES SEED
+// =============================================================================
+
+import {
+  CompanyProfile,
+  GeneralLedgerAccount,
+  JournalEntry,
+  CashBookEntry,
+  SiteLabourWorker,
+  DailyLabourMusterRoll,
+  LabourPayrollCycle,
+  PurchaseRequisition,
+  GoodsReceivedNote,
+  ThreeWayMatchRecord,
+  WarehouseStore,
+  MaterialIssueNote,
+  MachineryFuelLog,
+  ProjectBudgetBaseline,
+  GovernmentContractRecord,
+  CIDA102IPC,
+  SafetyInspectionChecklist,
+  PPEIssueRecord,
+  SafetyIncidentLog,
+  VaultDocument,
+} from './types';
+
+export const INITIAL_COMPANIES: CompanyProfile[] = [
+  {
+    id: 'COMP_A',
+    code: 'CNT-ENG',
+    name: 'Contec Engineering & Construction (Pvt) Ltd',
+    tradeName: 'Contec Engineering',
+    regNumber: 'PV-98241',
+    registeredAddress: 'Level 18, West Tower, World Trade Center, Echelon Square, Colombo 01, Sri Lanka',
+    incorporationDate: '2012-05-18',
+    tinNumber: '104829101',
+    vatNumber: '104829101-7000',
+    brExpiryDate: '2028-12-31',
+    taxClearanceExpiryDate: '2027-03-31',
+    cidaGrade: 'CS2 (Civil & Building Mega-Contractor)',
+    cidaRegNo: 'CS2/2026/0411',
+    cidaExpiryDate: '2027-12-31',
+    financialYearStart: '04-01',
+    financialYearEnd: '03-31',
+    depreciationPolicy: 'STRAIGHT_LINE',
+    inventoryValuation: 'FIFO',
+    directors: [
+      { id: 'dir-01', name: 'Elena Vance', designation: 'Managing Director & CEO', nic: '198421004812', isSignatory: true, signingLimitLkr: 150000000, email: 'elena.vance@contec.lk', phone: '+94 77 123 4567' },
+      { id: 'dir-02', name: 'Arthur Sterling', designation: 'Chief Financial Officer & Secretary', nic: '197904001920', isSignatory: true, signingLimitLkr: 75000000, email: 'arthur.sterling@contec.lk', phone: '+94 77 234 5678' },
+      { id: 'dir-03', name: 'Marcus Chen', designation: 'Director of Site Operations', nic: '198115009831', isSignatory: true, signingLimitLkr: 25000000, email: 'marcus.chen@contec.lk', phone: '+94 77 345 6789' },
+    ],
+    bankAccounts: [
+      { id: 'bk-a-01', bankName: 'Commercial Bank of Ceylon', branch: 'Corporate Branch, Colombo 01', accountNumber: '1000-8491-0021', accountType: 'CURRENT', currency: 'LKR', balanceLkr: 184500000, swiftCode: 'COMBCLKX' },
+      { id: 'bk-a-02', bankName: 'Bank of Ceylon', branch: 'Corporate Square, Fort', accountNumber: '7001-4492-9901', accountType: 'ESCROW', currency: 'LKR', balanceLkr: 76200000, swiftCode: 'BCEYLKLX' },
+      { id: 'bk-a-03', bankName: 'Hatton National Bank', branch: 'City Centre, Colombo 03', accountNumber: '0032-1184-5501', accountType: 'CURRENT', currency: 'LKR', balanceLkr: 32800000, swiftCode: 'HNBLLKLX' },
+    ],
+    documentSequences: [
+      { module: 'PAYMENT_VOUCHER', prefix: 'A-PV', nextNumber: 1043, format: 'A-PV-{num}' },
+      { module: 'PURCHASE_ORDER', prefix: 'A-PO', nextNumber: 2086, format: 'A-PO-{num}' },
+      { module: 'GRN', prefix: 'A-GRN', nextNumber: 1421, format: 'A-GRN-{num}' },
+      { module: 'IPC', prefix: 'A-IPC', nextNumber: 19, format: 'A-IPC-{num}' },
+      { module: 'INVOICE', prefix: 'A-INV', nextNumber: 321, format: 'A-INV-{num}' },
+      { module: 'PROJECT', prefix: 'A-PRJ', nextNumber: 246, format: 'A-PRJ-{num}' },
+    ],
+    approvalRules: [
+      { id: 'apr-a-01', transactionType: 'PR', minAmountLkr: 0, maxAmountLkr: 500000, approverRole: 'PROJECT_ENGINEER', description: 'Site Engineer can approve PR up to LKR 500,000' },
+      { id: 'apr-a-02', transactionType: 'PR', minAmountLkr: 500001, maxAmountLkr: 5000000, approverRole: 'OPERATIONS_HEAD', description: 'Operations Head approves PR between LKR 500K and 5M' },
+      { id: 'apr-a-03', transactionType: 'PO', minAmountLkr: 0, maxAmountLkr: 10000000, approverRole: 'FINANCE_DIRECTOR', description: 'Finance Director signs PO up to LKR 10M' },
+      { id: 'apr-a-04', transactionType: 'PAYMENT_VOUCHER', minAmountLkr: 0, maxAmountLkr: 25000000, approverRole: 'FINANCE_DIRECTOR', description: 'CFO approves payments up to LKR 25M' },
+    ],
+  },
+  {
+    id: 'COMP_B',
+    code: 'CNT-PLANT',
+    name: 'Contec Heavy Infra & Equipment (Pvt) Ltd',
+    tradeName: 'Contec Plant & Heavy Civil',
+    regNumber: 'PV-112048',
+    registeredAddress: 'Industrial Zone, Peliyagoda Heavy Equipment Yard, Kelaniya, Sri Lanka',
+    incorporationDate: '2016-08-24',
+    tinNumber: '209184022',
+    vatNumber: '209184022-7000',
+    brExpiryDate: '2029-06-30',
+    taxClearanceExpiryDate: '2027-03-31',
+    cidaGrade: 'EM1 / C1 (Machinery Fleet & Earthworks Specialist)',
+    cidaRegNo: 'EM1/2026/0188',
+    cidaExpiryDate: '2027-12-31',
+    financialYearStart: '04-01',
+    financialYearEnd: '03-31',
+    depreciationPolicy: 'REDUCING_BALANCE',
+    inventoryValuation: 'WEIGHTED_AVG',
+    directors: [
+      { id: 'dir-b-01', name: 'Marcus Chen', designation: 'Managing Director (Plant)', nic: '198115009831', isSignatory: true, signingLimitLkr: 100000000, email: 'marcus.chen@contecplant.lk', phone: '+94 77 345 6789' },
+      { id: 'dir-b-02', name: 'Elena Vance', designation: 'Director (Group)', nic: '198421004812', isSignatory: true, signingLimitLkr: 150000000, email: 'elena.vance@contec.lk', phone: '+94 77 123 4567' },
+      { id: 'dir-b-03', name: 'Samantha Perera', designation: 'General Manager - Fleet & Heavy Logistics', nic: '198829003411', isSignatory: true, signingLimitLkr: 15000000, email: 'samantha.perera@contecplant.lk', phone: '+94 77 456 7890' },
+    ],
+    bankAccounts: [
+      { id: 'bk-b-01', bankName: 'Commercial Bank of Ceylon', branch: 'Peliyagoda Industrial Branch', accountNumber: '1000-9921-7744', accountType: 'CURRENT', currency: 'LKR', balanceLkr: 94800000, swiftCode: 'COMBCLKX' },
+      { id: 'bk-b-02', bankName: 'Hatton National Bank', branch: 'Kelaniya Commercial Hub', accountNumber: '0032-5581-2201', accountType: 'CURRENT', currency: 'LKR', balanceLkr: 41500000, swiftCode: 'HNBLLKLX' },
+    ],
+    documentSequences: [
+      { module: 'PAYMENT_VOUCHER', prefix: 'B-PV', nextNumber: 513, format: 'B-PV-{num}' },
+      { module: 'PURCHASE_ORDER', prefix: 'B-PO', nextNumber: 941, format: 'B-PO-{num}' },
+      { module: 'GRN', prefix: 'B-GRN', nextNumber: 811, format: 'B-GRN-{num}' },
+      { module: 'IPC', prefix: 'B-IPC', nextNumber: 10, format: 'B-IPC-{num}' },
+      { module: 'INVOICE', prefix: 'B-INV', nextNumber: 185, format: 'B-INV-{num}' },
+      { module: 'PROJECT', prefix: 'B-PRJ', nextNumber: 86, format: 'B-PRJ-{num}' },
+    ],
+    approvalRules: [
+      { id: 'apr-b-01', transactionType: 'PR', minAmountLkr: 0, maxAmountLkr: 1000000, approverRole: 'PROJECT_ENGINEER', description: 'Plant engineer approves spare parts up to LKR 1M' },
+      { id: 'apr-b-02', transactionType: 'PO', minAmountLkr: 0, maxAmountLkr: 15000000, approverRole: 'OPERATIONS_HEAD', description: 'Fleet GM signs equipment procurement up to LKR 15M' },
+    ],
+  },
+];
+
+// Module 03: Chart of Accounts
+export const INITIAL_GL_ACCOUNTS: GeneralLedgerAccount[] = [
+  // Company A
+  { id: 'gl-a-1010', code: '1010', name: 'Commercial Bank Operating Current A/C', type: 'ASSET', companyId: 'COMP_A', balanceLkr: 184500000 },
+  { id: 'gl-a-1020', code: '1020', name: 'Bank of Ceylon Escrow Retention A/C', type: 'ASSET', companyId: 'COMP_A', balanceLkr: 76200000 },
+  { id: 'gl-a-1030', code: '1030', name: 'Site Petty Cash Imprest Floats', type: 'ASSET', companyId: 'COMP_A', balanceLkr: 2500000 },
+  { id: 'gl-a-1110', code: '1110', name: 'Trade Receivables (Certified Interim IPC Bills)', type: 'ASSET', companyId: 'COMP_A', balanceLkr: 215000000 },
+  { id: 'gl-a-1120', code: '1120', name: 'Retention Monies Receivable from Clients (5%)', type: 'ASSET', companyId: 'COMP_A', balanceLkr: 88500000 },
+  { id: 'gl-a-1210', code: '1210', name: 'Raw Material Stockpiles (Rebar, Cement, Sand)', type: 'ASSET', companyId: 'COMP_A', balanceLkr: 228000000 },
+  { id: 'gl-a-2010', code: '2010', name: 'Trade Payables (Material Suppliers & Subcontractors)', type: 'LIABILITY', companyId: 'COMP_A', balanceLkr: 142000000 },
+  { id: 'gl-a-2020', code: '2020', name: 'Subcontractor Retention Withheld (5%)', type: 'LIABILITY', companyId: 'COMP_A', balanceLkr: 38200000 },
+  { id: 'gl-a-2030', code: '2030', name: 'Statutory VAT (18%) & SSCL (2.5%) Payable', type: 'LIABILITY', companyId: 'COMP_A', balanceLkr: 28400000 },
+  { id: 'gl-a-3010', code: '3010', name: 'Shareholder Stated Capital', type: 'EQUITY', companyId: 'COMP_A', balanceLkr: 450000000 },
+  { id: 'gl-a-4010', code: '4010', name: 'Certified Contract Revenue (FIDIC / CIDA IPCs)', type: 'REVENUE', companyId: 'COMP_A', balanceLkr: 890000000 },
+  { id: 'gl-a-5010', code: '5010', name: 'Direct Material Cost (Cement, Steel, Aggregates)', type: 'EXPENSE', companyId: 'COMP_A', balanceLkr: 410000000 },
+  { id: 'gl-a-5020', code: '5020', name: 'Direct Site Labour Wages (15-Day Muster)', type: 'EXPENSE', companyId: 'COMP_A', balanceLkr: 125000000 },
+  { id: 'gl-a-5030', code: '5030', name: 'Plant & Heavy Machinery Hire Cost', type: 'EXPENSE', companyId: 'COMP_A', balanceLkr: 98000000 },
+
+  // Company B
+  { id: 'gl-b-1010', code: '1010', name: 'Commercial Bank Plant Revenue A/C', type: 'ASSET', companyId: 'COMP_B', balanceLkr: 94800000 },
+  { id: 'gl-b-1020', code: '1020', name: 'HNB Machinery Leasing & Fuel Float', type: 'ASSET', companyId: 'COMP_B', balanceLkr: 41500000 },
+  { id: 'gl-b-1200', code: '1200', name: 'Heavy Machinery & Fleet Assets at Cost', type: 'ASSET', companyId: 'COMP_B', balanceLkr: 685000000 },
+  { id: 'gl-b-1290', code: '1290', name: 'Accumulated Depreciation - Plant & Fleet', type: 'ASSET', companyId: 'COMP_B', balanceLkr: -142000000 },
+  { id: 'gl-b-2010', code: '2010', name: 'Equipment Lease & Term Loan Obligations', type: 'LIABILITY', companyId: 'COMP_B', balanceLkr: 185000000 },
+  { id: 'gl-b-4010', code: '4010', name: 'Plant Wet/Dry Hire & Earthmoving Revenue', type: 'REVENUE', companyId: 'COMP_B', balanceLkr: 295000000 },
+  { id: 'gl-b-5010', code: '5010', name: 'Auto Diesel Fuel Consumption (@ LKR 370/L)', type: 'EXPENSE', companyId: 'COMP_B', balanceLkr: 86500000 },
+  { id: 'gl-b-5020', code: '5020', name: 'Fleet Maintenance, Spare Parts & Lubricants', type: 'EXPENSE', companyId: 'COMP_B', balanceLkr: 42000000 },
+];
+
+export const INITIAL_JOURNALS: JournalEntry[] = [
+  {
+    id: 'jv-01',
+    entryNumber: 'A-JV-0041',
+    companyId: 'COMP_A',
+    date: '2026-10-25',
+    description: 'Post Certified IPC #05 Substructure Casting Revenue & 5% Retention Deduction',
+    referenceType: 'PAYMENT',
+    referenceNo: 'CNT-IPC-2026-089',
+    totalDebitLkr: 168800000,
+    totalCreditLkr: 168800000,
+    isPosted: true,
+    postedAt: '2026-10-25 14:30:00',
+    postedBy: 'Arthur Sterling (CFO)',
+    lines: [
+      { accountId: 'gl-a-1110', accountCode: '1110', accountName: 'Trade Receivables (Certified Interim IPC)', debitLkr: 168800000, creditLkr: 0, projectCode: 'CNT-PRJ-241' },
+      { accountId: 'gl-a-1120', accountCode: '1120', accountName: 'Retention Monies Receivable (5%)', debitLkr: 8000000, creditLkr: 0, projectCode: 'CNT-PRJ-241' },
+      { accountId: 'gl-a-4010', accountCode: '4010', accountName: 'Certified Contract Revenue', debitLkr: 0, creditLkr: 148000000, projectCode: 'CNT-PRJ-241' },
+      { accountId: 'gl-a-2030', accountCode: '2030', accountName: 'Statutory VAT & SSCL Output Tax', debitLkr: 0, creditLkr: 28800000, projectCode: 'CNT-PRJ-241' },
+    ],
+  },
+  {
+    id: 'jv-02',
+    entryNumber: 'B-JV-0018',
+    companyId: 'COMP_B',
+    date: '2026-10-26',
+    description: 'Inter-Company Machinery Hire Charges to Company A (Excavators & Tower Cranes)',
+    referenceType: 'MATERIAL_ISSUE',
+    referenceNo: 'B-INV-0184',
+    totalDebitLkr: 12500000,
+    totalCreditLkr: 12500000,
+    isPosted: true,
+    postedAt: '2026-10-26 10:15:00',
+    postedBy: 'Samantha Perera (GM Fleet)',
+    lines: [
+      { accountId: 'gl-b-1010', accountCode: '1010', accountName: 'Commercial Bank Plant Revenue A/C', debitLkr: 12500000, creditLkr: 0, memo: 'Inter-company wire transfer from Comp A' },
+      { accountId: 'gl-b-4010', accountCode: '4010', accountName: 'Plant Wet/Dry Hire Revenue', debitLkr: 0, creditLkr: 12500000, memo: 'Colombo Port City site fleet allocation' },
+    ],
+  },
+];
+
+export const INITIAL_CASH_BOOK: CashBookEntry[] = [
+  { id: 'cb-01', companyId: 'COMP_A', date: '2026-10-27', voucherNo: 'A-PV-1040', type: 'PAYMENT', accountName: 'Commercial Bank Operating Current A/C', particulars: 'Ceylon Heavy Steel Ltd - 240 Tons Rebar Batch Delivery', amountLkr: 82800000, balanceLkr: 184500000, paymentMode: 'ONLINE_TRANSFER', projectCode: 'CNT-PRJ-241' },
+  { id: 'cb-02', companyId: 'COMP_A', date: '2026-10-28', voucherNo: 'A-RV-0891', type: 'RECEIPT', accountName: 'Commercial Bank Operating Current A/C', particulars: 'Port City Colombo Holdings - Interim Payment Certificate #05 settlement', amountLkr: 168800000, balanceLkr: 267300000, paymentMode: 'ONLINE_TRANSFER', projectCode: 'CNT-PRJ-241' },
+  { id: 'cb-03', companyId: 'COMP_B', date: '2026-10-26', voucherNo: 'B-PV-0511', type: 'PAYMENT', accountName: 'Commercial Bank Plant Revenue A/C', particulars: 'Lanka IOC PLC - Bulk Auto Diesel (25,000 Liters @ LKR 370/L)', amountLkr: 9250000, balanceLkr: 94800000, paymentMode: 'ONLINE_TRANSFER' },
+];
+
+// Module 05: Site Labour Management
+export const INITIAL_LABOUR_WORKERS: SiteLabourWorker[] = [
+  { id: 'lw-01', companyId: 'COMP_A', workerCode: 'LB-A-010', fullName: 'K. G. Sunil Premaratne', trade: 'MASON', nic: '198219004521', dailyWageRateLkr: 4200, otHourlyRateLkr: 600, phone: '+94 71 889 1234', assignedProjectCode: 'CNT-PRJ-241' },
+  { id: 'lw-02', companyId: 'COMP_A', workerCode: 'LB-A-011', fullName: 'M. Nihal Bandara', trade: 'BAR_BENDER', nic: '198904008123', dailyWageRateLkr: 4500, otHourlyRateLkr: 650, phone: '+94 77 990 4321', assignedProjectCode: 'CNT-PRJ-241' },
+  { id: 'lw-03', companyId: 'COMP_A', workerCode: 'LB-A-012', fullName: 'P. Chaminda Kumara', trade: 'CARPENTER', nic: '198512003412', dailyWageRateLkr: 4000, otHourlyRateLkr: 580, phone: '+94 76 112 5544', assignedProjectCode: 'CNT-PRJ-241' },
+  { id: 'lw-04', companyId: 'COMP_A', workerCode: 'LB-A-013', fullName: 'R. Rasik Mohamed', trade: 'HELPER', nic: '199522007819', dailyWageRateLkr: 2800, otHourlyRateLkr: 400, phone: '+94 78 554 9911', assignedProjectCode: 'CNT-PRJ-241' },
+  { id: 'lw-05', companyId: 'COMP_B', workerCode: 'LB-B-001', fullName: 'W. Sirisena Perera', trade: 'MACHINE_OPERATOR', nic: '197814002311', dailyWageRateLkr: 5500, otHourlyRateLkr: 800, phone: '+94 77 441 2288', assignedProjectCode: 'CNT-PRJ-241', subcontractorGang: 'Contec Plant Mobile Crew' },
+];
+
+export const INITIAL_MUSTER_ROLLS: DailyLabourMusterRoll[] = [
+  {
+    id: 'mr-01',
+    companyId: 'COMP_A',
+    projectId: 'prj-01',
+    projectCode: 'CNT-PRJ-241',
+    date: '2026-10-28',
+    supervisorName: 'S. K. Dharmadasa (Site Foreman)',
+    engineerVerifiedBy: 'Eng. Maya Lin (Structural Eng)',
+    isVerified: true,
+    totalWorkersPresent: 48,
+    totalWageCostLkr: 182400,
+    entries: [
+      { workerId: 'lw-01', workerName: 'K. G. Sunil Premaratne', trade: 'MASON', shiftDays: 1.0, otHours: 2.0, wageAmountLkr: 5400, advanceDeductionLkr: 0 },
+      { workerId: 'lw-02', workerName: 'M. Nihal Bandara', trade: 'BAR_BENDER', shiftDays: 1.0, otHours: 3.0, wageAmountLkr: 6450, advanceDeductionLkr: 1000 },
+      { workerId: 'lw-03', workerName: 'P. Chaminda Kumara', trade: 'CARPENTER', shiftDays: 1.0, otHours: 1.5, wageAmountLkr: 4870, advanceDeductionLkr: 0 },
+      { workerId: 'lw-04', workerName: 'R. Rasik Mohamed', trade: 'HELPER', shiftDays: 1.0, otHours: 2.0, wageAmountLkr: 3600, advanceDeductionLkr: 500 },
+    ],
+  },
+];
+
+export const INITIAL_LABOUR_PAYROLLS: LabourPayrollCycle[] = [
+  {
+    id: 'lpc-01',
+    companyId: 'COMP_A',
+    cyclePeriod: '2026-10-01 to 2026-10-15 (Cycle 19)',
+    projectId: 'prj-01',
+    projectCode: 'CNT-PRJ-241',
+    totalGrossWagesLkr: 3850000,
+    totalAdvancesDeductedLkr: 420000,
+    totalNetPayableLkr: 3430000,
+    status: 'DISBURSED',
+    disbursedDate: '2026-10-17',
+  },
+  {
+    id: 'lpc-02',
+    companyId: 'COMP_A',
+    cyclePeriod: '2026-10-16 to 2026-10-31 (Cycle 20)',
+    projectId: 'prj-01',
+    projectCode: 'CNT-PRJ-241',
+    totalGrossWagesLkr: 4120000,
+    totalAdvancesDeductedLkr: 380000,
+    totalNetPayableLkr: 3740000,
+    status: 'APPROVED',
+  },
+];
+
+// Module 06: Procurement & Purchasing
+export const INITIAL_PURCHASE_REQS: PurchaseRequisition[] = [
+  {
+    id: 'pr-01',
+    prNumber: 'A-PR-0042',
+    companyId: 'COMP_A',
+    projectId: 'prj-01',
+    projectCode: 'CNT-PRJ-241',
+    requestedBy: 'Eng. Maya Lin (Structural Eng)',
+    requiredDate: '2026-11-05',
+    itemName: 'High-Yield Deformed Tor Steel (BS 4449 G500B: 25mm)',
+    category: 'Structural Steel',
+    quantity: 120,
+    unit: 'Metric Tons',
+    estimatedCostLkr: 41400000,
+    budgetLineCode: 'BL-STR-STEEL-01',
+    status: 'APPROVED',
+  },
+  {
+    id: 'pr-02',
+    prNumber: 'B-PR-0019',
+    companyId: 'COMP_B',
+    projectId: 'prj-01',
+    projectCode: 'CNT-PRJ-241',
+    requestedBy: 'Samantha Perera (GM Fleet)',
+    requiredDate: '2026-11-02',
+    itemName: 'Automotive Diesel Fuel (Bulk Tanker Discharge)',
+    category: 'Heavy Fleet Fuel',
+    quantity: 15000,
+    unit: 'Liters',
+    estimatedCostLkr: 5550000,
+    budgetLineCode: 'BL-PLT-FUEL-03',
+    status: 'PO_ISSUED',
+  },
+];
+
+export const INITIAL_GRNS: GoodsReceivedNote[] = [
+  {
+    id: 'grn-01',
+    grnNumber: 'A-GRN-1420',
+    companyId: 'COMP_A',
+    poNumber: 'A-PO-2085',
+    projectId: 'prj-01',
+    supplierName: 'Ceylon Heavy Steel Ltd',
+    receivedDate: '2026-10-24',
+    invoiceNumber: 'CHS-INV-2026-904',
+    inspectedBy: 'Eng. Marcus Chen (QA/QC Lead)',
+    qualityPassed: true,
+    itemsReceived: [
+      { itemSku: 'STEEL-RB-500B', name: 'High-Yield Tor Steel 25mm', orderedQty: 240, receivedQty: 240, damagedQty: 0, unit: 'Metric Tons' },
+    ],
+    totalAcceptedValueLkr: 82800000,
+  },
+];
+
+export const INITIAL_THREE_WAY_MATCH: ThreeWayMatchRecord[] = [
+  {
+    id: 'twm-01',
+    companyId: 'COMP_A',
+    poNumber: 'A-PO-2085',
+    poAmountLkr: 82800000,
+    grnNumber: 'A-GRN-1420',
+    grnAcceptedValueLkr: 82800000,
+    invoiceNumber: 'CHS-INV-2026-904',
+    invoiceAmountLkr: 82800000,
+    varianceLkr: 0,
+    matchStatus: 'EXACT_MATCH',
+    approvedForPayment: true,
+  },
+];
+
+// Module 07: Inventory & Multi-Store Management
+export const INITIAL_STORES: WarehouseStore[] = [
+  { id: 'wh-01', companyId: 'COMP_A', storeCode: 'WH-CENTRAL', name: 'Central Bonded Stockyard - Orugodawatta', storeType: 'CENTRAL_WAREHOUSE', location: 'Orugodawatta, Colombo', storekeeperName: 'K. Bandara', totalValueLkr: 345000000 },
+  { id: 'wh-02', companyId: 'COMP_A', storeCode: 'ST-PORTCITY', name: 'Colombo Port City Project Site Store', storeType: 'SITE_STORE', location: 'Marine Drive, Port City', storekeeperName: 'T. M. Nazeer', totalValueLkr: 142000000 },
+  { id: 'wh-03', companyId: 'COMP_A', storeCode: 'ST-KANDY', name: 'Kandy Scenic Ridge Project Site Store', storeType: 'SITE_STORE', location: 'Hunnasgiriya, Kandy', storekeeperName: 'M. Wimalasiri', totalValueLkr: 88000000 },
+  { id: 'wh-04', companyId: 'COMP_B', storeCode: 'WH-PELIYAGODA', name: 'Peliyagoda Heavy Equipment & Spares Yard', storeType: 'CENTRAL_WAREHOUSE', location: 'Heavy Industrial Zone, Peliyagoda', storekeeperName: 'N. S. Fernando', totalValueLkr: 185000000 },
+];
+
+export const INITIAL_MINS: MaterialIssueNote[] = [
+  {
+    id: 'min-01',
+    minNumber: 'A-MIN-0092',
+    companyId: 'COMP_A',
+    storeCode: 'ST-PORTCITY',
+    projectId: 'prj-01',
+    projectCode: 'CNT-PRJ-241',
+    issueDate: '2026-10-26',
+    storekeeperName: 'T. M. Nazeer',
+    receiverName: 'Eng. Maya Lin',
+    totalMaterialCostLkr: 31050000,
+    items: [
+      { itemSku: 'STEEL-RB-500B', name: 'Tor Steel Rebar 25mm', qtyIssued: 90, unit: 'Metric Tons', unitRateLkr: 345000, amountLkr: 31050000 },
+    ],
+  },
+];
+
+// Module 08: Machinery Telematics & Maintenance
+export const INITIAL_FUEL_LOGS: MachineryFuelLog[] = [
+  { id: 'fl-01', machineryId: 'eq-01', companyId: 'COMP_B', assetId: 'CAT-349D', date: '2026-10-27', litersIssued: 480, fuelRatePerLiterLkr: 370, totalFuelCostLkr: 177600, odometerOrHours: 4820, projectId: 'prj-01' },
+  { id: 'fl-02', machineryId: 'eq-02', companyId: 'COMP_B', assetId: 'LIE-280EC', date: '2026-10-27', litersIssued: 320, fuelRatePerLiterLkr: 370, totalFuelCostLkr: 118400, odometerOrHours: 3140, projectId: 'prj-01' },
+];
+
+// Module 09: Project Budgeting & Cost Control
+export const INITIAL_BUDGET_BASELINES: ProjectBudgetBaseline[] = [
+  {
+    id: 'bbl-01',
+    projectId: 'prj-01',
+    projectCode: 'CNT-PRJ-241',
+    companyId: 'COMP_A',
+    approvedDate: '2026-04-01',
+    totalBaselineBudgetLkr: 3850000000,
+    materialsBudgetLkr: 1650000000,
+    labourBudgetLkr: 680000000,
+    machineryBudgetLkr: 520000000,
+    subcontractorBudgetLkr: 720000000,
+    siteOverheadBudgetLkr: 280000000,
+    actualMaterialsSpentLkr: 615000000,
+    actualLabourSpentLkr: 242000000,
+    actualMachinerySpentLkr: 198000000,
+    actualSubcontractSpentLkr: 288000000,
+    actualOverheadSpentLkr: 120000000,
+    committedCostLkr: 450000000,
+    forecastVarianceLkr: 65000000,
+  },
+  {
+    id: 'bbl-02',
+    projectId: 'prj-02',
+    projectCode: 'CNT-PRJ-198',
+    companyId: 'COMP_A',
+    approvedDate: '2025-07-15',
+    totalBaselineBudgetLkr: 2250000000,
+    materialsBudgetLkr: 980000000,
+    labourBudgetLkr: 420000000,
+    machineryBudgetLkr: 310000000,
+    subcontractorBudgetLkr: 390000000,
+    siteOverheadBudgetLkr: 150000000,
+    actualMaterialsSpentLkr: 640000000,
+    actualLabourSpentLkr: 275000000,
+    actualMachinerySpentLkr: 205000000,
+    actualSubcontractSpentLkr: 245000000,
+    actualOverheadSpentLkr: 97500000,
+    committedCostLkr: 220000000,
+    forecastVarianceLkr: 42000000,
+  },
+];
+
+// Module 10: Government Contracts & CIDA Directive 102/2024 IPC Engine
+export const INITIAL_GOVT_CONTRACTS: GovernmentContractRecord[] = [
+  {
+    id: 'gc-01',
+    companyId: 'COMP_A',
+    contractNumber: 'RDA/CE3/2026/08',
+    tenderNumber: 'RDA/PROC/2026/014',
+    title: 'Central Expressway Viaduct & Pre-Stressed Bridge Section III',
+    employerName: 'Road Development Authority (RDA)',
+    cidaRegistrationGrade: 'CS2 (Civil)',
+    originalContractSumLkr: 5200000000,
+    approvedVariationsLkr: 340000000,
+    revisedContractSumLkr: 5540000000,
+    bidBondBank: 'Bank of Ceylon',
+    bidBondAmountLkr: 52000000,
+    bidBondExpiry: '2026-12-31',
+    performanceSecurityBank: 'Commercial Bank of Ceylon',
+    performanceSecurityAmountLkr: 520000000,
+    performanceSecurityExpiry: '2029-06-30',
+    mobilizationAdvancePaidLkr: 1040000000,
+    advanceRecoveryRatePct: 20,
+    retentionLimitPct: 5,
+    status: 'IN_EXECUTION',
+  },
+  {
+    id: 'gc-02',
+    companyId: 'COMP_A',
+    contractNumber: 'UDA/CMB/2025/11',
+    tenderNumber: 'UDA/DEV/2025/089',
+    title: 'Integrated Transit Hub & Commercial Arcade Fort Station',
+    employerName: 'Urban Development Authority (UDA)',
+    cidaRegistrationGrade: 'CS2 (Building)',
+    originalContractSumLkr: 5800000000,
+    approvedVariationsLkr: 0,
+    revisedContractSumLkr: 5800000000,
+    bidBondBank: 'People\'s Bank',
+    bidBondAmountLkr: 58000000,
+    bidBondExpiry: '2027-02-28',
+    performanceSecurityBank: 'Bank of Ceylon',
+    performanceSecurityAmountLkr: 580000000,
+    performanceSecurityExpiry: '2028-12-31',
+    mobilizationAdvancePaidLkr: 1160000000,
+    advanceRecoveryRatePct: 20,
+    retentionLimitPct: 5,
+    status: 'AWARDED',
+  },
+];
+
+export const INITIAL_CIDA_IPCS: CIDA102IPC[] = [
+  {
+    id: 'cipc-01',
+    companyId: 'COMP_A',
+    ipcNumber: 'A-IPC-005',
+    contractNumber: 'PCC/DEV/2026/01',
+    projectName: 'Colombo Port City Marina Residences',
+    employerName: 'Port City Colombo Holdings',
+    contractorName: 'Contec Engineering & Construction (Pvt) Ltd',
+    issueDate: '2026-10-15',
+    periodTo: '2026-10-14',
+    cumulativeWorksGrossLkr: 160000000, // Line 1
+    addBoqVariationsLkr: 12500000,      // Line 2
+    addNewStarRateVariationsLkr: 4200000, // Line 3
+    addPriceEscalationLkr: 6800000,      // Line 4 (CIDA Formula)
+    addMaterialsOnSiteLkr: 14500000,     // Line 5 (80% advance)
+    grossValuationLkr: 198000000,        // Line 6 Subtotal
+    lessRetentionDeductionLkr: 9900000,  // Line 7 (5%)
+    lessAdvanceRecoveryLkr: 19800000,    // Line 8 (10%)
+    lessLiquidatedDamagesLkr: 0,         // Line 9
+    lessPreviousGrossCertifiedLkr: 29500000, // Line 10
+    netCertifiedExclusiveVatLkr: 138800000,  // Line 11
+    ssclLevy2_5PctLkr: 3470000,          // Statutory SSCL (2.5%)
+    vat18PctLkr: 24984000,               // Statutory VAT (18%)
+    grandTotalCertifiedPayableLkr: 167254000,
+    status: 'EMPLOYER_APPROVED',
+  },
+];
+
+// Module 11: Health, Safety & Compliance (HSE)
+export const INITIAL_SAFETY_INSPECTIONS: SafetyInspectionChecklist[] = [
+  {
+    id: 'si-01',
+    companyId: 'COMP_A',
+    projectId: 'prj-01',
+    projectCode: 'CNT-PRJ-241',
+    inspectionDate: '2026-10-27',
+    inspectorName: 'S. Ratnayake (Chartered HSE Officer)',
+    scorePct: 96.5,
+    scaffoldingStatus: 'SAFE_GREEN_TAG',
+    electricalEarthingStatus: 'COMPLIANT',
+    ppeCompliancePct: 98,
+    excavationShoringStatus: 'COMPLIANT',
+    openCorrectiveActionsCount: 1,
+  },
+  {
+    id: 'si-02',
+    companyId: 'COMP_B',
+    projectId: 'prj-01',
+    projectCode: 'CNT-PRJ-241',
+    inspectionDate: '2026-10-26',
+    inspectorName: 'Samantha Perera (GM Fleet)',
+    scorePct: 94.0,
+    scaffoldingStatus: 'SAFE_GREEN_TAG',
+    electricalEarthingStatus: 'COMPLIANT',
+    ppeCompliancePct: 95,
+    excavationShoringStatus: 'COMPLIANT',
+    openCorrectiveActionsCount: 0,
+  },
+];
+
+export const INITIAL_PPE_RECORDS: PPEIssueRecord[] = [
+  { id: 'ppe-01', companyId: 'COMP_A', projectId: 'prj-01', workerName: 'K. G. Sunil Premaratne', trade: 'MASON', itemType: 'SAFETY_HELMET', serialOrTagNo: 'HL-A-0982', issueDate: '2026-05-10', acknowledgedByWorker: true },
+  { id: 'ppe-02', companyId: 'COMP_A', projectId: 'prj-01', workerName: 'M. Nihal Bandara', trade: 'BAR_BENDER', itemType: 'STEEL_TOE_BOOTS', serialOrTagNo: 'STB-A-1402', issueDate: '2026-06-15', acknowledgedByWorker: true },
+  { id: 'ppe-03', companyId: 'COMP_A', projectId: 'prj-01', workerName: 'P. Chaminda Kumara', trade: 'CARPENTER', itemType: 'FALL_HARNESS', serialOrTagNo: 'FHN-A-0441', issueDate: '2026-07-20', acknowledgedByWorker: true },
+];
+
+export const INITIAL_SAFETY_INCIDENTS: SafetyIncidentLog[] = [
+  {
+    id: 'inc-01',
+    companyId: 'COMP_A',
+    projectId: 'prj-01',
+    projectCode: 'CNT-PRJ-241',
+    incidentDate: '2026-09-14',
+    severity: 'FIRST_AID',
+    location: 'Basement Level B2 Reinforcement Bay',
+    description: 'Minor superficial abrasion on left forearm while guiding crane rebar bundle tag-line.',
+    injuredPerson: 'R. Rasik Mohamed (Helper)',
+    rootCause: 'Improper positioning relative to swinging load; wind gust 28 km/h.',
+    immediateCorrectiveAction: 'First aid dressing applied on-site. Re-briefed rigging team on tagline buffer zones.',
+    managementNotified: true,
+  },
+];
+
+// Module 12: Central Document Vault
+export const INITIAL_VAULT_DOCUMENTS: VaultDocument[] = [
+  { id: 'doc-01', companyId: 'COMP_A', documentRefNumber: 'DOC-A-CNT-2026-001', title: 'CIDA CS2 Accreditation Certificate & Schedule 2026-2027', category: 'CONTRACT', fileFormat: 'PDF', fileSizeKb: 3420, uploadDate: '2026-01-15', uploadedBy: 'Arthur Sterling', tags: ['CIDA', 'Accreditation', 'CS2', 'Legal'], isConfidential: false },
+  { id: 'doc-02', companyId: 'COMP_A', documentRefNumber: 'DOC-A-PRJ-241-CT', title: 'Port City Marina Contract Agreement & FIDIC Conditions of Contract', category: 'CONTRACT', relatedEntityId: 'prj-01', fileFormat: 'PDF', fileSizeKb: 18450, uploadDate: '2026-04-10', uploadedBy: 'Elena Vance', tags: ['PortCity', 'FIDIC', 'Contract', 'Signed'], isConfidential: true },
+  { id: 'doc-03', companyId: 'COMP_A', documentRefNumber: 'DOC-A-IPC-005-CERT', title: 'Interim Payment Certificate #05 Certified Measurement Sheets & Breakdown', category: 'CIDA_IPC', relatedEntityId: 'inv-1001', fileFormat: 'PDF', fileSizeKb: 5120, uploadDate: '2026-10-15', uploadedBy: 'Eng. Maya Lin', tags: ['IPC', 'Billing', 'PortCity', 'NBRO'], isConfidential: false },
+  { id: 'doc-04', companyId: 'COMP_B', documentRefNumber: 'DOC-B-PLANT-FLEET', title: 'Liebherr 280 EC-H & CAT 349D Telematics & Maintenance Logbook', category: 'PURCHASE_ORDER', fileFormat: 'EXCEL', fileSizeKb: 1420, uploadDate: '2026-10-20', uploadedBy: 'Samantha Perera', tags: ['Plant', 'Liebherr', 'Maintenance'], isConfidential: false },
+  { id: 'doc-05', companyId: 'COMP_A', documentRefNumber: 'DOC-A-EPF-ETF-SEP26', title: 'Central Bank of Sri Lanka EPF & ETF Monthly Contribution Schedule Sep 2026', category: 'PAYROLL_SHEET', fileFormat: 'PDF', fileSizeKb: 890, uploadDate: '2026-10-05', uploadedBy: 'Sophia Al-Mansoor', tags: ['HR', 'EPF', 'ETF', 'Statutory'], isConfidential: true },
+];
+
