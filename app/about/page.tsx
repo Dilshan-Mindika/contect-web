@@ -76,7 +76,7 @@ export default function AboutPage() {
           </h1>
 
           <p className="text-zinc-300 text-lg sm:text-xl max-w-3xl leading-relaxed font-light mb-12">
-            At CONTEC Design & Build, we merge avant-garde architectural vision with aerospace-grade structural engineering to craft luxury residences and landmark commercial infrastructure across Sri Lanka.
+            At CONTEC Design & Build, we combine creative architectural design with solid structural engineering to build custom luxury homes and modern commercial buildings across Sri Lanka.
           </p>
 
           {/* Large Studio Feature Image */}
@@ -95,7 +95,7 @@ export default function AboutPage() {
                   Design Studio • Kandy HQ & Colombo Hub
                 </span>
                 <p className="text-sm text-zinc-200 font-normal">
-                  Our multidisciplinary team of chartered architects, computational designers, and structural engineers collaborate seamlessly in real-time 3D BIM models.
+                  Our team of qualified architects, engineers, and construction specialists work together with realistic 3D designs to bring your project to life smoothly.
                 </p>
               </div>
               <div className="flex items-center gap-3 bg-[#0038B8]/30 backdrop-blur-md border border-blue-500/30 px-5 py-3 rounded-2xl">
@@ -113,7 +113,7 @@ export default function AboutPage() {
           <div className="text-center max-w-2xl mx-auto mb-14">
             <h2 className="text-xs uppercase font-bold text-[#FFB800] tracking-widest mb-3">Our Core Pillars</h2>
             <p className="text-3xl sm:text-4xl font-extrabold uppercase tracking-tight text-white">
-              The Architecture of Precision & Resilience
+              Built on Quality, Strength & Durability
             </p>
           </div>
 
@@ -121,18 +121,18 @@ export default function AboutPage() {
             {[
               {
                 icon: "01",
-                title: "Net-Positive Autonomy",
-                desc: "Every home is designed as a standalone power plant equipped with smart microinverters, battery storage, and Passivhaus thermal envelopes.",
+                title: "Clean Solar Energy",
+                desc: "We equip homes with efficient rooftop solar panels and battery storage to reduce electricity bills and ensure uninterrupted power, day and night.",
               },
               {
                 icon: "02",
-                title: "Robotic Precision",
-                desc: "Off-site CNC timber and steel pre-fabrication reduces on-site construction waste by 92% while delivering sub-millimeter joinery accuracy.",
+                title: "Engineered Precision",
+                desc: "Carefully planned steel and timber structures built to exact measurements, reducing building waste while ensuring strong and durable construction.",
               },
               {
                 icon: "03",
-                title: "Tactile Luxury",
-                desc: "We celebrate honest materials — charred Shou Sugi Ban timber, raw honed alpine stone, and matte titanium hardware that patina gracefully.",
+                title: "Premium Natural Materials",
+                desc: "We use high-grade Sri Lankan Kumbuk and Teak timber, natural stone, and durable hardware that look beautiful and last for generations.",
               },
             ].map((pillar) => (
               <div
@@ -231,17 +231,17 @@ export default function AboutPage() {
           <div className="rounded-3xl bg-gradient-to-r from-[#0038B8]/30 via-[#080e1c] to-[#FFB800]/20 border border-blue-500/30 p-8 sm:p-14 text-center relative overflow-hidden">
             <div className="relative z-10 max-w-2xl mx-auto">
               <h2 className="text-3xl sm:text-4xl font-extrabold uppercase text-white mb-4">
-                Ready to Build Your Architectural Vision?
+                Ready to Start Your Building Project?
               </h2>
               <p className="text-sm sm:text-base text-zinc-300 mb-8 leading-relaxed">
-                Connect with our principal architects for a private design discovery consultation.
+                Meet with our architects and engineers for a free, friendly consultation.
               </p>
               <div className="flex flex-wrap items-center justify-center gap-4">
                 <Link
                   href="/contact"
                   className="px-8 py-3.5 rounded-full bg-[#FFB800] hover:bg-[#F59E0B] text-black font-extrabold text-sm transition-all shadow-lg shadow-amber-500/20"
                 >
-                  Schedule Consultation ↗
+                  Book Free Consultation ↗
                 </Link>
                 <Link
                   href="/projects"

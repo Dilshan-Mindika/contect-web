@@ -26,7 +26,7 @@ export default function Footer() {
             </Link>
             
             <p className="text-zinc-400 text-sm leading-relaxed max-w-sm mb-6">
-              Building Visions, Designing Futures. CONTEC pioneers modern architectural excellence, aerospace-grade structural prefabrication, and sustainable luxury construction.
+              Building Visions, Designing Futures. CONTEC is Kandy&apos;s premier design &amp; build firm, specializing in custom luxury homes, modern commercial buildings, and professional property care.
             </p>
 
             {/* Theme-Aligned Official Social Media Links */}
@@ -116,19 +116,19 @@ export default function Footer() {
             <h4 className="text-xs uppercase font-bold text-[#FFB800] tracking-wider mb-4">Core Capabilities</h4>
             <ul className="flex flex-col gap-2.5 text-sm text-zinc-400">
               <li>
-                <Link href="/services#parametric" className="hover:text-[#FFB800] transition-colors">Parametric Architecture</Link>
+                <Link href="/services#design-build" className="hover:text-[#FFB800] transition-colors">Architectural Design & 3D Plans</Link>
               </li>
               <li>
-                <Link href="/services#prefab" className="hover:text-[#FFB800] transition-colors">Robotic Pre-fabrication</Link>
+                <Link href="/services#construction" className="hover:text-[#FFB800] transition-colors">Turnkey House Construction</Link>
               </li>
               <li>
-                <Link href="/services#offgrid" className="hover:text-[#FFB800] transition-colors">Off-Grid Solar Microgrids</Link>
+                <Link href="/services#renovation" className="hover:text-[#FFB800] transition-colors">Home Renovation & Remodeling</Link>
               </li>
               <li>
-                <Link href="/services#turnkey" className="hover:text-[#FFB800] transition-colors">Turnkey Luxury Handover</Link>
+                <Link href="/services#housemaster" className="hover:text-[#FFB800] transition-colors">House Master Home Care</Link>
               </li>
               <li>
-                <Link href="/services#materials" className="hover:text-[#FFB800] transition-colors">Mass Timber & Concrete</Link>
+                <Link href="/services#sustainable" className="hover:text-[#FFB800] transition-colors">Solar Power & Retaining Walls</Link>
               </li>
             </ul>
           </div>

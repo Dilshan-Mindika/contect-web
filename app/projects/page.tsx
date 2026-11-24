@@ -29,15 +29,15 @@ const PROJECTS: Project[] = [
     location: "Hanthana Mountain Range, Kandy",
     year: "2025",
     area: "6,400 sq ft",
-    solarCapacity: "42 kW Rooftop Solar Microgrid",
-    energyRating: "Net-Zero Certified",
+    solarCapacity: "42 kW Rooftop Solar System",
+    energyRating: "Eco-Friendly Living",
     image: "/images/project-alpine.jpg",
-    tagline: "Cantilevered luxury residence integrated into steep tropical terrain.",
-    description: "Engineered with reinforced rock-anchored foundations, panoramic glass spans overlooking the Kandy mountain valley, and passive natural ventilation.",
+    tagline: "Modern hillside home designed with scenic mountain valley views.",
+    description: "Built with reinforced rock-anchored foundations, panoramic glass windows overlooking the Kandy mountain valley, and natural breeze ventilation.",
     highlights: [
-      "Cantilevered infinity pool & viewing deck",
-      "Integrated solar storage & rainwater harvesting",
-      "Local Kumbuk timber & low-carbon concrete",
+      "Infinity pool & wide scenic viewing deck",
+      "Integrated solar power & rainwater storage",
+      "Local Kumbuk timber & durable concrete",
     ],
   },
   {
@@ -50,12 +50,12 @@ const PROJECTS: Project[] = [
     solarCapacity: "38 kW Smart Solar Array",
     energyRating: "Sustainable Luxury",
     image: "/images/project-coastal.jpg",
-    tagline: "Contemporary multi-level luxury villa with biophilic courtyards.",
-    description: "Designed for open-plan living with indoor-outdoor water features, bespoke teak carpentry, and high-efficiency double-glazed glass facades.",
+    tagline: "Contemporary multi-level luxury villa with peaceful courtyards.",
+    description: "Designed for bright open-plan living with indoor water features, custom teak carpentry, and energy-efficient double-glazed glass.",
     highlights: [
-      "Custom indoor biophilic atrium & koi pond",
-      "Automated climate control & smart lighting",
-      "Full turnkey interior execution by ConTec",
+      "Indoor garden courtyard & koi pond",
+      "Natural airflow & smart lighting controls",
+      "Full turnkey interior design & execution",
     ],
   },
   {
@@ -66,14 +66,14 @@ const PROJECTS: Project[] = [
     year: "2024",
     area: "4,800 sq ft",
     solarCapacity: "28 kW Solar Microgrid",
-    energyRating: "Net-Positive +110%",
+    energyRating: "Solar Powered",
     image: "/images/project-forest.jpg",
-    tagline: "Eco-luxury resort residence framing panoramic lake and fairway views.",
-    description: "Constructed with natural stone retaining walls, high-tensile steel frame pods, and open-air rooftop entertaining terraces.",
+    tagline: "Lakefront resort home framing panoramic lake and golf course views.",
+    description: "Constructed with natural stone retaining walls, reinforced steel framing, and open-air rooftop entertaining terraces.",
     highlights: [
-      "Hillside multi-tier terraced architecture",
-      "Off-grid battery storage & deep well filtration",
-      "Zero-carbon structural timber integration",
+      "Hillside multi-tier terraced design",
+      "Battery backup storage & water filtration",
+      "Durable natural timber and stone finishes",
     ],
   },
   {
@@ -83,14 +83,14 @@ const PROJECTS: Project[] = [
     location: "George E. De Silva Mawatha, Kandy",
     year: "2024",
     area: "12,500 sq ft",
-    solarCapacity: "65 kW Commercial Solar",
-    energyRating: "LEED Gold Standard",
+    solarCapacity: "65 kW Rooftop Solar Setup",
+    energyRating: "High Energy Efficiency",
     image: "/images/project-penthouse.jpg",
-    tagline: "Modern 5-storey commercial complex with seismic-grade reinforced framing.",
-    description: "Turnkey multi-storey commercial facility featuring high-speed elevators, underground parking, and high-performance acoustic glass facades.",
+    tagline: "Modern 5-storey commercial complex with reinforced concrete framing.",
+    description: "Turnkey multi-storey commercial facility featuring passenger elevators, basement parking, and high-performance sound-insulated glass facades.",
     highlights: [
-      "Turnkey structural, MEP & fire safety execution",
-      "Modern curtain wall glass facade",
+      "Turnkey structural, electrical & fire safety execution",
+      "Modern curtain wall glass exterior",
       "House Master comprehensive facility management",
     ],
   },
@@ -118,13 +118,13 @@ export default function ProjectsPage() {
           </div>
 
           <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold uppercase tracking-tight leading-[0.98] max-w-4xl mb-6">
-            <span className="text-white drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">Monuments of</span>{" "}
-            <span className="gradient-text-gold">Engineering</span>{" "}
-            <span className="text-white drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">& Luxury</span>
+            <span className="text-white drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">Our Featured</span>{" "}
+            <span className="gradient-text-gold">Projects</span>{" "}
+            <span className="text-white drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">& Completed Homes</span>
           </h1>
 
           <p className="text-zinc-300 text-lg sm:text-xl max-w-3xl leading-relaxed font-light mb-10">
-            Explore our portfolio of completed private residences and commercial developments across Sri Lanka, each tailored to its specific terrain and engineered for century-long permanence.
+            Explore our portfolio of completed private residences, hillside villas, and commercial buildings across Kandy and Sri Lanka, each tailored to its land and built to last.
           </p>
 
           {/* Category Filter Pills */}
@@ -139,7 +139,7 @@ export default function ProjectsPage() {
                     : "bg-[#080e1c]/80 text-zinc-300 hover:bg-white/15 hover:text-white border border-blue-500/20"
                 }`}
               >
-                {cat === "All" ? "All Projects" : `${cat} Developments`}
+                {cat === "All" ? "All Projects" : cat === "Hillside" ? "Hillside Homes" : cat === "Residential" ? "Residential Homes" : "Commercial Buildings"}
               </button>
             ))}
           </div>

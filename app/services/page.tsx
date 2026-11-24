@@ -10,86 +10,86 @@ const SERVICES = [
   {
     id: "design-build",
     badge: "STAGE 01",
-    title: "Bespoke Architectural Design & 3D BIM Modeling",
-    desc: "Computational architectural form-finding, 3D photorealistic renderings, terrain contour mapping, and local authority municipal approvals. We design living spaces harmonized with Sri Lanka's tropical climate and hillside landscapes.",
+    title: "Architectural Design & 3D House Plans",
+    desc: "Custom floor plans, photorealistic 3D views, land survey checks, and government municipal council approvals. We design living spaces tailored to Sri Lanka's tropical climate and hillside landscapes.",
     image: "/images/hero-main.jpg",
     features: [
-      "3D Photorealistic Architectural Visualization",
-      "Hillside Terrain & Slope Stability Analysis",
-      "Municipal Council & Planning Approvals",
-      "Climate-Responsive Biophilic Layouts",
+      "Photorealistic 3D Exterior & Interior Designs",
+      "Hillside Land & Slope Stability Planning",
+      "Municipal Council & Government Approvals",
+      "Natural Sunlight & Cross-Ventilation Planning",
     ],
   },
   {
     id: "construction",
     badge: "STAGE 02",
-    title: "Turnkey Residential & Commercial Construction",
-    desc: "End-to-end building construction with certified structural engineering, high-tensile steel reinforcements, premium grade concrete, and master craftsmanship from foundation to final key handover.",
+    title: "Turnkey House & Commercial Construction",
+    desc: "Complete building construction from foundation to final key handover. Built with certified structural engineering, high-strength steel reinforcement, premium grade concrete, and skilled craftsmanship.",
     image: "/images/craftsmanship-detail.jpg",
     features: [
       "Custom Hillside Villas & Luxury Residences",
-      "Commercial & Mixed-Use Multi-Storey Buildings",
-      "Fixed-Price & Guaranteed Timeline Delivery",
-      "Comprehensive 20-Year Structural Integrity Warranty",
+      "Commercial & Multi-Storey Buildings",
+      "Guaranteed Fixed-Price & Timely Handover",
+      "25-Year Structural Warranty on Foundations & Frames",
     ],
   },
   {
     id: "renovation",
     badge: "STAGE 03",
-    title: "Luxury Renovation, Remodeling & Expansions",
-    desc: "Transforming existing properties into modern architectural showpieces. We specialize in luxury kitchen modernizations, designer bathrooms, structural wall reconfigurations, room additions, and rooftop entertaining decks.",
+    title: "Home Renovation, Remodeling & Extensions",
+    desc: "Transforming existing properties into beautiful, functional spaces. We specialize in modern kitchens, designer bathrooms, structural wall changes, room extensions, and rooftop leisure terraces.",
     image: "/images/project-penthouse.jpg",
     features: [
       "Modern Kitchen & Luxury Bathroom Remodeling",
-      "Structural Additions & Floor-Level Expansions",
-      "Rooftop Terraces & Cantilevered Balconies",
-      "Seamless Heritage & Contemporary Modern Restorations",
+      "Room Additions & Upper-Floor Extensions",
+      "Rooftop Terraces & Balconies",
+      "Heritage Restorations & Modern Upgrades",
     ],
   },
   {
     id: "housemaster",
     badge: "STAGE 04",
-    title: "House Master Kandy — Complete Property Care & Maintenance",
-    desc: "Professional property care services ensuring long-term value and durability. Our certified technicians handle routine structural inspections, roof waterproofing, electrical & plumbing overhauls, exterior protective coatings, and landscaping.",
+    title: "House Master Kandy — Complete Home Care & Maintenance",
+    desc: "Professional property care to keep your building leak-free and in top condition. Our qualified team handles roof waterproofing, damp proofing, electrical and plumbing repairs, exterior painting, and routine maintenance.",
     image: "/images/material-preview.jpg",
     features: [
-      "Annual Structural & Leakage Diagnostic Audits",
+      "Annual Roof & Leakage Diagnostic Inspections",
       "Advanced Roof Waterproofing & Damp Proofing",
-      "Full Electrical, Plumbing & HVAC Maintenance",
-      "Weatherproof Exterior Painting & Landscape Architecture",
+      "Full Electrical, Plumbing & Water Systems Repair",
+      "Weatherproof Exterior Painting & Wall Protection",
     ],
   },
   {
     id: "sustainable",
     badge: "STAGE 05",
-    title: "Solar Microgrids, Hillside Foundations & Sustainable Living",
-    desc: "High-capacity rooftop solar power integration with battery storage, rainwater harvesting systems, and reinforced hillside retaining structures engineered for heavy monsoon rains and century durability.",
+    title: "Solar Power Systems & Hillside Retaining Walls",
+    desc: "Rooftop solar electricity with battery backup, rainwater harvesting systems, and strong reinforced retaining walls engineered for heavy monsoon rains and lasting safety.",
     image: "/images/project-forest.jpg",
     features: [
-      "Rooftop Solar & Hybrid Battery Microgrids",
-      "Reinforced Retaining Walls & Soil Anchoring",
-      "Rainwater Harvesting & Filtration Networks",
-      "Passive Natural Ventilation & Thermal Comfort",
+      "Rooftop Solar & Hybrid Battery Backup",
+      "Reinforced Retaining Walls & Slope Anchoring",
+      "Rainwater Harvesting & Water Filtration",
+      "Natural Airflow & Energy-Efficient Living",
     ],
   },
 ];
 
 const FAQS = [
   {
-    q: "How long does a full bespoke architectural build take from concept to handover?",
-    a: "Because 75% of the structural pod is pre-fabricated using automated CNC robotic systems off-site while foundation works occur concurrently, our typical construction timeline is 7–11 months, compared to 18–24 months for conventional builds.",
+    q: "How long does a complete building project take from start to finish?",
+    a: "Depending on the size and terrain, most residential projects take between 7 and 12 months. Because we manage both architectural design and construction in-house, we eliminate common delays between separate architects and contractors.",
   },
   {
-    q: "Can CONTEC homes be constructed on extreme or off-grid terrains?",
-    a: "Yes. Our cantilevered engineering and modular foundation systems are specifically designed for steep alpine slopes, coastal cliffs, and remote forest environments where conventional heavy machinery cannot easily operate.",
+    q: "Can CONTEC build homes on steep hills and difficult lands?",
+    a: "Yes. Building on slopes and hillsides is our specialty in Kandy. We design reinforced retaining walls and strong foundations that keep your home completely safe, stable, and protected from heavy monsoon rain and soil movement.",
   },
   {
-    q: "What does 'Net-Positive Energy' mean for my home?",
-    a: "Our integrated solar roof tiles and smart energy storage generate more clean electricity annually than the home consumes for heating, cooling, lighting, and EV charging, allowing you to feed surplus power back to the grid.",
+    q: "What does solar power integration mean for my house?",
+    a: "Our rooftop solar systems generate clean electricity to power your entire house, significantly reducing or even eliminating your monthly electricity bills. Surplus power can be fed back to the national grid.",
   },
   {
-    q: "How does the CONTEC fixed-price guarantee work?",
-    a: "Following the preliminary BIM engineering phase, we provide a binding fixed-price contract with zero surprise overruns, covering architectural design, pre-fabrication, on-site assembly, and luxury interior finishes.",
+    q: "How does the fixed-price guarantee work?",
+    a: "Once your design and Bill of Quantities (BOQ) are finalized, we sign a fixed-price contract. That means the price we agreed on is locked in, protecting you against unexpected price increases during construction.",
   },
 ];
 
@@ -104,17 +104,17 @@ export default function ServicesPage() {
         {/* Hero Header */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16">
           <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-[#0038B8]/30 border border-[#0038B8]/60 text-[#FFB800] text-xs font-bold tracking-wider uppercase backdrop-blur-md mb-6 shadow-lg shadow-blue-950/40">
-            CONTEC Engineering & Construction
+            CONTEC Design & Construction
           </div>
 
           <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold uppercase tracking-tight leading-[0.98] max-w-4xl mb-8">
-            <span className="text-white drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">From Computational</span>{" "}
-            <span className="gradient-text-gold">Vision</span>{" "}
-            <span className="text-white drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">to Turnkey Reality</span>
+            <span className="text-white drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">From Initial</span>{" "}
+            <span className="gradient-text-gold">Ideas</span>{" "}
+            <span className="text-white drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">to Completed Buildings</span>
           </h1>
 
           <p className="text-zinc-300 text-lg sm:text-xl max-w-3xl leading-relaxed font-light mb-12">
-            We operate as a single unified entity — principal architecture studio, computational engineering lab, and master construction builder across Sri Lanka.
+            We are your complete construction partner across Sri Lanka — taking care of architectural design, structural engineering, government approvals, and full building construction under one roof.
           </p>
 
           {/* Quick Service Anchor Navigation */}
@@ -125,7 +125,7 @@ export default function ServicesPage() {
                 href={`#${s.id}`}
                 className="px-4 py-2 rounded-full text-xs font-bold bg-[#0038B8]/15 hover:bg-[#0038B8]/30 border border-blue-500/20 text-zinc-200 hover:text-[#FFB800] transition-all"
               >
-                {s.title.split("&")[0]}
+                {s.title.split("&")[0].split("—")[0]}
               </a>
             ))}
           </div>
@@ -202,9 +202,9 @@ export default function ServicesPage() {
         {/* 4-Step Process Walkthrough */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-t border-white/10">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-xs uppercase font-bold text-[#FFB800] tracking-widest mb-3">Our Methodology</h2>
+            <h2 className="text-xs uppercase font-bold text-[#FFB800] tracking-widest mb-3">Our Work Process</h2>
             <p className="text-3xl sm:text-4xl font-extrabold uppercase tracking-tight text-white">
-              The 4-Phase Delivery Flow
+              The 4-Step Construction Journey
             </p>
           </div>
 
@@ -212,23 +212,23 @@ export default function ServicesPage() {
             {[
               {
                 step: "01",
-                title: "Discovery & Terrain Survey",
-                desc: "Solar path mapping, geotechnical drone terrain scans, and initial architectural vision session.",
+                title: "First Meeting & Site Visit",
+                desc: "We visit your land, inspect the ground slope, and discuss your family's lifestyle, ideas, and budget.",
               },
               {
                 step: "02",
-                title: "3D BIM & Parametric Engineering",
-                desc: "Full structural calculation, energy modeling, and fabrication-ready digital twin creation.",
+                title: "3D Plans & Structural Design",
+                desc: "Realistic 3D views, detailed floor plans, and engineer calculations for safety, natural light, and ventilation.",
               },
               {
                 step: "03",
-                title: "Robotic Prefab & Foundation",
-                desc: "Parallel execution: subterranean foundation installation while structural pods are CNC-milled.",
+                title: "Clear Pricing & Approvals",
+                desc: "A transparent itemized cost breakdown (BOQ) with fixed pricing, plus municipal council approvals.",
               },
               {
                 step: "04",
-                title: "Assembly & White-Glove Handover",
-                desc: "Rapid on-site erection, smart envelope testing, bespoke interior detailing, and key delivery.",
+                title: "Quality Construction & Handover",
+                desc: "Professional on-site construction, regular progress updates, quality inspections, and key handover on time.",
               },
             ].map((phase, idx) => (
               <div

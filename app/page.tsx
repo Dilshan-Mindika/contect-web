@@ -40,26 +40,26 @@ const STAGES: SectionStage[] = [
     headlineLine2: "DESIGNING",
     headlineLine3: "FUTURES",
     description:
-      "We design and construct bespoke architectural residences blending aerospace-grade precision engineering with sustainable luxury craftsmanship.",
+      "We design and build custom luxury homes and modern buildings, combining strong engineering precision with beautiful, lasting craftsmanship.",
     ctaText: "Explore Projects",
     ctaHref: "/projects",
-    chips: ["Sustainable Living", "Parametric Architecture", "Energy Autonomy"],
-    topCardTag: "Energy Efficiency",
-    topCardTitle: "Passive Climate & Energy",
+    chips: ["Custom Luxury Homes", "Modern Architecture", "Solar Living"],
+    topCardTag: "Energy-Smart Living",
+    topCardTitle: "Naturally Cool & Efficient",
     topCardDesc:
-      "Our commitment to zero-carbon practices ensures that every CONTEC home is both aesthetically magnificent and environmentally regenerative.",
+      "Our smart designs keep your home naturally cool and energy-efficient, lowering your electricity bills while protecting the environment.",
     topCardImage: "/images/interior-preview.jpg",
-    bottomLeftTag: "Eco Materials",
-    bottomLeftTitle: "Mass Timber & Titanium",
+    bottomLeftTag: "Quality Materials",
+    bottomLeftTitle: "Solid Timber & Steel",
     bottomLeftDesc:
-      "We combine certified sustainable timber and low-carbon concrete with high-tensile titanium bracing to maximize structural resilience.",
+      "We combine certified high-grade timber, durable concrete, and treated steel to give your home maximum strength and durability.",
     bottomLeftLink: "Learn more",
     bottomLeftHref: "/services#materials",
     bottomLeftImage: "/images/material-preview.jpg",
     statNumber: "120+",
-    statLabel: "Luxury sustainable estates delivered worldwide",
+    statLabel: "Luxury homes & commercial buildings completed",
     rightStatement:
-      "We collaborate directly with you to engineer bespoke living spaces that combine iconic architectural form with sustainable performance.",
+      "We work closely with you from sketch to keys, creating living spaces that look stunning and feel comfortable all year round.",
     rightLink: "About CONTEC",
     rightHref: "/about",
   },
@@ -69,84 +69,84 @@ const STAGES: SectionStage[] = [
     headlineLine2: "FOR CENTURY",
     headlineLine3: "DURABILITY",
     description:
-      "Precision robotic pre-fabrication, aerospace-grade carbon steel framing, and seismic-resistant subterranean foundations.",
+      "Precision engineering, high-strength steel framing, and deep earthquake-safe concrete foundations designed for hill slopes and any terrain.",
     ctaText: "View Services",
     ctaHref: "/services",
-    chips: ["Steel Framing", "Seismic Resilience", "Geothermal Loops"],
-    topCardTag: "Core Engineering",
-    topCardTitle: "Parametric Structural Pod",
+    chips: ["Strong Steel Framing", "Hillside Retaining", "Deep Foundations"],
+    topCardTag: "Structural Design",
+    topCardTitle: "Open-Span Living Areas",
     topCardDesc:
-      "Engineered with high-tensile curved steel spans that allow column-free 360-degree panoramic glass openings.",
+      "Engineered with high-strength steel spans that allow wide open living rooms and panoramic glass views without blocking columns.",
     topCardImage: "/images/hero-main.jpg",
-    bottomLeftTag: "Structural Integrity",
-    bottomLeftTitle: "Reinforced Composite Framing",
+    bottomLeftTag: "Foundation Strength",
+    bottomLeftTitle: "Reinforced Concrete Frames",
     bottomLeftDesc:
-      "Ultra-lightweight high-tensile carbon composites reducing structural deadweight while doubling seismic load tolerances.",
+      "Heavy-duty foundations and reinforced concrete frames designed to withstand heavy rainfall, soil movement, and hill slopes.",
     bottomLeftLink: "Engineering Specs",
     bottomLeftHref: "/services#prefab",
     bottomLeftImage: "/images/craftsmanship-detail.jpg",
     statNumber: "100%",
-    statLabel: "Zero-emission certified construction process",
+    statLabel: "Guaranteed structural engineering safety standards",
     rightStatement:
-      "Every structural beam and connection is mathematically modeled in 3D BIM for millimeter-accurate robotic fabrication.",
+      "Every column, beam, and joint is carefully calculated in 3D design software before construction begins on site.",
     rightLink: "Explore Engineering",
     rightHref: "/services",
   },
   {
-    badge: "SMART THERMAL ENVELOPE",
+    badge: "ENERGY-EFFICIENT & SMART HOMES",
     headlineLine1: "INTELLIGENT",
-    headlineLine2: "MICROCLIMATE",
-    headlineLine3: "AUTOMATION",
+    headlineLine2: "NATURAL CLIMATE",
+    headlineLine3: "COMFORT",
     description:
-      "Triple-insulated electrochromic glass, automated ventilation airflows, and rooftop solar harvesting systems operating in harmony.",
-    ctaText: "Energy Specs",
+      "Double-glazed glass, natural airflow design, and rooftop solar power working together to keep your home cool, bright, and energy-independent.",
+    ctaText: "Solar Specs",
     ctaHref: "/services#offgrid",
-    chips: ["Smart Glass", "Solar Shading", "IoT Automation"],
-    topCardTag: "Smart Living",
-    topCardTitle: "Autonomous Energy System",
+    chips: ["Rooftop Solar", "Natural Airflow", "Smart Lighting"],
+    topCardTag: "Clean Power",
+    topCardTitle: "Solar Power & Battery Backup",
     topCardDesc:
-      "Integrated micro-inverter rooftop solar collectors paired with high-capacity battery storage for 100% off-grid autonomy.",
+      "Rooftop solar panels paired with reliable battery backup provide uninterrupted electricity, even during power cuts.",
     topCardImage: "/images/project-forest.jpg",
-    bottomLeftTag: "Clean Energy",
-    bottomLeftTitle: "Off-Grid Power Architecture",
+    bottomLeftTag: "Energy Savings",
+    bottomLeftTitle: "Rooftop Solar Setup",
     bottomLeftDesc:
-      "Bespoke solar tile roofing generating up to 42 kW daily clean energy with smart grid backfeeding.",
+      "High-efficiency solar systems producing clean electricity to power your entire house and cut monthly utility bills.",
     bottomLeftLink: "Calculate Savings",
     bottomLeftHref: "#estimator",
     bottomLeftImage: "/images/project-alpine.jpg",
-    statNumber: "98.4%",
-    statLabel: "Average thermal efficiency rating achieved",
+    statNumber: "90%+",
+    statLabel: "Average reduction in monthly electricity costs",
     rightStatement:
-      "Our smart envelopes self-regulate ambient temperature and air purity with near-zero acoustic noise.",
+      "Our homes stay naturally cool and comfortable, cutting down on air conditioning needs while letting in plenty of natural daylight.",
     rightLink: "View Technology",
     rightHref: "/services",
   },
   {
-    badge: "TURNKEY LUXURY DELIVERY",
-    headlineLine1: "BESPOKE",
-    headlineLine2: "ARCHITECTURAL",
-    headlineLine3: "REALITY",
+    badge: "COMPLETE TURNKEY CONSTRUCTION",
+    headlineLine1: "FROM IDEA",
+    headlineLine2: "TO COMPLETED",
+    headlineLine3: "HOME",
     description:
-      "From architectural zoning approvals and site excavation to custom bespoke interior handover — fully managed turnkey delivery.",
+      "From government building approvals and foundation digging to custom interior finishes and key handover — we manage everything for you.",
     ctaText: "Start Your Build",
     ctaHref: "/contact",
-    chips: ["Turnkey Handover", "Custom Interiors", "Consultation"],
+    chips: ["All-in-One Service", "Custom Interiors", "Free Consultation"],
     topCardTag: "Project Delivery",
-    topCardTitle: "Architectural Consultation",
+    topCardTitle: "Personal Consultation",
     topCardDesc:
-      "Collaborate directly with our principal architects and master builders to customize your dream sustainable residence.",
+      "Sit down with our experienced architects and engineers to tailor your dream home exactly to your budget and lifestyle.",
     topCardImage: "/images/project-coastal.jpg",
     bottomLeftTag: "Master Craft",
-    bottomLeftTitle: "Artisan Construction",
+    bottomLeftTitle: "Experienced Builders",
     bottomLeftDesc:
-      "Master builders ensuring the highest grade of tactile luxury in every joint, seam, and architectural finish.",
-    bottomLeftLink: "Schedule Private Tour",
+      "Skilled master builders and carpenters ensuring the highest quality finishes in every room, tile, and door.",
+    bottomLeftLink: "Book Consultation",
     bottomLeftHref: "/contact",
     bottomLeftImage: "/images/craftsmanship-detail.jpg",
     statNumber: "50+",
-    statLabel: "Dedicated master architects & engineers",
+    statLabel: "Dedicated architects, engineers & master builders",
     rightStatement:
-      "Book an initial design discovery session to review terrain suitability, floorplans, and estimated construction timelines.",
+      "Book a friendly consultation with our team to discuss your land, review sample floorplans, and get a realistic cost estimate.",
     rightLink: "Book Consultation",
     rightHref: "/contact",
   },
@@ -185,9 +185,9 @@ export default function HomePage() {
   const [activeChipIdx, setActiveChipIdx] = useState<number>(0);
 
   // Interactive Estimator State
-  const [terrain, setTerrain] = useState("Alpine Mountain");
+  const [terrain, setTerrain] = useState("Hillside / Slope");
   const [sqft, setSqft] = useState(5000);
-  const [autonomy, setAutonomy] = useState("100% Off-Grid Microgrid");
+  const [autonomy, setAutonomy] = useState("Solar with Battery Storage");
 
   // Track scroll position to update hero stage
   useEffect(() => {
@@ -485,27 +485,27 @@ export default function HomePage() {
           {[
             {
               icon: "01",
-              title: "Parametric Architecture",
-              desc: "Computational form-finding modeled around terrain contours, wind aerodynamics, and winter solar harvesting.",
-              href: "/services#parametric",
+              title: "Architectural Design & 3D Plans",
+              desc: "Custom floor plans, photorealistic 3D views, and natural sunlight & ventilation planning tailored to your land.",
+              href: "/services#design-build",
             },
             {
               icon: "02",
-              title: "Robotic Pre-fabrication",
-              desc: "Aerospace-grade steel and mass timber structural pods milled with sub-millimeter CNC accuracy.",
-              href: "/services#prefab",
+              title: "Precision Construction",
+              desc: "High-strength steel framing, reinforced concrete, and quality timber built to exact engineering measurements.",
+              href: "/services#construction",
             },
             {
               icon: "03",
-              title: "Smart Solar Microgrids",
-              desc: "Integrated solar roof tiles and high-capacity battery storage delivering 100% off-grid clean autonomy.",
-              href: "/services#offgrid",
+              title: "Rooftop Solar & Backup Power",
+              desc: "Rooftop solar panels and reliable battery storage providing clean power and protection against electricity cuts.",
+              href: "/services#sustainable",
             },
             {
               icon: "04",
-              title: "Turnkey Luxury Handover",
-              desc: "From initial site permits to bespoke interior carpentry and white-glove handover under one fixed price.",
-              href: "/services#turnkey",
+              title: "Complete Turnkey Delivery",
+              desc: "From council building approvals to custom interior carpentry and move-in ready handover under one fixed price.",
+              href: "/services#construction",
             },
           ].map((item) => (
             <Link
@@ -592,48 +592,48 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ================= SECTION 4: CRAFTSMANSHIP & MATERIAL SCIENCE ================= */}
+      {/* ================= SECTION 4: CRAFTSMANSHIP & MATERIALS ================= */}
       <section className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-t border-white/10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           
           <div className="lg:col-span-6 relative h-[420px] sm:h-[500px] rounded-3xl overflow-hidden border border-white/15 shadow-2xl group">
             <Image
               src="/images/craftsmanship-detail.jpg"
-              alt="Parametric Timber and Titanium Joinery Detail"
+              alt="Teak, Kumbuk and Reinforced Steel Joinery Detail"
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-700"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
             <div className="absolute bottom-6 left-6 right-6 dark-backdrop-contrast p-4 rounded-2xl">
               <span className="text-xs font-mono font-bold text-[#FFB800] block mb-1">
-                Material Detail • Grade-5 Titanium & Glulam
+                Craftsmanship Detail • Teak, Kumbuk & Steel
               </span>
               <p className="text-xs text-zinc-200 font-medium">
-                Interlocking parametric joints precision CNC-milled with sub-millimeter tolerances for century-long structural integrity.
+                Carefully fitted joints and precision-milled timber crafted for decades of structural strength and elegance.
               </p>
             </div>
           </div>
 
           <div className="lg:col-span-6 space-y-6">
             <div className="inline-flex items-center px-4 py-1.5 rounded-full glass-badge text-[#FFB800] text-xs font-bold uppercase tracking-wider">
-              Materiality & Zero Carbon
+              Quality Materials & Strength
             </div>
             
             <h2 className="text-3xl sm:text-5xl font-extrabold uppercase tracking-tight text-white leading-tight">
-              <span className="drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">Honest Materials,</span> <br />
+              <span className="drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">Natural Materials,</span> <br />
               <span className="gradient-text-blue">
-                Enduring Tactility
+                Lasting Beauty
               </span>
             </h2>
 
             <p className="text-sm sm:text-base text-zinc-200 leading-relaxed font-normal">
-              We combine certified European mass timber, low-carbon geopolymer concrete, charred Japanese cedar, and electrochromic glass that tints intelligently with solar intensity.
+              We combine seasoned Sri Lankan Kumbuk and Teak timber, high-strength low-carbon concrete, natural stone, and double-glazed solar-tinted glass that keeps interiors cool in every season.
             </p>
 
             <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/10">
               <div className="p-4 rounded-2xl bg-[#080e1c]/85 border border-blue-500/30 shadow-lg">
-                <span className="text-2xl font-extrabold text-[#FFB800] block font-mono drop-shadow-[0_2px_8px_rgba(255,184,0,0.3)]">92%</span>
-                <span className="text-xs text-zinc-300 font-medium">Waste reduction via robotic off-site prefabrication</span>
+                <span className="text-2xl font-extrabold text-[#FFB800] block font-mono drop-shadow-[0_2px_8px_rgba(255,184,0,0.3)]">90%+</span>
+                <span className="text-xs text-zinc-300 font-medium">Less on-site waste through careful precision planning</span>
               </div>
               <div className="p-4 rounded-2xl bg-[#080e1c]/85 border border-blue-500/30 shadow-lg">
                 <span className="text-2xl font-extrabold text-blue-400 block font-mono drop-shadow-[0_2px_8px_rgba(59,130,246,0.3)]">100 Yrs</span>
@@ -646,7 +646,7 @@ export default function HomePage() {
                 href="/about"
                 className="inline-flex items-center gap-2 text-sm font-bold text-white hover:text-[#FFB800] transition-colors"
               >
-                <span>Read Our Sustainability Whitepaper</span>
+                <span>Learn More About Our Standards</span>
                 <span>↗</span>
               </Link>
             </div>
@@ -664,10 +664,10 @@ export default function HomePage() {
               Interactive Planning Tool
             </span>
             <h2 className="text-3xl sm:text-4xl font-extrabold uppercase text-white tracking-tight drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)]">
-              Project Feasibility & Energy Estimator
+              Project Planning & Cost Estimator
             </h2>
             <p className="text-xs sm:text-sm text-zinc-300 mt-2 font-normal">
-              Configure your property parameters below for an instant preliminary timeline and solar harvesting calculation.
+              Select your land type and desired house size below for an instant preliminary timeline and cost estimate.
             </p>
           </div>
 
@@ -679,10 +679,10 @@ export default function HomePage() {
               {/* Terrain Selection */}
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-300 mb-2">
-                  1. Property Terrain & Climate
+                  1. Land Type & Location
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                  {["Alpine Mountain", "Coastal Cliff", "Forest Retreat", "Urban Plot"].map((t) => (
+                  {["Hillside / Slope", "Lakefront / River", "Forest / Estate", "City / Urban Plot"].map((t) => (
                     <button
                       key={t}
                       onClick={() => setTerrain(t)}
@@ -702,7 +702,7 @@ export default function HomePage() {
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <label className="text-xs font-semibold uppercase tracking-wider text-zinc-300">
-                    2. Desired Living Footprint
+                    2. Desired House Size
                   </label>
                   <span className="text-sm font-extrabold text-[#FFB800] font-mono drop-shadow-[0_1px_6px_rgba(255,184,0,0.3)]">
                     {sqft.toLocaleString()} sq ft ({Math.round(sqft * 0.0929)} m²)
@@ -727,10 +727,10 @@ export default function HomePage() {
               {/* Autonomy Level */}
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-300 mb-2">
-                  3. Autonomous Clean Energy Target
+                  3. Clean Energy Preference
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                  {["100% Off-Grid Microgrid", "Grid-Tied Net-Zero"].map((lvl) => (
+                  {["Solar with Battery Storage", "Grid-Tied Solar"].map((lvl) => (
                     <button
                       key={lvl}
                       onClick={() => setAutonomy(lvl)}
@@ -752,17 +752,17 @@ export default function HomePage() {
             <div className="lg:col-span-5">
               <div className="p-6 sm:p-8 rounded-3xl bg-[#050811]/92 border border-blue-500/30 backdrop-blur-2xl space-y-6 shadow-[0_16px_48px_rgba(0,0,0,0.9)]">
                 <span className="text-xs font-bold uppercase tracking-wider text-[#FFB800] block border-b border-white/10 pb-3 text-shadow-sub">
-                  Preliminary Build Metrics
+                  Estimated Project Details
                 </span>
 
                 <div className="space-y-4 text-xs">
                   <div className="flex items-center justify-between pb-3 border-b border-white/5">
-                    <span className="text-zinc-300 font-medium">Estimated Construction Timeline:</span>
+                    <span className="text-zinc-300 font-medium">Estimated Construction Time:</span>
                     <span className="text-white font-bold text-sm font-mono text-shadow-sub">{calculatedMonths} Months</span>
                   </div>
 
                   <div className="flex items-center justify-between pb-3 border-b border-white/5">
-                    <span className="text-zinc-300 font-medium">Daily Clean Energy Output:</span>
+                    <span className="text-zinc-300 font-medium">Daily Solar Power Output:</span>
                     <span className="text-[#FFB800] font-bold text-sm font-mono text-shadow-sub">~{calculatedSolar} kW / day</span>
                   </div>
 
@@ -781,7 +781,7 @@ export default function HomePage() {
                   href="/contact"
                   className="w-full py-3.5 rounded-full bg-[#FFB800] hover:bg-[#F59E0B] text-black font-extrabold text-xs text-center block uppercase tracking-wider transition-all shadow-[0_4px_20px_rgba(255,184,0,0.35)]"
                 >
-                  Request Detailed Architectural Blueprint ↗
+                  Request Detailed Plan & Free Estimate ↗
                 </Link>
               </div>
             </div>
@@ -795,29 +795,29 @@ export default function HomePage() {
       <section className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-t border-white/10">
         <div className="text-center max-w-2xl mx-auto mb-16">
           <div className="inline-flex items-center px-4 py-1.5 rounded-full glass-badge text-[#FFB800] text-xs font-bold uppercase tracking-wider mb-4">
-            Client Voices & Recognition
+            Client Reviews & Trust
           </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold uppercase tracking-tight text-white drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)]">
-            Trusted by Discerning Visionaries
+            Trusted by Homeowners & Businesses Across Kandy
           </h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {[
             {
-              quote: "ConTec delivered our Hanthana hillside villa ahead of schedule. The structural retaining and rock foundations held flawlessly through the heaviest monsoon season on record.",
+              quote: "ConTec delivered our Hanthana hillside villa ahead of schedule. The retaining walls and rock foundations held strong through the heaviest monsoon season on record.",
               client: "Dr. Rohan & Anoma Senanayake",
               residence: "Hanthana Hillside Sanctuary • Kandy",
               rating: "★★★★★",
             },
             {
-              quote: "The open-plan biophilic architecture and custom Kumbuk woodwork in our Anniewatte residence is sheer mastery. ConTec managed every municipal approval and key handover turnkey.",
+              quote: "The open-plan design and custom Kumbuk woodwork in our Anniewatte home is simply stunning. ConTec handled all municipal council approvals and handed over the keys right on time.",
               client: "Kavinda Dissanayake",
               residence: "Anniewatte Modern Residence • Kandy",
               rating: "★★★★★",
             },
             {
-              quote: "House Master Kandy performed a full waterproofing and electrical diagnostic on our commercial building. Transparent pricing and exceptional structural precision.",
+              quote: "House Master Kandy inspected and repaired roof waterproofing on our commercial building. Transparent pricing, excellent communication, and no more water leaks.",
               client: "Mahesh Bandaranaike",
               residence: "Commercial Facility • Kandy",
               rating: "★★★★★",
@@ -858,7 +858,7 @@ export default function HomePage() {
                 href="/contact"
                 className="px-8 py-4 rounded-full bg-[#FFB800] hover:bg-[#F59E0B] text-black font-extrabold text-sm tracking-wide transition-all shadow-[0_4px_24px_rgba(255,184,0,0.45)]"
               >
-                Schedule Discovery Session ↗
+                Book Free Consultation ↗
               </Link>
               <a
                 href="https://wa.me/94777812141?text=Hello%20ConTec%2C%20I%20would%20like%20to%20discuss%20a%20project."
