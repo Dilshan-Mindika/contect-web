@@ -94,7 +94,7 @@ interface ERPContextType {
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   switchPersona: (email: string) => Promise<void>;
-  
+
   // Multi-Company State
   activeCompany: ActiveCompany;
   setActiveCompany: (company: ActiveCompany) => void;

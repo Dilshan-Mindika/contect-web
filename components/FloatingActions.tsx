@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 
 export default function FloatingActions() {
+  const pathname = usePathname();
   const [showScrollTop, setShowScrollTop] = useState(false);
 
   useEffect(() => {
@@ -15,6 +17,11 @@ export default function FloatingActions() {
 
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // WhatsApp concierge and floating actions only appear on public views (never on admin dashboards or admin login)
+  if (pathname?.startsWith("/erp")) {
+    return null;
+  }
 
   const scrollToTop = () => {
     window.scrollTo({

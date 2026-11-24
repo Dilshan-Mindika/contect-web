@@ -926,21 +926,20 @@ export default function ERPDashboardPage() {
 
                 <div className="flex items-center gap-2 shrink-0">
                   <a
-                    href={`https://wa.me/${inq.phone.replace(/[^0-9]/g, '')}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-3 py-1.5 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-xs font-semibold flex items-center gap-1.5 transition-colors"
-                  >
-                    <MessageSquare className="w-3 h-3" />
-                    <span>WhatsApp</span>
-                  </a>
-                  <a
                     href={`tel:${inq.phone}`}
-                    className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-zinc-300 hover:text-white transition-colors"
-                    title="Call Client"
+                    className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-zinc-200 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                    title="Call Client Hotline"
                   >
-                    <Phone className="w-3.5 h-3.5" />
+                    <Phone className="w-3.5 h-3.5 text-[#FFB800]" />
+                    <span>Call Client</span>
                   </a>
+                  <Link
+                    href="/erp/crm"
+                    className="px-2.5 py-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 text-blue-300 text-xs font-semibold flex items-center gap-1 transition-colors"
+                    title="Open Inquiry in CRM"
+                  >
+                    <span>Details →</span>
+                  </Link>
                 </div>
               </div>
             ))}
