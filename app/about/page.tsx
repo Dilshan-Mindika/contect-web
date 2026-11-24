@@ -64,16 +64,19 @@ export default function AboutPage() {
       <main className="pt-28 pb-20">
         {/* Hero Section */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16">
-          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-[#0038B8]/25 border border-[#0038B8]/50 text-[#FFB800] text-xs font-bold tracking-wider uppercase backdrop-blur-md mb-6 text-shadow-sub">
+          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-[#0038B8]/30 border border-[#0038B8]/60 text-[#FFB800] text-xs font-bold tracking-wider uppercase backdrop-blur-md mb-6 shadow-lg shadow-blue-950/40">
             Our Heritage & Philosophy
           </div>
 
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold uppercase tracking-tight leading-[0.95] max-w-4xl mb-8 text-shadow-heading">
-            Building Visions, <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFB800] via-slate-100 to-blue-400">Designing Futures</span>
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold uppercase tracking-tight leading-[0.98] max-w-4xl mb-8">
+            <span className="text-white drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">Building Visions,</span>{" "}
+            <span className="gradient-text-gold block sm:inline mt-1 sm:mt-0">
+              Designing Futures
+            </span>
           </h1>
 
           <p className="text-zinc-300 text-lg sm:text-xl max-w-3xl leading-relaxed font-light mb-12">
-            At CONTEC Design & Build, we merge avant-garde architectural vision with aerospace-grade structural engineering to craft residences that produce more clean energy than they consume.
+            At CONTEC Design & Build, we merge avant-garde architectural vision with aerospace-grade structural engineering to craft luxury residences and landmark commercial infrastructure across Sri Lanka.
           </p>
 
           {/* Large Studio Feature Image */}
@@ -89,10 +92,10 @@ export default function AboutPage() {
             <div className="absolute bottom-6 left-6 sm:bottom-10 sm:left-10 right-6 sm:right-10 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4">
               <div className="bg-black/70 backdrop-blur-md p-4 sm:p-6 rounded-2xl border border-white/15 max-w-md">
                 <span className="text-xs font-bold text-[#FFB800] uppercase tracking-wider block mb-1">
-                  Design Studio • Zurich HQ
+                  Design Studio • Kandy HQ & Colombo Hub
                 </span>
                 <p className="text-sm text-zinc-200 font-normal">
-                  Our multidisciplinary team of architects, computational designers, and structural engineers collaborate seamlessly in real-time 3D BIM models.
+                  Our multidisciplinary team of chartered architects, computational designers, and structural engineers collaborate seamlessly in real-time 3D BIM models.
                 </p>
               </div>
               <div className="flex items-center gap-3 bg-[#0038B8]/30 backdrop-blur-md border border-blue-500/30 px-5 py-3 rounded-2xl">

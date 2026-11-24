@@ -19,7 +19,7 @@ export default function Footer() {
                   src="/branding/logo nav.png"
                   alt="CONTEC Design & Build"
                   fill
-                  className="object-contain object-left"
+                  className="object-contain object-left filter brightness-[1.6] contrast-[1.2] drop-shadow-[0_0_12px_rgba(255,255,255,0.7)]"
                 />
               </div>
             </Link>

@@ -103,16 +103,18 @@ export default function ServicesPage() {
       <main className="pt-28 pb-20">
         {/* Hero Header */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16">
-          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-[#0038B8]/25 border border-[#0038B8]/50 text-[#FFB800] text-xs font-bold tracking-wider uppercase backdrop-blur-md mb-6 text-shadow-sub">
+          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-[#0038B8]/30 border border-[#0038B8]/60 text-[#FFB800] text-xs font-bold tracking-wider uppercase backdrop-blur-md mb-6 shadow-lg shadow-blue-950/40">
             CONTEC Engineering & Construction
           </div>
 
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold uppercase tracking-tight leading-[0.95] max-w-4xl mb-8 text-shadow-heading">
-            From Computational <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-slate-100 to-[#FFB800]">Vision</span> to Turnkey Reality
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold uppercase tracking-tight leading-[0.98] max-w-4xl mb-8">
+            <span className="text-white drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">From Computational</span>{" "}
+            <span className="gradient-text-gold">Vision</span>{" "}
+            <span className="text-white drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">to Turnkey Reality</span>
           </h1>
 
           <p className="text-zinc-300 text-lg sm:text-xl max-w-3xl leading-relaxed font-light mb-12">
-            We operate as a single unified entity — principal architecture studio, computational engineering lab, and master construction builder.
+            We operate as a single unified entity — principal architecture studio, computational engineering lab, and master construction builder across Sri Lanka.
           </p>
 
           {/* Quick Service Anchor Navigation */}

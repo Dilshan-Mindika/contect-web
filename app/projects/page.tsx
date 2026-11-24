@@ -113,16 +113,18 @@ export default function ProjectsPage() {
       <main className="pt-28 pb-20">
         {/* Hero Section */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12">
-          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-[#0038B8]/25 border border-[#0038B8]/50 text-[#FFB800] text-xs font-bold tracking-wider uppercase backdrop-blur-md mb-6 text-shadow-sub">
+          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-[#0038B8]/30 border border-[#0038B8]/60 text-[#FFB800] text-xs font-bold tracking-wider uppercase backdrop-blur-md mb-6 shadow-lg shadow-blue-950/40">
             CONTEC Architectural Portfolio
           </div>
 
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold uppercase tracking-tight leading-[0.95] max-w-4xl mb-6 text-shadow-heading">
-            Monuments of <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFB800] via-slate-100 to-blue-300">Engineering</span> & Luxury
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold uppercase tracking-tight leading-[0.98] max-w-4xl mb-6">
+            <span className="text-white drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">Monuments of</span>{" "}
+            <span className="gradient-text-gold">Engineering</span>{" "}
+            <span className="text-white drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">& Luxury</span>
           </h1>
 
           <p className="text-zinc-300 text-lg sm:text-xl max-w-3xl leading-relaxed font-light mb-10">
-            Explore our portfolio of completed private residences, each tailored to its specific terrain and engineered to produce more clean energy than it consumes.
+            Explore our portfolio of completed private residences and commercial developments across Sri Lanka, each tailored to its specific terrain and engineered for century-long permanence.
           </p>
 
           {/* Category Filter Pills */}
@@ -133,11 +135,11 @@ export default function ProjectsPage() {
                 onClick={() => setActiveCategory(cat)}
                 className={`px-5 py-2 rounded-full text-xs font-bold transition-all duration-300 cursor-pointer ${
                   activeCategory === cat
-                    ? "bg-[#FFB800] text-black shadow-lg shadow-amber-500/20"
+                    ? "bg-[#FFB800] text-black shadow-lg shadow-amber-500/30"
                     : "bg-[#080e1c]/80 text-zinc-300 hover:bg-white/15 hover:text-white border border-blue-500/20"
                 }`}
               >
-                {cat === "All" ? "All Projects" : `${cat} Residences`}
+                {cat === "All" ? "All Projects" : `${cat} Developments`}
               </button>
             ))}
           </div>

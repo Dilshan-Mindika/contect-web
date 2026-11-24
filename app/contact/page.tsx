@@ -50,27 +50,29 @@ export default function ContactPage() {
       <main className="pt-28 pb-20">
         {/* Header */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12">
-          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-[#0038B8]/25 border border-[#0038B8]/50 text-[#FFB800] text-xs font-bold tracking-wider uppercase backdrop-blur-md mb-6 text-shadow-sub">
+          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-[#0038B8]/30 border border-[#0038B8]/60 text-[#FFB800] text-xs font-bold tracking-wider uppercase backdrop-blur-md mb-6 shadow-lg shadow-blue-950/40">
             Direct Architectural Inquiries
           </div>
 
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold uppercase tracking-tight leading-[0.95] max-w-4xl mb-6 text-shadow-heading">
-            Initiate Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFB800] via-slate-100 to-blue-300">CONTEC</span> Project
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold uppercase tracking-tight leading-[0.98] max-w-4xl mb-6">
+            <span className="text-white drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">Initiate Your</span>{" "}
+            <span className="gradient-text-gold">CONTEC</span>{" "}
+            <span className="text-white drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">Project</span>
           </h1>
 
           <p className="text-zinc-300 text-lg sm:text-xl max-w-3xl leading-relaxed font-light">
-            Whether you hold land in the Alps, coastal Mediterranean, or an urban setting, our principal architects and structural engineers will review your project parameters within 48 hours.
+            Whether you hold land in Colombo Port City, the Central Province hills of Kandy, the Southern coastal corridor, or an urban commercial zone, our chartered architects and structural engineers will review your project parameters within 48 hours.
           </p>
         </section>
 
         {/* Main 2-Column Section: Form + Studio Details */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14">
-            
+
             {/* Left Column: Interactive Consultation Booking Form */}
             <div className="lg:col-span-7">
               <div className="glass-panel p-6 sm:p-10 rounded-3xl border border-blue-500/25 bg-[#080e1c]/60 shadow-2xl">
-                
+
                 {submitted ? (
                   <div className="py-16 text-center animate-fadeIn">
                     <div className="w-16 h-16 rounded-full bg-[#0038B8]/30 text-[#FFB800] flex items-center justify-center mx-auto mb-6 text-2xl font-bold border border-[#FFB800]/40">
@@ -142,20 +144,20 @@ export default function ContactPage() {
                           type="tel"
                           value={formData.phone}
                           onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                          placeholder="+41 / +44 / +1 ..."
+                          placeholder="+94 77 123 4567"
                           className="w-full px-4 py-3 rounded-xl bg-black/50 border border-white/15 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-[#FFB800] transition-colors"
                         />
                       </div>
 
                       <div>
                         <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-300 mb-2">
-                          Project Location / Country
+                          Project Location / City
                         </label>
                         <input
                           type="text"
                           value={formData.location}
                           onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                          placeholder="e.g. Valais Switzerland / Malibu / Aspen"
+                          placeholder="e.g. Kandy Hills / Port City Colombo / Galle"
                           className="w-full px-4 py-3 rounded-xl bg-black/50 border border-white/15 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-[#FFB800] transition-colors"
                         />
                       </div>
@@ -181,17 +183,17 @@ export default function ContactPage() {
 
                       <div>
                         <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-300 mb-2">
-                          Investment Range
+                          Investment Range (LKR)
                         </label>
                         <select
                           value={formData.budget}
                           onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
                           className="w-full px-4 py-3 rounded-xl bg-black/70 border border-white/15 text-xs text-white focus:outline-none focus:border-[#FFB800] transition-colors"
                         >
-                          <option>$1.5M - $3M</option>
-                          <option>$3M - $6M</option>
-                          <option>$6M - $12M</option>
-                          <option>$12M+</option>
+                          <option>LKR 45M - LKR 100M</option>
+                          <option>LKR 100M - LKR 250M</option>
+                          <option>LKR 250M - LKR 750M</option>
+                          <option>LKR 750M+ (Mega-Project / Commercial)</option>
                         </select>
                       </div>
 
@@ -250,7 +252,7 @@ export default function ContactPage() {
 
             {/* Right Column: ConTec Kandy Office & Contacts */}
             <div className="lg:col-span-5 space-y-6">
-              
+
               {/* Studio Card */}
               <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-blue-500/25 bg-[#080e1c]/80 shadow-2xl">
                 <h3 className="text-xs uppercase font-bold text-[#FFB800] tracking-widest mb-6">
@@ -296,7 +298,7 @@ export default function ContactPage() {
                       className="inline-flex items-center gap-2.5 px-4 py-2 rounded-xl bg-[#0038B8]/30 border border-[#0038B8]/50 text-[#FFB800] text-xs font-bold hover:bg-[#0038B8]/60 transition-all shadow-md"
                     >
                       <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                       </svg>
                       <span>Visit facebook.com/conteckandy ↗</span>
                     </a>

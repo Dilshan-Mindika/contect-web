@@ -263,14 +263,14 @@ export default function HomePage() {
                     {currentStage.badge}
                   </div>
 
-                  {/* High-Contrast Oversized Brand Headline with Drop Shadow */}
-                  <h1 className="text-white font-extrabold uppercase text-3xl sm:text-5xl md:text-6xl lg:text-[60px] xl:text-[72px] leading-[0.96] tracking-[-0.03em] drop-shadow-[0_4px_20px_rgba(0,0,0,0.95)]">
-                    <span className="block transition-all duration-300">{currentStage.headlineLine1}</span>
-                    <span className="block transition-all duration-300 text-transparent bg-clip-text bg-gradient-to-r from-white via-blue-100 to-[#FFB800]">
+                  {/* High-Contrast Oversized Brand Headline */}
+                  <h1 className="text-white font-extrabold uppercase text-3xl sm:text-5xl md:text-6xl lg:text-[60px] xl:text-[72px] leading-[0.96] tracking-[-0.03em]">
+                    <span className="block transition-all duration-300 drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">{currentStage.headlineLine1}</span>
+                    <span className="block transition-all duration-300 gradient-text-gold">
                       {currentStage.headlineLine2}
                     </span>
                     <div className="flex flex-wrap items-center gap-2.5 sm:gap-4 mt-1">
-                      <span className="transition-all duration-300">{currentStage.headlineLine3}</span>
+                      <span className="transition-all duration-300 drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">{currentStage.headlineLine3}</span>
                       
                       {/* Inline CTA Button with Warm Amber Glow Shadow */}
                       <Link
@@ -468,8 +468,9 @@ export default function HomePage() {
             <div className="inline-flex items-center px-4 py-1.5 rounded-full glass-badge text-[#FFB800] text-xs font-bold uppercase tracking-wider mb-4">
               Integrated Capabilities
             </div>
-            <h2 className="text-3xl sm:text-5xl font-extrabold uppercase tracking-tight text-white max-w-2xl leading-tight drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)]">
-              Mastery Across Every <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-slate-100 to-[#FFB800]">Dimension</span>
+            <h2 className="text-3xl sm:text-5xl font-extrabold uppercase tracking-tight text-white max-w-2xl leading-tight">
+              <span className="drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">Mastery Across Every</span>{" "}
+              <span className="gradient-text-blue">Dimension</span>
             </h2>
           </div>
           <Link
@@ -539,8 +540,9 @@ export default function HomePage() {
             <div className="inline-flex items-center px-4 py-1.5 rounded-full glass-badge text-[#FFB800] text-xs font-bold uppercase tracking-wider mb-4">
               Selected Works
             </div>
-            <h2 className="text-3xl sm:text-5xl font-extrabold uppercase tracking-tight text-white max-w-2xl leading-tight drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)]">
-              Private Residences <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFB800] to-blue-300">Delivered</span>
+            <h2 className="text-3xl sm:text-5xl font-extrabold uppercase tracking-tight text-white max-w-2xl leading-tight">
+              <span className="drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">Private Residences</span>{" "}
+              <span className="gradient-text-gold">Delivered</span>
             </h2>
           </div>
           <Link
@@ -617,9 +619,9 @@ export default function HomePage() {
               Materiality & Zero Carbon
             </div>
             
-            <h2 className="text-3xl sm:text-5xl font-extrabold uppercase tracking-tight text-white leading-tight drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)]">
-              Honest Materials, <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-slate-100 to-[#FFB800]">
+            <h2 className="text-3xl sm:text-5xl font-extrabold uppercase tracking-tight text-white leading-tight">
+              <span className="drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">Honest Materials,</span> <br />
+              <span className="gradient-text-blue">
                 Enduring Tactility
               </span>
             </h2>
@@ -771,7 +773,7 @@ export default function HomePage() {
 
                   <div className="flex items-center justify-between">
                     <span className="text-zinc-300 font-medium">Estimated Turnkey Investment:</span>
-                    <span className="text-[#FFB800] font-extrabold text-base font-mono text-shadow-sub">${calculatedInvestment}M – ${(Number(calculatedInvestment) * 1.3).toFixed(1)}M</span>
+                    <span className="text-[#FFB800] font-extrabold text-base font-mono drop-shadow-[0_2px_8px_rgba(255,184,0,0.4)]">LKR {(Number(calculatedInvestment) * 45).toFixed(0)}M – {(Number(calculatedInvestment) * 60).toFixed(0)}M</span>
                   </div>
                 </div>
 

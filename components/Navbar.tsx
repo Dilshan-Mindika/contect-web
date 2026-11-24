@@ -36,14 +36,14 @@ export default function Navbar() {
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-          {/* Brand Logo - Clean Transparent Presentation with White Luminescence Shadow */}
+          {/* Brand Logo - High Contrast Crisp Luminous Presentation */}
           <Link href="/" className="flex items-center gap-3 group">
             <div className="relative h-10 sm:h-12 w-36 sm:w-48 transition-transform duration-300 group-hover:scale-105 flex items-center">
               <Image
                 src="/branding/logo nav.png"
                 alt="CONTEC Design & Build"
                 fill
-                className="object-contain drop-shadow-[0_0_12px_rgba(255,255,255,0.7)] drop-shadow-[0_2px_6px_rgba(255,255,255,0.4)]"
+                className="object-contain filter brightness-[1.6] contrast-[1.2] drop-shadow-[0_0_12px_rgba(255,255,255,0.7)] drop-shadow-[0_0_4px_rgba(255,184,0,0.5)]"
                 priority
               />
             </div>
