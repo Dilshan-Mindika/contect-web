@@ -197,7 +197,7 @@ interface ERPContextType {
 const ERPContext = createContext<ERPContextType | undefined>(undefined);
 
 export function ERPProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<ERPUser | null>(null);
+  const [user, setUser] = useState<ERPUser | null>(ENTERPRISE_USERS['admin@contec.com']);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 

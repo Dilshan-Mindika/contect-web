@@ -11,6 +11,14 @@ export interface PublicProject {
   tagline: string;
   description: string;
   highlights: string[];
+  // Advanced & Optional Fields
+  status?: 'COMPLETED' | 'UNDER_CONSTRUCTION' | 'DESIGN_PHASE';
+  featured?: boolean;
+  contractValue?: string;
+  structuralWarranty?: string;
+  leadArchitect?: string;
+  foundationType?: string;
+  clientPrivacy?: 'CONFIDENTIAL' | 'PUBLIC';
 }
 
 export interface PublicService {
@@ -20,6 +28,12 @@ export interface PublicService {
   desc: string;
   image: string;
   features: string[];
+  // Advanced & Optional Fields
+  startingPrice?: string;
+  timeline?: string;
+  cidaStandard?: string;
+  warranty?: string;
+  featured?: boolean;
 }
 
 export const DEFAULT_PROJECTS: PublicProject[] = [
@@ -40,6 +54,11 @@ export const DEFAULT_PROJECTS: PublicProject[] = [
       "Integrated solar power & rainwater storage",
       "Local Kumbuk timber & durable concrete",
     ],
+    status: "COMPLETED",
+    featured: true,
+    contractValue: "LKR 165M",
+    structuralWarranty: "25-Year Foundation Warranty",
+    leadArchitect: "Chartered Structural Engineering Team",
   },
   {
     id: "anniewatte-villa",
@@ -58,6 +77,11 @@ export const DEFAULT_PROJECTS: PublicProject[] = [
       "Natural airflow & smart lighting controls",
       "Full turnkey interior design & execution",
     ],
+    status: "COMPLETED",
+    featured: true,
+    contractValue: "LKR 145M",
+    structuralWarranty: "25-Year Foundation Warranty",
+    leadArchitect: "Principal Architectural & BIM Lead",
   },
   {
     id: "victoria-estate",
@@ -76,6 +100,11 @@ export const DEFAULT_PROJECTS: PublicProject[] = [
       "Battery backup storage & water filtration",
       "Durable natural timber and stone finishes",
     ],
+    status: "COMPLETED",
+    featured: false,
+    contractValue: "LKR 120M",
+    structuralWarranty: "25-Year Foundation Warranty",
+    leadArchitect: "Hillside Geotechnical Specialist",
   },
   {
     id: "commercial-kandy",
@@ -94,6 +123,11 @@ export const DEFAULT_PROJECTS: PublicProject[] = [
       "Modern curtain wall glass exterior",
       "Comprehensive facility management",
     ],
+    status: "COMPLETED",
+    featured: false,
+    contractValue: "LKR 310M",
+    structuralWarranty: "30-Year Commercial Structure Warranty",
+    leadArchitect: "Chartered Civil & MEP Engineers",
   },
 ];
 
@@ -110,6 +144,10 @@ export const DEFAULT_SERVICES: PublicService[] = [
       "Municipal Council & Government Approvals",
       "Natural Sunlight & Cross-Ventilation Planning",
     ],
+    startingPrice: "Complimentary Initial Consultation",
+    timeline: "2 to 4 Weeks Concept Delivery",
+    cidaStandard: "Chartered Architectural Standards",
+    warranty: "100% Planning Approval Support",
   },
   {
     id: "construction",
@@ -123,6 +161,10 @@ export const DEFAULT_SERVICES: PublicService[] = [
       "Guaranteed Fixed-Price & Timely Handover",
       "25-Year Structural Warranty on Foundations & Frames",
     ],
+    startingPrice: "Itemized Fixed BOQ Pricing",
+    timeline: "7 to 12 Months Delivery",
+    cidaStandard: "CIDA Grade CS2 Certified",
+    warranty: "25-Year Structural Warranty",
   },
   {
     id: "renovation",
@@ -136,6 +178,10 @@ export const DEFAULT_SERVICES: PublicService[] = [
       "Rooftop Terraces & Balconies",
       "Heritage Restorations & Modern Upgrades",
     ],
+    startingPrice: "Transparent Scope of Work",
+    timeline: "4 to 8 Weeks Fast-Track",
+    cidaStandard: "Quality Assured Execution",
+    warranty: "2-Year Craftsmanship Guarantee",
   },
   {
     id: "repairs",
@@ -149,6 +195,10 @@ export const DEFAULT_SERVICES: PublicService[] = [
       "Full Electrical, Plumbing & Water Systems Repair",
       "Weatherproof Exterior Painting & Wall Protection",
     ],
+    startingPrice: "Rapid Response & Site Inspection",
+    timeline: "Immediate Inspection within 24h",
+    cidaStandard: "Polymer Membrane Waterproofing",
+    warranty: "10-Year Leak-Free Warranty",
   },
   {
     id: "sustainable",
@@ -162,6 +212,10 @@ export const DEFAULT_SERVICES: PublicService[] = [
       "Rainwater Harvesting & Water Filtration",
       "Natural Airflow & Energy-Efficient Living",
     ],
+    startingPrice: "Custom Engineering Evaluation",
+    timeline: "3 to 6 Weeks Installation",
+    cidaStandard: "Geotechnical Slope Engineering",
+    warranty: "25-Year Solar & Wall Integrity Guarantee",
   },
 ];
 
