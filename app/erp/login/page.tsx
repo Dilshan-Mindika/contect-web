@@ -6,7 +6,6 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useERP } from '@/lib/erp/AuthContext';
 import {
-  ShieldCheck,
   Lock,
   AlertCircle,
   Building2,
@@ -53,23 +52,19 @@ export default function ERPLoginPage() {
       </div>
 
       {/* Header */}
-      <header className="relative z-10 p-6 max-w-7xl mx-auto w-full flex items-center justify-between">
-        <Link href="/erp/login" className="flex items-center gap-3">
-          <div className="relative h-10 w-44">
+      <header className="relative z-10 pt-8 pb-4 px-6 max-w-7xl mx-auto w-full flex items-center justify-center">
+        <Link href="/erp/login" className="flex items-center justify-center">
+          <div className="relative h-16 sm:h-20 w-64 sm:w-80">
             <Image
               src="/branding/contec-white-logo.png"
               alt="CONTEC Design & Build"
               fill
-              className="object-contain object-left"
+              className="object-contain object-center"
               priority
               unoptimized
             />
           </div>
         </Link>
-        <div className="flex items-center gap-1.5 text-xs text-zinc-400 font-medium bg-white/5 border border-white/10 px-3 py-1.5 rounded-full">
-          <ShieldCheck className="w-3.5 h-3.5 text-[#FFB800]" />
-          <span>Staff Access Only</span>
-        </div>
       </header>
 
       {/* Main Login Card */}
@@ -199,16 +194,6 @@ export default function ERPLoginPage() {
               )}
             </button>
           </form>
-
-          {/* Help & Support note */}
-          <div className="pt-4 border-t border-white/10 text-center">
-            <p className="text-[11px] text-zinc-400 leading-relaxed">
-              Need account assistance or password reset? Please contact the office administrator at Kandy Main Office or call{" "}
-              <a href="tel:+94777812141" className="text-[#FFB800] hover:underline font-semibold">
-                +94 77 781 2141
-              </a>.
-            </p>
-          </div>
         </div>
       </main>
 
