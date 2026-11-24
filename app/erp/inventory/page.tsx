@@ -155,17 +155,8 @@ export default function InventoryPage() {
             icon: <FileCheck className="w-4 h-4" />,
           },
         ]}
-        chartTitle="Current Stock vs. Minimum Threshold (Units)"
-        chartSubtitle="Top tracked construction materials across yards"
-        primarySeriesLabel="Current Stock"
-        secondarySeriesLabel="Min Threshold"
-        chartData={filteredInventory.slice(0, 6).map((it) => ({
-          label: it.sku.slice(0, 10),
-          value: it.quantity,
-          secondaryValue: it.minThreshold,
-          unit: it.unit,
-        }))}
         reportFilename="contec-inventory-stock"
+        showModeToggle={false}
         reportRows={filteredInventory.map((it) => ({
           SKU: it.sku,
           Material: it.name,

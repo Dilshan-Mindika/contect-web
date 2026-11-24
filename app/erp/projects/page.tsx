@@ -141,17 +141,8 @@ export default function ProjectsPage() {
             icon: <Activity className="w-4 h-4" />,
           },
         ]}
-        chartTitle="Site Progress & Budget Allocation (M LKR)"
-        chartSubtitle="Approved budget vs. expenditure per project code"
-        primarySeriesLabel="Budget (M LKR)"
-        secondarySeriesLabel="Spent (M LKR)"
-        chartData={filteredProjects.map((p) => ({
-          label: p.code,
-          value: Math.round(p.budget / 1_000_000),
-          secondaryValue: Math.round(p.spent / 1_000_000),
-          unit: 'M LKR',
-        }))}
         reportFilename="contec-construction-projects"
+        showModeToggle={false}
         reportRows={filteredProjects.map((p) => ({
           Code: p.code,
           Name: p.name,

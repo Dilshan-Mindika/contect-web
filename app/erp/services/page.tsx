@@ -255,11 +255,8 @@ export default function WebsiteServicesManagerPage() {
             icon: <Clock className="w-4 h-4" />,
           },
         ]}
-        chartTitle="Deliverables Count per Service Stage"
-        chartSubtitle="Number of verified client deliverables included in each stage"
-        primarySeriesLabel="Deliverables"
-        chartData={chartData}
         reportFilename="contec-website-services"
+        showModeToggle={false}
         reportRows={publicServices.map((s) => ({
           ID: s.id,
           Badge: s.badge,

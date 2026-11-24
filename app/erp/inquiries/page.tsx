@@ -79,16 +79,8 @@ export default function ClientInquiriesPage() {
             icon: <CheckCircle2 className="w-4 h-4" />,
           },
         ]}
-        chartTitle="Inquiries by Status"
-        chartSubtitle="Conversion funnel from initial website contact to BOQ quotation"
-        primarySeriesLabel="Inquiries"
-        chartData={[
-          { label: 'New', value: newCount, unit: 'inquiries' },
-          { label: 'Contacted', value: contactedCount, unit: 'inquiries' },
-          { label: 'Quoted', value: convertedCount, unit: 'inquiries' },
-          { label: 'Archived', value: websiteInquiries.filter((i) => i.status === 'ARCHIVED').length, unit: 'inquiries' },
-        ]}
         reportFilename="contec-client-inquiries"
+        showModeToggle={false}
         reportRows={websiteInquiries.map((q) => ({
           ID: q.id,
           ClientName: q.clientName,

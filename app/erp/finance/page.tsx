@@ -247,17 +247,8 @@ export default function FinancePage() {
             icon: <Scale className="w-4 h-4" />,
           },
         ]}
-        chartTitle="Invoice Valuation by Certificate (M LKR)"
-        chartSubtitle="Subtotal vs. Net Certified Total across active invoices"
-        primarySeriesLabel="Net Total (M LKR)"
-        secondarySeriesLabel="Subtotal (M LKR)"
-        chartData={filteredInvoices.slice(0, 6).map((inv) => ({
-          label: inv.invoiceNumber,
-          value: Math.round(inv.total / 1_000_000),
-          secondaryValue: Math.round(inv.subtotal / 1_000_000),
-          unit: 'M LKR',
-        }))}
         reportFilename="contec-financial-invoices"
+        showModeToggle={false}
         reportRows={filteredInvoices.map((inv) => ({
           InvoiceNumber: inv.invoiceNumber,
           Client: inv.clientName,

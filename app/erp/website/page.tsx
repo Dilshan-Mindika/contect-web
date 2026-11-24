@@ -320,12 +320,8 @@ export default function WebsiteProjectsManagerPage() {
             icon: <Sun className="w-4 h-4" />,
           },
         ]}
-        chartTitle="Projects by Category vs Featured"
-        chartSubtitle="Distribution across Hillside, Residential, and Commercial categories"
-        primarySeriesLabel="Total Projects"
-        secondarySeriesLabel="Featured Projects"
-        chartData={chartData}
         reportFilename="contec-website-projects"
+        showModeToggle={false}
         reportRows={publicProjects.map((p) => ({
           ID: p.id,
           Title: p.title,

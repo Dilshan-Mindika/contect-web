@@ -130,19 +130,8 @@ export default function CRMPage() {
             icon: <Search className="w-4 h-4" />,
           },
         ]}
-        chartTitle="Pipeline Value by Stage (M LKR)"
-        chartSubtitle="Total estimated contract value across CRM funnel stages"
-        primarySeriesLabel="Estimated Value (M LKR)"
-        chartData={STAGES.map((st) => ({
-          label: st.label.split(' ')[0],
-          value: Math.round(
-            leads
-              .filter((l) => l.stage === st.key)
-              .reduce((a, b) => a + b.estimatedValue, 0) / 1_000_000
-          ),
-          unit: 'M LKR',
-        }))}
         reportFilename="contec-crm-pipeline"
+        showModeToggle={false}
         reportRows={leads.map((l) => ({
           Company: l.company,
           Client: l.clientName,
