@@ -40,7 +40,8 @@ import {
 
 const PRIMARY_NAV = [
   { label: 'Dashboard Overview', href: '/erp', icon: LayoutDashboard },
-  { label: 'Website Projects & Services', href: '/erp/website', icon: Globe },
+  { label: 'Website Projects', href: '/erp/website', icon: Globe },
+  { label: 'Website Services', href: '/erp/services', icon: Layers },
   { label: 'Client Inquiries & CRM', href: '/erp/crm', icon: Users },
   { label: 'Quotations & Fixed BOQ', href: '/erp/quotations', icon: FileText },
 ];
@@ -57,9 +58,11 @@ const SITE_OPERATIONS_NAV = [
 const MANAGEMENT_NAV = [
   { label: 'Invoices & Billing', href: '/erp/finance', icon: CreditCard },
   { label: 'Cost Control & Budget', href: '/erp/budgeting', icon: Calculator },
+  { label: 'CIDA & Contracts', href: '/erp/contracts', icon: ShieldCheck },
   { label: 'Site Safety & Checks', href: '/erp/safety', icon: ShieldAlert },
   { label: 'Team Directory', href: '/erp/hr', icon: Users },
   { label: 'Company Profile & Info', href: '/erp/company', icon: Building2 },
+  { label: 'Audit & Security Logs', href: '/erp/audit', icon: Lock },
 ];
 
 export default function ERPLayoutContent({ children }: { children: React.ReactNode }) {

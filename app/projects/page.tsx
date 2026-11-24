@@ -15,6 +15,15 @@ export default function ProjectsPage() {
   useEffect(() => {
     setProjectsList(getPublicProjects());
 
+    fetch("/api/public/content")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.success && Array.isArray(data.projects) && data.projects.length > 0) {
+          setProjectsList(data.projects);
+        }
+      })
+      .catch(() => {});
+
     const handleUpdate = () => {
       setProjectsList(getPublicProjects());
     };

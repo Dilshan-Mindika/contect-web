@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useERP } from '@/lib/erp/AuthContext';
 import { InvoiceStatus, Invoice, JournalLine } from '@/lib/erp/types';
 import { formatLKR, formatLKRFull } from '@/lib/erp/currency';
+import ModuleAnalytics from '@/components/erp/ModuleAnalytics';
 import {
   CreditCard,
   Plus,
@@ -184,10 +185,10 @@ export default function FinancePage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-white">
-            Invoices, Billing & Financial Ledgers
+            Invoices, Billing &amp; Financial Ledgers
           </h1>
           <p className="text-xs sm:text-sm text-zinc-400 mt-0.5">
-            Manage Running Account (RA) bills, CIDA SBD-02 statutory retentions, General Ledger, Cash Book, and P&L Statements for {activeCompany === 'CONSOLIDATED' ? 'Consolidated Group' : currentComp?.tradeName}.
+            Manage Running Account (RA) bills, CIDA SBD-02 statutory retentions, General Ledger, Cash Book, and P&amp;L Statements for {activeCompany === 'CONSOLIDATED' ? 'Consolidated Group' : currentComp?.tradeName}.
           </p>
         </div>
 
@@ -212,6 +213,61 @@ export default function FinancePage() {
           )}
         </div>
       </div>
+
+      {/* Stat Boxes, Graph View & CSV/Print Reports */}
+      <ModuleAnalytics
+        title="Financial Telemetry & Reports"
+        stats={[
+          {
+            label: 'Total Certified Invoiced',
+            value: formatLKR(totalInvoiced, true),
+            subtitle: `${filteredInvoices.length} Interim Certificates`,
+            accent: 'blue',
+            icon: <CreditCard className="w-4 h-4" />,
+          },
+          {
+            label: 'Collected Payments',
+            value: formatLKR(totalPaid, true),
+            subtitle: 'Settled to bank',
+            accent: 'emerald',
+            icon: <CheckCircle2 className="w-4 h-4" />,
+          },
+          {
+            label: 'Pending Receivables',
+            value: formatLKR(totalPending, true),
+            subtitle: 'Awaiting client settlement',
+            accent: 'gold',
+            icon: <Clock className="w-4 h-4" />,
+          },
+          {
+            label: 'Statutory Retention',
+            value: formatLKR(totalRetention, true),
+            subtitle: '5% CIDA SBD-02 held',
+            accent: 'purple',
+            icon: <Scale className="w-4 h-4" />,
+          },
+        ]}
+        chartTitle="Invoice Valuation by Certificate (M LKR)"
+        chartSubtitle="Subtotal vs. Net Certified Total across active invoices"
+        primarySeriesLabel="Net Total (M LKR)"
+        secondarySeriesLabel="Subtotal (M LKR)"
+        chartData={filteredInvoices.slice(0, 6).map((inv) => ({
+          label: inv.invoiceNumber,
+          value: Math.round(inv.total / 1_000_000),
+          secondaryValue: Math.round(inv.subtotal / 1_000_000),
+          unit: 'M LKR',
+        }))}
+        reportFilename="contec-financial-invoices"
+        reportRows={filteredInvoices.map((inv) => ({
+          InvoiceNumber: inv.invoiceNumber,
+          Client: inv.clientName,
+          Project: inv.projectName,
+          IssueDate: inv.issueDate,
+          DueDate: inv.dueDate,
+          TotalLKR: inv.total,
+          Status: inv.status,
+        }))}
+      />
 
       {/* KPI Cards in LKR */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

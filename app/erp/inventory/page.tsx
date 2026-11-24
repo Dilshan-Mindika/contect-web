@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useERP } from '@/lib/erp/AuthContext';
 import { formatLKR, formatLKRFull } from '@/lib/erp/currency';
+import ModuleAnalytics from '@/components/erp/ModuleAnalytics';
 import {
   Boxes,
   Plus,
@@ -120,6 +121,62 @@ export default function InventoryPage() {
           <span>Issue Material Note (MIN)</span>
         </button>
       </div>
+
+      {/* Stat Boxes, Graph View & CSV/Print Reports */}
+      <ModuleAnalytics
+        title="Inventory Stockpile Analytics & Reports"
+        stats={[
+          {
+            label: 'Stockpile Valuation',
+            value: formatLKR(totalInventoryValuation, true),
+            subtitle: `${filteredInventory.length} tracked SKUs`,
+            accent: 'blue',
+            icon: <Boxes className="w-4 h-4" />,
+          },
+          {
+            label: 'Low / Critical Stock',
+            value: `${lowStockCount} Items`,
+            subtitle: 'Below minimum threshold',
+            accent: lowStockCount > 0 ? 'amber' : 'emerald',
+            icon: <AlertTriangle className="w-4 h-4" />,
+          },
+          {
+            label: 'Active Warehouse Stores',
+            value: filteredStores.length,
+            subtitle: 'Site & central yards',
+            accent: 'gold',
+            icon: <Building2 className="w-4 h-4" />,
+          },
+          {
+            label: 'Material Issue Notes',
+            value: filteredMins.length,
+            subtitle: 'Dispatched to sites',
+            accent: 'purple',
+            icon: <FileCheck className="w-4 h-4" />,
+          },
+        ]}
+        chartTitle="Current Stock vs. Minimum Threshold (Units)"
+        chartSubtitle="Top tracked construction materials across yards"
+        primarySeriesLabel="Current Stock"
+        secondarySeriesLabel="Min Threshold"
+        chartData={filteredInventory.slice(0, 6).map((it) => ({
+          label: it.sku.slice(0, 10),
+          value: it.quantity,
+          secondaryValue: it.minThreshold,
+          unit: it.unit,
+        }))}
+        reportFilename="contec-inventory-stock"
+        reportRows={filteredInventory.map((it) => ({
+          SKU: it.sku,
+          Material: it.name,
+          Category: it.category,
+          Quantity: it.quantity,
+          Unit: it.unit,
+          UnitCostLKR: it.unitCost,
+          TotalValueLKR: it.quantity * it.unitCost,
+          Status: it.status,
+        }))}
+      />
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

@@ -33,6 +33,15 @@ export default function ServicesPage() {
   useEffect(() => {
     setServicesList(getPublicServices());
 
+    fetch("/api/public/content")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.success && Array.isArray(data.services) && data.services.length > 0) {
+          setServicesList(data.services);
+        }
+      })
+      .catch(() => {});
+
     const handleUpdate = () => {
       setServicesList(getPublicServices());
     };

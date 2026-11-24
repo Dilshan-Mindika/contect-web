@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useERP } from '@/lib/erp/AuthContext';
 import { TaskStatus, ProjectPhase } from '@/lib/erp/types';
 import { formatLKR, formatLKRFull } from '@/lib/erp/currency';
+import ModuleAnalytics from '@/components/erp/ModuleAnalytics';
 import {
   HardHat,
   Plus,
@@ -106,6 +107,62 @@ export default function ProjectsPage() {
           <span>Register New Mega-Project</span>
         </button>
       </div>
+
+      {/* Stat Boxes, Graph View & CSV/Print Reports */}
+      <ModuleAnalytics
+        title="Construction Portfolio Telemetry"
+        stats={[
+          {
+            label: 'Total Projects',
+            value: filteredProjects.length,
+            subtitle: 'Active & handover sites',
+            accent: 'blue',
+            icon: <HardHat className="w-4 h-4" />,
+          },
+          {
+            label: 'Total Contract Budget',
+            value: formatLKR(filteredProjects.reduce((a, b) => a + b.budget, 0), true),
+            subtitle: 'Approved contract sum',
+            accent: 'gold',
+            icon: <DollarSign className="w-4 h-4" />,
+          },
+          {
+            label: 'Cumulative Spend',
+            value: formatLKR(filteredProjects.reduce((a, b) => a + b.spent, 0), true),
+            subtitle: 'Certified expenditure',
+            accent: 'emerald',
+            icon: <TrendingUp className="w-4 h-4" />,
+          },
+          {
+            label: 'Avg. Completion',
+            value: `${filteredProjects.length ? Math.round(filteredProjects.reduce((a, b) => a + b.progress, 0) / filteredProjects.length) : 0}%`,
+            subtitle: 'Physical site progress',
+            accent: 'purple',
+            icon: <Activity className="w-4 h-4" />,
+          },
+        ]}
+        chartTitle="Site Progress & Budget Allocation (M LKR)"
+        chartSubtitle="Approved budget vs. expenditure per project code"
+        primarySeriesLabel="Budget (M LKR)"
+        secondarySeriesLabel="Spent (M LKR)"
+        chartData={filteredProjects.map((p) => ({
+          label: p.code,
+          value: Math.round(p.budget / 1_000_000),
+          secondaryValue: Math.round(p.spent / 1_000_000),
+          unit: 'M LKR',
+        }))}
+        reportFilename="contec-construction-projects"
+        reportRows={filteredProjects.map((p) => ({
+          Code: p.code,
+          Name: p.name,
+          Client: p.client,
+          Location: p.location,
+          Phase: p.phase,
+          ProgressPct: p.progress,
+          BudgetLKR: p.budget,
+          SpentLKR: p.spent,
+        }))}
+      />
 
       {/* Projects Grid Selector */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

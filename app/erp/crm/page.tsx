@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useERP } from '@/lib/erp/AuthContext';
 import { LeadStage } from '@/lib/erp/types';
 import { formatLKR } from '@/lib/erp/currency';
+import ModuleAnalytics from '@/components/erp/ModuleAnalytics';
 import {
   TrendingUp,
   Plus,
@@ -95,6 +96,63 @@ export default function CRMPage() {
           <span>Register New Tender (LKR)</span>
         </button>
       </div>
+
+      {/* Stat Boxes, Graph View & CSV/Print Reports */}
+      <ModuleAnalytics
+        title="CRM Pipeline & Tender Analytics"
+        stats={[
+          {
+            label: 'Unweighted Pipeline',
+            value: formatLKR(totalPipeline, true),
+            subtitle: `${leads.length} active proposals`,
+            accent: 'blue',
+            icon: <TrendingUp className="w-4 h-4" />,
+          },
+          {
+            label: 'Weighted Forecast',
+            value: formatLKR(weightedPipeline, true),
+            subtitle: 'Probability-adjusted LKR',
+            accent: 'emerald',
+            icon: <Sparkles className="w-4 h-4" />,
+          },
+          {
+            label: 'Awarded Contracts',
+            value: formatLKR(leads.filter((l) => l.stage === 'WON').reduce((a, l) => a + l.estimatedValue, 0), true),
+            subtitle: `${leads.filter((l) => l.stage === 'WON').length} won tenders`,
+            accent: 'gold',
+            icon: <Award className="w-4 h-4" />,
+          },
+          {
+            label: 'Active Tender Stages',
+            value: STAGES.length,
+            subtitle: 'Inquiry to Contract Award',
+            accent: 'purple',
+            icon: <Search className="w-4 h-4" />,
+          },
+        ]}
+        chartTitle="Pipeline Value by Stage (M LKR)"
+        chartSubtitle="Total estimated contract value across CRM funnel stages"
+        primarySeriesLabel="Estimated Value (M LKR)"
+        chartData={STAGES.map((st) => ({
+          label: st.label.split(' ')[0],
+          value: Math.round(
+            leads
+              .filter((l) => l.stage === st.key)
+              .reduce((a, b) => a + b.estimatedValue, 0) / 1_000_000
+          ),
+          unit: 'M LKR',
+        }))}
+        reportFilename="contec-crm-pipeline"
+        reportRows={leads.map((l) => ({
+          Company: l.company,
+          Client: l.clientName,
+          ProjectType: l.projectType,
+          Stage: l.stage,
+          ProbabilityPct: l.probability,
+          EstimatedValueLKR: l.estimatedValue,
+          AssignedTo: l.assignedTo,
+        }))}
+      />
 
       {/* Metrics Header Cards in LKR */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

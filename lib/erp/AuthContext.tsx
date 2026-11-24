@@ -244,8 +244,26 @@ export function ERPProvider({ children }: { children: React.ReactNode }) {
   const [safetyIncidents, setSafetyIncidents] = useState<SafetyIncidentLog[]>(INITIAL_SAFETY_INCIDENTS);
   const [vaultDocuments, setVaultDocuments] = useState<VaultDocument[]>(INITIAL_VAULT_DOCUMENTS);
 
-  // Check existing session on mount
+  // Check existing session on mount and hydrate live MySQL ERP data
   useEffect(() => {
+    async function hydrateErpData() {
+      try {
+        const dataRes = await fetch('/api/erp/data');
+        if (dataRes.ok) {
+          const payload = await dataRes.json();
+          if (payload.success && payload.data) {
+            if (payload.data.projects?.length) setProjects(payload.data.projects);
+            if (payload.data.invoices?.length) setInvoices(payload.data.invoices);
+            if (payload.data.websiteInquiries?.length) setWebsiteInquiries(payload.data.websiteInquiries);
+            if (payload.data.inventory?.length) setInventory(payload.data.inventory);
+            if (payload.data.auditLogs?.length) setAuditLogs(payload.data.auditLogs);
+          }
+        }
+      } catch {
+        // Fallback to initial seeded store if offline
+      }
+    }
+
     async function initAuth() {
       try {
         const res = await fetch('/api/erp/auth/me');
@@ -253,6 +271,7 @@ export function ERPProvider({ children }: { children: React.ReactNode }) {
           const data = await res.json();
           if (data.authenticated && data.user) {
             setUser(data.user);
+            await hydrateErpData();
           }
         } else {
           const storedToken = localStorage.getItem('contec_erp_token');
@@ -260,6 +279,7 @@ export function ERPProvider({ children }: { children: React.ReactNode }) {
           if (storedToken && storedUser) {
             setToken(storedToken);
             setUser(JSON.parse(storedUser));
+            await hydrateErpData();
           } else {
             // Default active staff session for seamless dashboard access
             setUser(ENTERPRISE_USERS['admin@contec.com']);
@@ -602,6 +622,11 @@ export function ERPProvider({ children }: { children: React.ReactNode }) {
     setInvoices((prev) =>
       prev.map((inv) => (inv.id === id ? { ...inv, status } : inv))
     );
+    fetch('/api/erp/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'UPDATE_INVOICE_STATUS', payload: { id, status } }),
+    }).catch(() => {});
     logAuditEvent('INVOICE_STATUS_UPDATED', 'FINANCE', `Invoice ${id} marked as ${status}`);
   };
 
@@ -662,6 +687,11 @@ export function ERPProvider({ children }: { children: React.ReactNode }) {
         if (newQty === 0) status = 'CRITICAL';
         else if (newQty < item.minThreshold) status = 'LOW_STOCK';
         else status = 'OPTIMAL';
+        fetch('/api/erp/data', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'ADJUST_INVENTORY', payload: { id, quantity: newQty, status } }),
+        }).catch(() => {});
         return { ...item, quantity: newQty, status };
       })
     );
@@ -745,6 +775,11 @@ export function ERPProvider({ children }: { children: React.ReactNode }) {
     setWebsiteInquiries((prev) =>
       prev.map((inq) => (inq.id === id ? { ...inq, status } : inq))
     );
+    fetch('/api/erp/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'UPDATE_INQUIRY_STATUS', payload: { id, status } }),
+    }).catch(() => {});
     logAuditEvent('INQUIRY_STATUS_UPDATED', 'WEBSITE', `Client inquiry ${id} updated to ${status}`);
   };
 
