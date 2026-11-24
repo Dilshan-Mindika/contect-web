@@ -75,18 +75,9 @@ export default function Navbar() {
 
           {/* Right Action Button & Mobile Trigger */}
           <div className="flex items-center gap-2.5 sm:gap-3">
-            {/* Direct ERP Suite Enterprise Entrypoint */}
-            <Link
-              href="/erp"
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full border border-blue-500/40 text-blue-200 hover:text-white hover:bg-blue-600/25 text-xs font-bold backdrop-blur-xl bg-[#080e1c]/85 transition-all duration-300 shadow-md shadow-blue-950/40"
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              <span>ERP Suite</span>
-            </Link>
-
             <Link
               href="/contact"
-              className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-[#FFB800]/60 text-[#FFB800] hover:text-black hover:bg-[#FFB800] text-xs font-extrabold backdrop-blur-xl bg-[#080e1c]/85 transition-all duration-300 shadow-lg shadow-black/40 group"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-[#FFB800]/60 text-[#FFB800] hover:text-black hover:bg-[#FFB800] text-xs font-extrabold backdrop-blur-xl bg-[#080e1c]/85 transition-all duration-300 shadow-lg shadow-black/40 group"
             >
               <span>Book Consultation</span>
               <span className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">↗</span>
@@ -115,17 +106,6 @@ export default function Navbar() {
         <div className="fixed inset-0 z-40 bg-[#050811]/95 backdrop-blur-2xl md:hidden pt-24 px-6 flex flex-col justify-between pb-12 animate-fadeIn">
           <div className="flex flex-col gap-3">
             <span className="text-xs uppercase font-bold text-zinc-400 tracking-wider mb-2">Navigation</span>
-            <Link
-              href="/erp"
-              onClick={() => setMobileMenuOpen(false)}
-              className="px-4 py-3 rounded-2xl text-base font-bold flex items-center justify-between transition-all bg-[#0038B8]/30 text-[#FFB800] border border-[#0038B8]/50"
-            >
-              <span className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span>ERP Enterprise Suite</span>
-              </span>
-              <span className="text-xs font-mono px-2 py-0.5 rounded bg-white/10 text-white">v4.2</span>
-            </Link>
 
             {navLinks.map((item) => {
               const isActive = pathname === item.href;

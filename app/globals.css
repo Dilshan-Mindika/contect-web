@@ -45,24 +45,75 @@ body {
   display: inline-block;
 }
 
+/* Continuous Running Gradient Fluid Light Animations */
+@keyframes running-gradient-gold {
+  0% {
+    background-position: 0% center;
+  }
+  100% {
+    background-position: -200% center;
+  }
+}
+
+@keyframes running-gradient-blue {
+  0% {
+    background-position: 0% center;
+  }
+  100% {
+    background-position: -200% center;
+  }
+}
+
 .gradient-text-gold {
-  background: linear-gradient(135deg, #FFB800 0%, #FDE68A 50%, #60A5FA 100%);
+  background: linear-gradient(
+    90deg,
+    #FFB800 0%,
+    #FDE68A 20%,
+    #60A5FA 40%,
+    #FFFFFF 50%,
+    #60A5FA 60%,
+    #FDE68A 80%,
+    #FFB800 100%
+  );
+  background-size: 200% auto;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   text-shadow: none !important;
-  filter: drop-shadow(0 0 18px rgba(255, 184, 0, 0.4));
+  filter: drop-shadow(0 0 18px rgba(255, 184, 0, 0.45));
   display: inline-block;
+  animation: running-gradient-gold 4s linear infinite;
+  will-change: background-position;
 }
 
 .gradient-text-blue {
-  background: linear-gradient(135deg, #60A5FA 0%, #E2E8F0 50%, #FFB800 100%);
+  background: linear-gradient(
+    90deg,
+    #60A5FA 0%,
+    #93C5FD 20%,
+    #FDE68A 40%,
+    #FFFFFF 50%,
+    #FFB800 60%,
+    #93C5FD 80%,
+    #60A5FA 100%
+  );
+  background-size: 200% auto;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   text-shadow: none !important;
-  filter: drop-shadow(0 0 18px rgba(96, 165, 250, 0.4));
+  filter: drop-shadow(0 0 18px rgba(96, 165, 250, 0.45));
   display: inline-block;
+  animation: running-gradient-blue 4s linear infinite;
+  will-change: background-position;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gradient-text-gold,
+  .gradient-text-blue {
+    animation: none;
+    background-size: 100% auto;
+  }
 }
 
 .text-shadow-sub {
