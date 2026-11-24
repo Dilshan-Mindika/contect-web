@@ -249,8 +249,8 @@ export default function HomePage() {
           {/* Borderless Full-Screen Content Layer */}
           <div className="relative z-10 w-full h-full flex flex-col justify-between overflow-y-auto lg:overflow-hidden custom-scrollbar pt-20 sm:pt-24 lg:pt-24">
             
-            {/* ================= MAIN HERO BODY CONTENT ================= */}
-            <div className="relative z-20 w-full px-4 sm:px-8 lg:px-12 pt-2 sm:pt-4 flex-1 flex flex-col justify-between">
+            {/* ================= MAIN HERO BODY CONTENT (CONSTRAINED CONTAINER) ================= */}
+            <div className="relative z-20 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 sm:pt-4 flex-1 flex flex-col justify-between">
               
               {/* Top Row: Headline (Left) + Feature Glass Card (Right) */}
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 lg:gap-8 items-start">
@@ -264,7 +264,7 @@ export default function HomePage() {
                   </div>
 
                   {/* High-Contrast Oversized Brand Headline */}
-                  <h1 className="text-white font-extrabold uppercase text-3xl sm:text-5xl md:text-6xl lg:text-[60px] xl:text-[72px] leading-[0.96] tracking-[-0.03em]">
+                  <h1 className="text-white font-extrabold uppercase text-3xl sm:text-5xl md:text-5xl lg:text-[52px] xl:text-[62px] leading-[0.98] tracking-[-0.03em]">
                     <span className="block transition-all duration-300 drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">{currentStage.headlineLine1}</span>
                     <span className="block transition-all duration-300 gradient-text-gold">
                       {currentStage.headlineLine2}
@@ -299,7 +299,7 @@ export default function HomePage() {
 
                 {/* Right Column: Floating Top-Right Glass Card */}
                 <div className="lg:col-span-5 xl:col-span-5 flex justify-end">
-                  <div className="w-full max-w-[460px] rounded-[24px] sm:rounded-[28px] glass-panel border border-blue-500/30 p-4 sm:p-5 backdrop-blur-2xl bg-[#080e1c]/90 shadow-[0_16px_45px_rgba(0,0,0,0.85)] transition-all duration-300">
+                  <div className="w-full max-w-[420px] rounded-[24px] sm:rounded-[28px] glass-panel border border-blue-500/30 p-4 sm:p-5 backdrop-blur-2xl bg-[#080e1c]/90 shadow-[0_16px_45px_rgba(0,0,0,0.85)] transition-all duration-300">
                     
                     {/* Style/Phase Pill Chips */}
                     <div className="flex flex-wrap items-center gap-2 pb-3 border-b border-white/15">
@@ -426,8 +426,8 @@ export default function HomePage() {
 
             </div>
 
-            {/* ================= SCROLL STAGE STEPPER ================= */}
-            <div className="relative z-30 w-full px-4 sm:px-8 lg:px-12 pb-3 sm:pb-4 pt-1 flex flex-col sm:flex-row items-center justify-between gap-2.5 shrink-0">
+            {/* ================= SCROLL STAGE STEPPER (CONSTRAINED CONTAINER) ================= */}
+            <div className="relative z-30 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-3 sm:pb-4 pt-1 flex flex-col sm:flex-row items-center justify-between gap-2.5 shrink-0">
               <div className="flex items-center gap-2 bg-[#080e1c]/85 backdrop-blur-xl px-4 py-2 rounded-full border border-blue-500/30 shadow-lg">
                 <span className="text-[10px] uppercase font-bold text-zinc-300 tracking-wider mr-1">
                   Phase 0{currentStageIdx + 1}

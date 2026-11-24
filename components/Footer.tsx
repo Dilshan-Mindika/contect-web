@@ -14,12 +14,13 @@ export default function Footer() {
           {/* Col 1: Brand & Mission */}
           <div className="lg:col-span-2">
             <Link href="/" className="flex items-center gap-3 mb-4 group">
-              <div className="relative h-10 sm:h-12 w-36 sm:w-48">
+              <div className="relative h-10 sm:h-12 w-44 sm:w-52">
                 <Image
-                  src="/branding/logo nav.png"
+                  src="/branding/contec-white-logo.png"
                   alt="CONTEC Design & Build"
                   fill
-                  className="object-contain object-left filter brightness-[1.6] contrast-[1.2] drop-shadow-[0_0_12px_rgba(255,255,255,0.7)]"
+                  className="object-contain object-left"
+                  unoptimized
                 />
               </div>
             </Link>

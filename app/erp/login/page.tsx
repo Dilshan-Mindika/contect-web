@@ -57,13 +57,14 @@ export default function ERPLoginPage() {
       {/* Header */}
       <header className="relative z-10 p-6 max-w-7xl mx-auto w-full flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3">
-          <div className="relative h-9 w-36">
+          <div className="relative h-10 w-44">
             <Image
-              src="/branding/logo nav.png"
+              src="/branding/contec-white-logo.png"
               alt="CONTEC Design & Build"
               fill
-              className="object-contain drop-shadow-[0_0_8px_rgba(255,255,255,0.7)]"
+              className="object-contain object-left"
               priority
+              unoptimized
             />
           </div>
         </Link>
