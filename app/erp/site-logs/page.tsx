@@ -111,12 +111,8 @@ export default function SiteLogsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
         <div>
-          <div className="flex items-center gap-2 text-xs font-mono text-[#FFB800] uppercase tracking-wider">
-            <HardHat className="w-4 h-4" />
-            <span>Site QA/QC, Cube Tests & Safety Diary (CIDA Standards)</span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white mt-1">
-            Construction Daily Site Logs & Cube Tests
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-white">
+            Daily Site Logs & Inspection Diary
           </h1>
           <p className="text-xs sm:text-sm text-zinc-400 mt-0.5">
             Log shift workforce counts, concrete pour volumes, slump test ratings, NBRO 7/28-day cube strengths, and OSHA/CIDA compliance.

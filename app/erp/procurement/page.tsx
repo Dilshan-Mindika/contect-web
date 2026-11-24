@@ -117,12 +117,8 @@ export default function ProcurementPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
         <div>
-          <div className="flex items-center gap-2 text-xs font-mono text-[#FFB800] uppercase tracking-wider">
-            <ShoppingCart className="w-4 h-4" />
-            <span>Module 06 • Procurement, Purchasing & 3-Way Match Verification</span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white mt-1">
-            Requisitions, Purchase Orders & Supplier Auditing
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-white">
+            Procurement & Purchase Orders
           </h1>
           <p className="text-xs sm:text-sm text-zinc-400 mt-0.5">
             Manage site PRs, RFQ price comparisons, PO authorizations, Goods Received Notes (GRN), and 3-Way Matching for {activeCompany === 'CONSOLIDATED' ? 'All Companies' : currentComp?.tradeName}.

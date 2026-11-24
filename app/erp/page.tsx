@@ -221,36 +221,12 @@ export default function ERPDashboardPage() {
       {/* Welcome Banner */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-white/10">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0038B8]/20 border border-blue-500/30 text-xs font-semibold text-blue-300">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>CONTEC Staff Dashboard • Kandy Operations</span>
-          </div>
-
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white mt-2">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-white">
             Welcome back, {user?.name || 'Staff Member'}
           </h1>
           <p className="text-xs sm:text-sm text-zinc-400 mt-1">
             Department: <span className="text-[#FFB800] font-semibold">{user?.department || 'Executive'}</span> • Manage active construction projects, client inquiries, and public website content.
           </p>
-        </div>
-
-        {/* Quick Top Actions */}
-        <div className="flex items-center gap-2.5 flex-wrap">
-          <button
-            onClick={handleOpenAddProject}
-            className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#0038B8] to-[#1D4ED8] hover:from-[#1D4ED8] hover:to-[#2563EB] text-white text-xs font-bold border border-blue-400/40 flex items-center gap-1.5 shadow-md shadow-blue-900/40 transition-all cursor-pointer"
-          >
-            <Plus className="w-3.5 h-3.5 text-[#FFB800]" />
-            <span>Add Public Project</span>
-          </button>
-
-          <button
-            onClick={handleOpenAddService}
-            className="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-bold border border-white/20 flex items-center gap-1.5 transition-all cursor-pointer"
-          >
-            <Plus className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Add Service</span>
-          </button>
         </div>
       </div>
 
@@ -305,14 +281,10 @@ export default function ERPDashboardPage() {
       <div className="p-6 rounded-3xl bg-[#080e1c]/90 border border-blue-500/25 shadow-2xl space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
           <div>
-            <div className="flex items-center gap-2 text-xs font-bold uppercase text-[#FFB800] tracking-wider">
-              <Globe className="w-4 h-4" />
-              <span>Public Website Content Manager</span>
-            </div>
-            <h2 className="text-xl font-bold text-white mt-1">
-              Manage What Appears on Public Web Pages
+            <h2 className="text-xl font-bold text-white">
+              Public Website Content Manager
             </h2>
-            <p className="text-xs text-zinc-400 mt-0.5">
+            <p className="text-xs text-zinc-400 mt-1">
               Add, update, or remove projects shown on <span className="text-[#FFB800]">/projects</span> and services shown on <span className="text-[#FFB800]">/services</span>. Updates appear instantly on the live site.
             </p>
           </div>

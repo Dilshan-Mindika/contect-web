@@ -163,15 +163,8 @@ export default function QuotationsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
         <div>
-          <div className="flex items-center gap-2 text-xs font-mono text-[#FFB800] uppercase tracking-wider">
-            <FileText className="w-4 h-4" />
-            <span>Commercial Tenders & Cost Estimation (LKR)</span>
-            <span className="px-2 py-0.5 rounded text-[10px] bg-blue-500/20 text-blue-300 font-bold border border-blue-500/30">
-              CIDA CS2 STANDARDS
-            </span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white mt-1">
-            Construction Quotations & BOQ Estimating Engine
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-white">
+            Quotations & Itemized BOQ
           </h1>
           <p className="text-xs sm:text-sm text-zinc-400 mt-0.5">
             CESMM4 / SLS 573 Bill of Quantities generator, CIDA SBD-02 tax schedules, 1-click A4 PDF export, and direct email dispatch.

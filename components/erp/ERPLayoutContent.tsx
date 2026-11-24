@@ -346,15 +346,6 @@ export default function ERPLayoutContent({ children }: { children: React.ReactNo
                 </nav>
               </div>
             </div>
-
-            {/* Sidebar Footer */}
-            <div className="pt-4 border-t border-white/10 text-xs text-zinc-400 space-y-1">
-              <div className="flex items-center gap-2 font-medium text-white">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span>CONTEC Kandy Operations</span>
-              </div>
-              <p className="text-[11px] text-zinc-500">Design, Engineering &amp; Build</p>
-            </div>
           </div>
         </aside>
 

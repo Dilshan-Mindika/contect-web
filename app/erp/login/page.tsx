@@ -76,11 +76,6 @@ export default function ERPLoginPage() {
       <main className="relative z-10 max-w-5xl mx-auto w-full px-4 py-8 flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
         {/* Left: Friendly Team Overview */}
         <div className="flex-1 space-y-6 text-left">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-950/60 border border-blue-500/30 text-xs text-blue-300 font-medium">
-            <ShieldCheck className="w-4 h-4 text-[#FFB800]" />
-            <span>CONTEC Staff Portal</span>
-          </div>
-
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight">
             Team Workspace &amp; <span className="text-gradient-gold">Project Management</span>
           </h1>

@@ -209,12 +209,8 @@ export default function AuditAndVaultPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
         <div>
-          <div className="flex items-center gap-2 text-xs font-mono text-[#FFB800] uppercase tracking-wider">
-            <FolderLock className="w-4 h-4" />
-            <span>Module 12 • Enterprise Document Management & Audit Trail</span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white mt-1">
-            Central Document Vault & Cryptographic Audit Ledger
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-white">
+            Document Management & Audit Trail
           </h1>
           <p className="text-xs sm:text-sm text-zinc-400 mt-0.5">
             CIDA & ISO 9001:2015 audit-ready electronic document management, SHA-256 cryptographic provenance, multi-company isolation, and tamper-evident audit logs.

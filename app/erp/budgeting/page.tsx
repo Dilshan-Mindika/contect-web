@@ -53,12 +53,8 @@ export default function ProjectBudgetingCostControlPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
         <div>
-          <div className="flex items-center gap-2 text-xs font-mono text-[#FFB800] uppercase tracking-wider">
-            <Calculator className="w-4 h-4" />
-            <span>Module 09 • Project Budgeting, Variance Analysis & EVM Cost Control</span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white mt-1">
-            Budget Baselines, Actual Cost Feeds & EVM Forecasts
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-white">
+            Project Budgeting & Cost Control
           </h1>
           <p className="text-xs sm:text-sm text-zinc-400 mt-0.5">
             Compare locked baseline budgets against real-time actuals (Materials + Labour + Equipment + Subcontractors) and committed POs for {activeCompany === 'CONSOLIDATED' ? 'All Companies' : currentComp?.tradeName}.
@@ -196,35 +192,35 @@ export default function ProjectBudgetingCostControlPage() {
                   name: 'Direct Construction Materials',
                   budget: baseline?.materialsBudgetLkr || 1650000000,
                   spent: baseline?.actualMaterialsSpentLkr || 615000000,
-                  source: 'Module 07: Material Issue Notes (MIN)',
+                  source: 'Materials & Store Issue Notes (MIN)',
                 },
                 {
                   code: 'COST-02',
                   name: 'Site Labour Wages (15-Day Muster)',
                   budget: baseline?.labourBudgetLkr || 680000000,
                   spent: baseline?.actualLabourSpentLkr || 242000000,
-                  source: 'Module 05: Daily Muster Rolls & Wages',
+                  source: 'Site Labour Attendance & Wages',
                 },
                 {
                   code: 'COST-03',
                   name: 'Heavy Plant & Machinery Operations',
                   budget: baseline?.machineryBudgetLkr || 520000000,
                   spent: baseline?.actualMachinerySpentLkr || 198000000,
-                  source: 'Module 08: Fleet Telematics & Diesel',
+                  source: 'Machinery Fleet & Fuel Records',
                 },
                 {
                   code: 'COST-04',
                   name: 'Specialized Subcontractors',
                   budget: baseline?.subcontractorBudgetLkr || 720000000,
                   spent: baseline?.actualSubcontractSpentLkr || 288000000,
-                  source: 'Module 06: Procurement & Subcontracts',
+                  source: 'Procurement & Subcontractor Invoices',
                 },
                 {
                   code: 'COST-05',
                   name: 'Site Utilities, Water & Overheads',
                   budget: baseline?.siteOverheadBudgetLkr || 280000000,
                   spent: baseline?.actualOverheadSpentLkr || 120000000,
-                  source: 'Module 03: Cash & Petty Cash Books',
+                  source: 'Cash & Petty Cash Books',
                 },
               ].map((row) => {
                 const burnPct = Math.round((row.spent / row.budget) * 100);

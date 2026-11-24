@@ -107,12 +107,8 @@ export default function SiteLabourManagementPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
         <div>
-          <div className="flex items-center gap-2 text-xs font-mono text-[#FFB800] uppercase tracking-wider">
-            <Activity className="w-4 h-4" />
-            <span>Module 05 • Site Labour Management & 15-Day Wages</span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white mt-1">
-            Site Labour Muster, Wage Rates & Project Cost Posting
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-white">
+            Site Labour & Worker Attendance
           </h1>
           <p className="text-xs sm:text-sm text-zinc-400 mt-0.5">
             6-step daily attendance verification, 15-day half-monthly wages, advance recovery, and automatic posting to Project Cost ledger for {activeCompany === 'CONSOLIDATED' ? 'Consolidated Group' : currentComp?.tradeName}.

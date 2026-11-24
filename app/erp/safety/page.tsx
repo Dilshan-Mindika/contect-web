@@ -75,12 +75,8 @@ export default function HealthSafetyPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
         <div>
-          <div className="flex items-center gap-2 text-xs font-mono text-[#FFB800] uppercase tracking-wider">
-            <ShieldAlert className="w-4 h-4" />
-            <span>Module 11 • Health, Safety & Compliance (HSE / OSHA Standards)</span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white mt-1">
-            Site Safety Inspections, PPE & Zero-Harm Protocol
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-white">
+            Site Safety & Quality Compliance
           </h1>
           <p className="text-xs sm:text-sm text-zinc-400 mt-0.5">
             OSHA and Sri Lanka Factories Ordinance compliance, green-tag scaffolding audits, PPE issuance registers, and LTIR monitoring for {activeCompany === 'CONSOLIDATED' ? 'All Companies' : currentComp?.tradeName}.

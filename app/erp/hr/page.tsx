@@ -97,12 +97,8 @@ export default function HRPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
         <div>
-          <div className="flex items-center gap-2 text-xs font-mono text-[#FFB800] uppercase tracking-wider">
-            <Users className="w-4 h-4" />
-            <span>Module 04 • Human Resource Management & Sri Lankan Statutory Payroll</span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white mt-1">
-            Workforce Directory, EPF/ETF Engine & HR Ops
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-white">
+            Team Directory & Staff Management
           </h1>
           <p className="text-xs sm:text-sm text-zinc-400 mt-0.5">
             Oversee staff profiles, statutory Central Bank EPF (12% + 8%) & ETF (3%), leave approvals, and monthly payslips for {activeCompany === 'CONSOLIDATED' ? 'All Companies' : currentComp?.tradeName}.

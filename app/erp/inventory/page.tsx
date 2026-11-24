@@ -104,12 +104,8 @@ export default function InventoryPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
         <div>
-          <div className="flex items-center gap-2 text-xs font-mono text-[#FFB800] uppercase tracking-wider">
-            <Boxes className="w-4 h-4" />
-            <span>Module 07 • Inventory, Multi-Store Warehouses & Material Issues</span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white mt-1">
-            Raw Material Stockpiles & Site Store Logistics
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-white">
+            Materials & Inventory Management
           </h1>
           <p className="text-xs sm:text-sm text-zinc-400 mt-0.5">
             Monitor Tor steel rebar, Tokyo Super cement, M-sand, multi-store stock transfers, and Material Issue Notes (MIN) for {activeCompany === 'CONSOLIDATED' ? 'All Companies' : currentComp?.tradeName}.

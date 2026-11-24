@@ -95,12 +95,8 @@ export default function GovernmentContractsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
         <div>
-          <div className="flex items-center gap-2 text-xs font-mono text-[#FFB800] uppercase tracking-wider">
-            <FileText className="w-4 h-4" />
-            <span>Module 10 • Government Contract Management & CIDA Directive 102/2024 IPC Engine</span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white mt-1">
-            CIDA 2024 Interim Certificates, Bonds & Claims
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-white">
+            Contracts & Payment Certificates
           </h1>
           <p className="text-xs sm:text-sm text-zinc-400 mt-0.5">
             Full compliance with CIDA Directive Gov/CIDA/Directive/102/2024 (24 Sept 2024), FIDIC Red Book, 2.5% SSCL, 18% VAT, and 5% retention for {activeCompany === 'CONSOLIDATED' ? 'All Companies' : currentComp?.tradeName}.
