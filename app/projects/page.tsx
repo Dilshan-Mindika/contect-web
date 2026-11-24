@@ -1,110 +1,36 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-
-interface Project {
-  id: string;
-  title: string;
-  category: string;
-  location: string;
-  year: string;
-  area: string;
-  solarCapacity: string;
-  energyRating: string;
-  image: string;
-  tagline: string;
-  description: string;
-  highlights: string[];
-}
-
-const PROJECTS: Project[] = [
-  {
-    id: "hanthana-sanctuary",
-    title: "Hanthana Hillside Sanctuary",
-    category: "Hillside",
-    location: "Hanthana Mountain Range, Kandy",
-    year: "2025",
-    area: "6,400 sq ft",
-    solarCapacity: "42 kW Rooftop Solar System",
-    energyRating: "Eco-Friendly Living",
-    image: "/images/project-alpine.jpg",
-    tagline: "Modern hillside home designed with scenic mountain valley views.",
-    description: "Built with reinforced rock-anchored foundations, panoramic glass windows overlooking the Kandy mountain valley, and natural breeze ventilation.",
-    highlights: [
-      "Infinity pool & wide scenic viewing deck",
-      "Integrated solar power & rainwater storage",
-      "Local Kumbuk timber & durable concrete",
-    ],
-  },
-  {
-    id: "anniewatte-villa",
-    title: "Anniewatte Modern Residence",
-    category: "Residential",
-    location: "Anniewatte, Kandy",
-    year: "2025",
-    area: "5,800 sq ft",
-    solarCapacity: "38 kW Smart Solar Array",
-    energyRating: "Sustainable Luxury",
-    image: "/images/project-coastal.jpg",
-    tagline: "Contemporary multi-level luxury villa with peaceful courtyards.",
-    description: "Designed for bright open-plan living with indoor water features, custom teak carpentry, and energy-efficient double-glazed glass.",
-    highlights: [
-      "Indoor garden courtyard & koi pond",
-      "Natural airflow & smart lighting controls",
-      "Full turnkey interior design & execution",
-    ],
-  },
-  {
-    id: "victoria-estate",
-    title: "Victoria Lakefront Retreat",
-    category: "Hillside",
-    location: "Digana / Victoria Golf Resort, Kandy",
-    year: "2024",
-    area: "4,800 sq ft",
-    solarCapacity: "28 kW Solar Microgrid",
-    energyRating: "Solar Powered",
-    image: "/images/project-forest.jpg",
-    tagline: "Lakefront resort home framing panoramic lake and golf course views.",
-    description: "Constructed with natural stone retaining walls, reinforced steel framing, and open-air rooftop entertaining terraces.",
-    highlights: [
-      "Hillside multi-tier terraced design",
-      "Battery backup storage & water filtration",
-      "Durable natural timber and stone finishes",
-    ],
-  },
-  {
-    id: "commercial-kandy",
-    title: "Kandy Commercial & Medical Suites",
-    category: "Commercial",
-    location: "George E. De Silva Mawatha, Kandy",
-    year: "2024",
-    area: "12,500 sq ft",
-    solarCapacity: "65 kW Rooftop Solar Setup",
-    energyRating: "High Energy Efficiency",
-    image: "/images/project-penthouse.jpg",
-    tagline: "Modern 5-storey commercial complex with reinforced concrete framing.",
-    description: "Turnkey multi-storey commercial facility featuring passenger elevators, basement parking, and high-performance sound-insulated glass facades.",
-    highlights: [
-      "Turnkey structural, electrical & fire safety execution",
-      "Modern curtain wall glass exterior",
-      "House Master comprehensive facility management",
-    ],
-  },
-];
-
-const CATEGORIES = ["All", "Hillside", "Residential", "Commercial"];
+import { getPublicProjects, DEFAULT_PROJECTS, PublicProject } from "@/lib/publicData";
 
 export default function ProjectsPage() {
+  const [projectsList, setProjectsList] = useState<PublicProject[]>(DEFAULT_PROJECTS);
   const [activeCategory, setActiveCategory] = useState("All");
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [selectedProject, setSelectedProject] = useState<PublicProject | null>(null);
+
+  useEffect(() => {
+    setProjectsList(getPublicProjects());
+
+    const handleUpdate = () => {
+      setProjectsList(getPublicProjects());
+    };
+    window.addEventListener("contec_projects_updated", handleUpdate);
+    window.addEventListener("storage", handleUpdate);
+    return () => {
+      window.removeEventListener("contec_projects_updated", handleUpdate);
+      window.removeEventListener("storage", handleUpdate);
+    };
+  }, []);
+
+  const categories = ["All", ...Array.from(new Set(projectsList.map((p) => p.category)))];
 
   const filteredProjects = activeCategory === "All"
-    ? PROJECTS
-    : PROJECTS.filter((p) => p.category === activeCategory);
+    ? projectsList
+    : projectsList.filter((p) => p.category === activeCategory);
 
   return (
     <div className="min-h-screen bg-[#050811] text-white flex flex-col justify-between">
@@ -129,7 +55,7 @@ export default function ProjectsPage() {
 
           {/* Category Filter Pills */}
           <div className="flex flex-wrap gap-2.5">
-            {CATEGORIES.map((cat) => (
+            {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
@@ -139,7 +65,7 @@ export default function ProjectsPage() {
                     : "bg-[#080e1c]/80 text-zinc-300 hover:bg-white/15 hover:text-white border border-blue-500/20"
                 }`}
               >
-                {cat === "All" ? "All Projects" : cat === "Hillside" ? "Hillside Homes" : cat === "Residential" ? "Residential Homes" : "Commercial Buildings"}
+                {cat === "All" ? "All Projects" : cat}
               </button>
             ))}
           </div>

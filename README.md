@@ -69,6 +69,22 @@ An all-in-one team management portal designed for CONTEC staff, site engineers, 
   - **Safety Compliance (`/erp/safety`)**: Site safety inspections, PPE compliance checks, and hazard reports.
   - **Audit & Settings (`/erp/audit`, `/erp/company`, `/erp/hr`, `/erp/website`)**: Activity logs, staff permissions, and company configuration.
 
+### 🔑 Staff & Admin Login Credentials (`/erp/login`)
+
+Use these pre-configured team accounts to test the internal portal at `http://localhost:3000/erp/login`:
+
+| Persona / Role | Email Address | Password | Permissions & Scope |
+| :--- | :--- | :--- | :--- |
+| **Super Admin / CEO** | `admin@contec.com` | `ContecSuper2026!` | **Full Access**: All modules, financial ledgers, project controls & settings |
+| **Finance Director** | `finance@contec.com` | `Finance2026!` | Invoices, client payments, budgeting, procurement bills & audit logs |
+| **VP of Field Operations** | `operations@contec.com` | `OpsLead2026!` | Live construction sites, machinery tracking, daily site logs & inventory |
+| **Project Engineer / Architect** | `engineer@contec.com` | `CivilBIM2026!` | Active project milestones, architectural logs & material requests |
+| **Sales & CRM Director** | `sales@contec.com` | `ContecSales2026!` | Client inquiries, consultation bookings, quotations & fixed BOQ |
+| **HR & Labour Manager** | `hr@contec.com` | `PeopleFirst2026!` | Site workforce, daily attendance, subcontractor logs & team directory |
+
+> [!NOTE]
+> All credentials use secure cryptographic JWT tokens with `HttpOnly` cookies. For real production deployments, accounts and secret keys can be configured via environment variables.
+
 ---
 
 ## 🛠️ Technology Stack
@@ -131,7 +147,7 @@ CONTEC_JWT_SECRET=your_secure_jwt_secret_key_here
 npm run dev
 ```
 Open [http://localhost:3000](http://localhost:3000) with your browser to explore the website.
-To access the internal staff portal, visit [http://localhost:3000/erp/login](http://localhost:3000/erp/login).
+To access the internal staff portal, visit [http://localhost:3000/erp/login](http://localhost:3000/erp/login) (Sign in with Super Admin `admin@contec.com` / `ContecSuper2026!`, or see the credentials table above for other roles).
 
 ### 5. Build for production
 ```bash

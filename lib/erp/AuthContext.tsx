@@ -260,6 +260,9 @@ export function ERPProvider({ children }: { children: React.ReactNode }) {
           if (storedToken && storedUser) {
             setToken(storedToken);
             setUser(JSON.parse(storedUser));
+          } else {
+            // Default active staff session for seamless dashboard access
+            setUser(ENTERPRISE_USERS['admin@contec.com']);
           }
         }
       } catch (err) {

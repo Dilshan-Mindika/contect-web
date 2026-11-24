@@ -1,78 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-
-const SERVICES = [
-  {
-    id: "design-build",
-    badge: "STAGE 01",
-    title: "Architectural Design & 3D House Plans",
-    desc: "Custom floor plans, photorealistic 3D views, land survey checks, and government municipal council approvals. We design living spaces tailored to Sri Lanka's tropical climate and hillside landscapes.",
-    image: "/images/hero-main.jpg",
-    features: [
-      "Photorealistic 3D Exterior & Interior Designs",
-      "Hillside Land & Slope Stability Planning",
-      "Municipal Council & Government Approvals",
-      "Natural Sunlight & Cross-Ventilation Planning",
-    ],
-  },
-  {
-    id: "construction",
-    badge: "STAGE 02",
-    title: "Turnkey House & Commercial Construction",
-    desc: "Complete building construction from foundation to final key handover. Built with certified structural engineering, high-strength steel reinforcement, premium grade concrete, and skilled craftsmanship.",
-    image: "/images/craftsmanship-detail.jpg",
-    features: [
-      "Custom Hillside Villas & Luxury Residences",
-      "Commercial & Multi-Storey Buildings",
-      "Guaranteed Fixed-Price & Timely Handover",
-      "25-Year Structural Warranty on Foundations & Frames",
-    ],
-  },
-  {
-    id: "renovation",
-    badge: "STAGE 03",
-    title: "Home Renovation, Remodeling & Extensions",
-    desc: "Transforming existing properties into beautiful, functional spaces. We specialize in modern kitchens, designer bathrooms, structural wall changes, room extensions, and rooftop leisure terraces.",
-    image: "/images/project-penthouse.jpg",
-    features: [
-      "Modern Kitchen & Luxury Bathroom Remodeling",
-      "Room Additions & Upper-Floor Extensions",
-      "Rooftop Terraces & Balconies",
-      "Heritage Restorations & Modern Upgrades",
-    ],
-  },
-  {
-    id: "housemaster",
-    badge: "STAGE 04",
-    title: "House Master Kandy — Complete Home Care & Maintenance",
-    desc: "Professional property care to keep your building leak-free and in top condition. Our qualified team handles roof waterproofing, damp proofing, electrical and plumbing repairs, exterior painting, and routine maintenance.",
-    image: "/images/material-preview.jpg",
-    features: [
-      "Annual Roof & Leakage Diagnostic Inspections",
-      "Advanced Roof Waterproofing & Damp Proofing",
-      "Full Electrical, Plumbing & Water Systems Repair",
-      "Weatherproof Exterior Painting & Wall Protection",
-    ],
-  },
-  {
-    id: "sustainable",
-    badge: "STAGE 05",
-    title: "Solar Power Systems & Hillside Retaining Walls",
-    desc: "Rooftop solar electricity with battery backup, rainwater harvesting systems, and strong reinforced retaining walls engineered for heavy monsoon rains and lasting safety.",
-    image: "/images/project-forest.jpg",
-    features: [
-      "Rooftop Solar & Hybrid Battery Backup",
-      "Reinforced Retaining Walls & Slope Anchoring",
-      "Rainwater Harvesting & Water Filtration",
-      "Natural Airflow & Energy-Efficient Living",
-    ],
-  },
-];
+import { getPublicServices, DEFAULT_SERVICES, PublicService } from "@/lib/publicData";
 
 const FAQS = [
   {
@@ -94,7 +27,22 @@ const FAQS = [
 ];
 
 export default function ServicesPage() {
+  const [servicesList, setServicesList] = useState<PublicService[]>(DEFAULT_SERVICES);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+
+  useEffect(() => {
+    setServicesList(getPublicServices());
+
+    const handleUpdate = () => {
+      setServicesList(getPublicServices());
+    };
+    window.addEventListener("contec_services_updated", handleUpdate);
+    window.addEventListener("storage", handleUpdate);
+    return () => {
+      window.removeEventListener("contec_services_updated", handleUpdate);
+      window.removeEventListener("storage", handleUpdate);
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#050811] text-white flex flex-col justify-between">
@@ -119,7 +67,7 @@ export default function ServicesPage() {
 
           {/* Quick Service Anchor Navigation */}
           <div className="flex flex-wrap gap-3">
-            {SERVICES.map((s) => (
+            {servicesList.map((s) => (
               <a
                 key={s.id}
                 href={`#${s.id}`}
@@ -133,7 +81,7 @@ export default function ServicesPage() {
 
         {/* Detailed Service Cards */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16">
-          {SERVICES.map((service, idx) => {
+          {servicesList.map((service, idx) => {
             const isEven = idx % 2 === 1;
             return (
               <div

@@ -8,7 +8,6 @@ import { useERP } from '@/lib/erp/AuthContext';
 import { ENTERPRISE_USERS } from '@/lib/erp/auth';
 import {
   LayoutDashboard,
-  TrendingUp,
   CreditCard,
   HardHat,
   Boxes,
@@ -33,27 +32,28 @@ import {
   Layers,
 } from 'lucide-react';
 
-const CORE_MODULES = [
-  { moduleNumber: '01', label: 'Company & Admin', href: '/erp/company', icon: Building2, badge: 'Multi-Co' },
-  { moduleNumber: '02', label: 'Project Management', href: '/erp/projects', icon: HardHat, badge: 'BIM / 360°' },
-  { moduleNumber: '03', label: 'Accounting & Finance', href: '/erp/finance', icon: CreditCard, badge: 'Double-Entry' },
-  { moduleNumber: '04', label: 'HR & Workforce', href: '/erp/hr', icon: Users, badge: 'EPF/ETF' },
-  { moduleNumber: '05', label: 'Site Labour & Wages', href: '/erp/site-labour', icon: Activity, badge: '15-Day' },
-  { moduleNumber: '06', label: 'Procurement & POs', href: '/erp/procurement', icon: ShoppingCart, badge: '3-Way Match' },
-  { moduleNumber: '07', label: 'Inventory & Stores', href: '/erp/inventory', icon: Boxes, badge: 'Multi-Store' },
-  { moduleNumber: '08', label: 'Plant & Machinery', href: '/erp/machinery', icon: Wrench, badge: 'Telematics' },
-  { moduleNumber: '09', label: 'Cost Control & EVM', href: '/erp/budgeting', icon: Calculator, badge: 'EVM CPI' },
-  { moduleNumber: '10', label: 'Govt Contracts & IPC', href: '/erp/contracts', icon: FileText, badge: 'CIDA 102' },
-  { moduleNumber: '11', label: 'Health & Safety HSE', href: '/erp/safety', icon: ShieldAlert, badge: 'LTIR 0.0' },
-  { moduleNumber: '12', label: 'Document Vault & Audit', href: '/erp/audit', icon: ShieldCheck, badge: 'Immutable' },
+const PRIMARY_NAV = [
+  { label: 'Dashboard Overview', href: '/erp', icon: LayoutDashboard },
+  { label: 'Website Projects & Services', href: '/erp/website', icon: Globe },
+  { label: 'Client Inquiries & CRM', href: '/erp/crm', icon: Users },
+  { label: 'Quotations & Fixed BOQ', href: '/erp/quotations', icon: FileText },
 ];
 
-const SECONDARY_LINKS = [
-  { label: 'Executive Command', href: '/erp', icon: LayoutDashboard, badge: 'Live' },
-  { label: 'Quotations & BOQ', href: '/erp/quotations', icon: FileText, badge: 'PDF' },
-  { label: 'Site Shift Diary', href: '/erp/site-logs', icon: Clock, badge: 'QC Cubes' },
-  { label: 'Commercial CRM', href: '/erp/crm', icon: TrendingUp, badge: 'Tenders' },
-  { label: 'Website CMS', href: '/erp/website', icon: Globe, badge: 'Live' },
+const SITE_OPERATIONS_NAV = [
+  { label: 'Construction Projects', href: '/erp/projects', icon: HardHat },
+  { label: 'Daily Site Logs', href: '/erp/site-logs', icon: Clock },
+  { label: 'Materials & Inventory', href: '/erp/inventory', icon: Boxes },
+  { label: 'Machinery & Vehicles', href: '/erp/machinery', icon: Wrench },
+  { label: 'Procurement & Orders', href: '/erp/procurement', icon: ShoppingCart },
+  { label: 'Site Labour & Workers', href: '/erp/site-labour', icon: Activity },
+];
+
+const MANAGEMENT_NAV = [
+  { label: 'Invoices & Billing', href: '/erp/finance', icon: CreditCard },
+  { label: 'Cost Control & Budget', href: '/erp/budgeting', icon: Calculator },
+  { label: 'Site Safety & Checks', href: '/erp/safety', icon: ShieldAlert },
+  { label: 'Team Directory', href: '/erp/hr', icon: Users },
+  { label: 'Company Profile & Info', href: '/erp/company', icon: Building2 },
 ];
 
 export default function ERPLayoutContent({ children }: { children: React.ReactNode }) {
@@ -77,8 +77,8 @@ export default function ERPLayoutContent({ children }: { children: React.ReactNo
     return (
       <div className="min-h-screen bg-[#050811] flex items-center justify-center">
         <div className="flex flex-col items-center gap-4 text-center">
-          <div className="w-12 h-12 border-2 border-[#FFB800] border-t-transparent rounded-full animate-spin" />
-          <p className="text-zinc-400 font-mono text-sm tracking-wider">Verifying Enterprise Cryptographic Credentials...</p>
+          <div className="w-10 h-10 border-2 border-[#FFB800] border-t-transparent rounded-full animate-spin" />
+          <p className="text-zinc-400 text-sm">Loading staff dashboard...</p>
         </div>
       </div>
     );
@@ -88,9 +88,9 @@ export default function ERPLayoutContent({ children }: { children: React.ReactNo
 
   return (
     <div className="min-h-screen bg-[#050811] text-[#f4f4f7] flex flex-col antialiased">
-      {/* Top Enterprise Bar */}
+      {/* Top Header Bar */}
       <header className="sticky top-0 z-40 h-16 bg-[#080e1c]/95 backdrop-blur-xl border-b border-white/10 px-4 sm:px-6 flex items-center justify-between">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className="lg:hidden p-2 text-zinc-300 hover:text-white rounded-lg hover:bg-white/5 transition-colors"
@@ -99,56 +99,49 @@ export default function ERPLayoutContent({ children }: { children: React.ReactNo
             {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
 
+          {/* Official CONTEC Navbar Logo matching main site */}
           <Link href="/erp" className="flex items-center gap-3 group">
-            <div className="relative h-8 w-28 sm:w-36">
+            <div className="relative h-10 w-44 sm:w-52 transition-transform duration-300 group-hover:scale-105 flex items-center">
               <Image
-                src="/branding/logo nav.png"
-                alt="CONTEC Enterprise"
+                src="/branding/contec-white-logo.png"
+                alt="CONTEC Design & Build"
                 fill
-                className="object-contain drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]"
+                className="object-contain object-left"
                 priority
+                unoptimized
               />
             </div>
-            <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold tracking-wider uppercase bg-[#FFB800]/15 text-[#FFB800] border border-[#FFB800]/40">
-              12 Modules • Multi-Co
-            </span>
           </Link>
         </div>
 
         {/* Center / Right controls */}
-        <div className="flex items-center gap-2 sm:gap-4">
-          {/* Multi-Company Switcher Dropdown */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Company / Division Switcher */}
           <div className="relative">
             <button
               onClick={() => {
                 setCompanyMenuOpen(!companyMenuOpen);
                 setPersonaMenuOpen(false);
               }}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gradient-to-r from-blue-950/60 to-indigo-950/40 hover:from-blue-900/60 hover:to-indigo-900/50 border border-blue-500/30 text-xs text-zinc-200 transition-all shadow-sm"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-zinc-200 transition-all"
             >
               <Building2 className="w-3.5 h-3.5 text-[#FFB800]" />
               <div className="text-left hidden sm:block">
-                <div className="text-[9px] font-mono uppercase text-blue-300 leading-none">Active Company</div>
-                <div className="font-bold text-white text-xs truncate max-w-[150px] md:max-w-[200px]">
+                <div className="text-[9px] uppercase text-zinc-400 font-medium">Division</div>
+                <div className="font-semibold text-white text-xs truncate max-w-[140px] md:max-w-[180px]">
                   {activeCompany === 'CONSOLIDATED'
-                    ? '🏢 Consolidated Group'
+                    ? 'All Divisions'
                     : currentCompProfile?.tradeName || activeCompany}
                 </div>
               </div>
-              <span className="sm:hidden font-bold text-white text-xs">
-                {activeCompany === 'COMP_A' ? 'Co. A' : activeCompany === 'COMP_B' ? 'Co. B' : 'Group'}
-              </span>
               <ChevronDown className="w-3.5 h-3.5 text-zinc-400" />
             </button>
 
             {companyMenuOpen && (
-              <div className="absolute right-0 mt-2 w-80 rounded-xl bg-[#080f24] border border-blue-500/30 shadow-2xl p-2 z-50 animate-fadeIn">
+              <div className="absolute right-0 mt-2 w-72 rounded-xl bg-[#080f24] border border-white/15 shadow-2xl p-2 z-50 animate-fadeIn">
                 <div className="px-3 py-2 border-b border-white/10 mb-1">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-mono uppercase text-blue-300 tracking-wider">Multi-Company Switcher</span>
-                    <Layers className="w-3.5 h-3.5 text-[#FFB800]" />
-                  </div>
-                  <p className="text-[11px] text-zinc-400 mt-0.5">Switch active legal entity or view consolidated group reports</p>
+                  <span className="text-xs font-bold text-white block">Operating Division</span>
+                  <p className="text-[11px] text-zinc-400">Select branch or view all company operations</p>
                 </div>
                 <div className="space-y-1">
                   {companies.map((comp) => {
@@ -162,27 +155,16 @@ export default function ERPLayoutContent({ children }: { children: React.ReactNo
                         }}
                         className={`w-full text-left p-2.5 rounded-lg text-xs transition-all ${
                           isSelected
-                            ? 'bg-blue-600/30 border border-blue-400 text-white font-bold'
+                            ? 'bg-[#0038B8]/30 border border-blue-400 text-white font-bold'
                             : 'hover:bg-white/5 text-zinc-300 border border-transparent'
                         }`}
                       >
-                        <div className="flex items-center justify-between">
-                          <span className="font-bold text-white">{comp.tradeName}</span>
-                          <span className="text-[9px] px-1.5 py-0.5 rounded font-mono bg-[#FFB800]/20 text-[#FFB800] border border-[#FFB800]/40">
-                            {comp.id === 'COMP_A' ? 'Co. A (CS2)' : 'Co. B (EM1)'}
-                          </span>
-                        </div>
-                        <div className="text-[10px] text-zinc-400 truncate mt-0.5">{comp.name}</div>
-                        <div className="text-[9px] font-mono text-zinc-400 mt-1 flex items-center gap-2">
-                          <span>BR: {comp.regNumber}</span>
-                          <span>•</span>
-                          <span>TIN: {comp.tinNumber}</span>
-                        </div>
+                        <div className="font-semibold text-white">{comp.tradeName}</div>
+                        <div className="text-[10px] text-zinc-400 mt-0.5">{comp.name}</div>
                       </button>
                     );
                   })}
 
-                  {/* Consolidated View Toggle */}
                   <button
                     onClick={() => {
                       setActiveCompany('CONSOLIDATED');
@@ -190,18 +172,13 @@ export default function ERPLayoutContent({ children }: { children: React.ReactNo
                     }}
                     className={`w-full text-left p-2.5 rounded-lg text-xs transition-all mt-1 ${
                       activeCompany === 'CONSOLIDATED'
-                        ? 'bg-purple-600/30 border border-purple-400 text-white font-bold'
+                        ? 'bg-blue-600/30 border border-blue-400 text-white font-bold'
                         : 'hover:bg-white/5 text-zinc-300 border border-white/5'
                     }`}
                   >
-                    <div className="flex items-center justify-between">
-                      <span className="font-bold text-purple-300">🏢 Consolidated Group Intelligence</span>
-                      <span className="text-[9px] px-1.5 py-0.5 rounded font-mono bg-purple-500/20 text-purple-300">
-                        Holding
-                      </span>
-                    </div>
+                    <div className="font-semibold text-blue-300">🏢 Combined Overview</div>
                     <div className="text-[10px] text-zinc-400 mt-0.5">
-                      Combined Financial Statements, Inter-Company Eliminations & Group Audit
+                      All projects and financial metrics across CONTEC
                     </div>
                   </button>
                 </div>
@@ -209,31 +186,30 @@ export default function ERPLayoutContent({ children }: { children: React.ReactNo
             )}
           </div>
 
-          {/* Persona Switcher Dropdown */}
+          {/* User Switcher */}
           <div className="relative">
             <button
               onClick={() => {
                 setPersonaMenuOpen(!personaMenuOpen);
                 setCompanyMenuOpen(false);
               }}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/15 text-xs text-zinc-200 transition-colors"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-zinc-200 transition-colors"
             >
               <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="hidden md:inline text-zinc-400">Persona:</span>
-              <span className="font-semibold text-white truncate max-w-[110px] sm:max-w-none">
-                {user?.name || 'Switch Role'}
-              </span>
+              <div className="text-left hidden sm:block">
+                <div className="text-[9px] uppercase text-zinc-400 font-medium">Logged In As</div>
+                <div className="font-semibold text-white text-xs truncate max-w-[120px]">
+                  {user?.name || 'Staff User'}
+                </div>
+              </div>
               <ChevronDown className="w-3.5 h-3.5 text-zinc-400" />
             </button>
 
             {personaMenuOpen && (
               <div className="absolute right-0 mt-2 w-72 rounded-xl bg-[#091124] border border-white/15 shadow-2xl p-2 z-50 animate-fadeIn">
                 <div className="px-3 py-2 border-b border-white/10 mb-1">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-mono uppercase text-zinc-400 tracking-wider">Fast Role Switcher</span>
-                    <Sparkles className="w-3 h-3 text-[#FFB800]" />
-                  </div>
-                  <p className="text-[11px] text-zinc-400 mt-0.5">Test RBAC permissions instantly</p>
+                  <span className="text-xs font-bold text-white block">Switch Staff Account</span>
+                  <p className="text-[11px] text-zinc-400">View dashboard from different department roles</p>
                 </div>
                 <div className="space-y-1">
                   {Object.values(ENTERPRISE_USERS).map((persona) => {
@@ -255,9 +231,6 @@ export default function ERPLayoutContent({ children }: { children: React.ReactNo
                           <div className="font-medium text-white">{persona.name}</div>
                           <div className="text-[10px] text-zinc-400">{persona.title}</div>
                         </div>
-                        <span className="text-[9px] px-1.5 py-0.5 rounded font-mono bg-white/10 text-[#FFB800]">
-                          {persona.role.split('_')[0]}
-                        </span>
                       </button>
                     );
                   })}
@@ -266,22 +239,15 @@ export default function ERPLayoutContent({ children }: { children: React.ReactNo
             )}
           </div>
 
-          {/* User badge */}
-          <div className="hidden lg:flex items-center gap-2 pl-3 border-l border-white/10">
-            <div className="text-right">
-              <div className="text-xs font-semibold text-white">{user?.name}</div>
-              <div className="text-[10px] font-mono text-[#FFB800]">{user?.role}</div>
-            </div>
-          </div>
-
-          {/* Return to Public Portal */}
+          {/* View Public Website */}
           <Link
             href="/"
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-zinc-300 hover:text-white bg-white/5 hover:bg-white/10 rounded-lg border border-white/10 transition-colors"
-            title="Return to Main Website"
+            target="_blank"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-zinc-200 hover:text-white bg-white/5 hover:bg-white/10 rounded-xl border border-white/10 transition-colors"
+            title="Open Public Website"
           >
-            <ExternalLink className="w-3.5 h-3.5 text-zinc-400" />
-            <span className="hidden sm:inline">Public Site</span>
+            <ExternalLink className="w-3.5 h-3.5 text-[#FFB800]" />
+            <span className="hidden sm:inline">Public Website</span>
           </Link>
 
           {/* Logout */}
@@ -290,8 +256,8 @@ export default function ERPLayoutContent({ children }: { children: React.ReactNo
               await logout();
               router.push('/erp/login');
             }}
-            className="p-2 text-zinc-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
-            title="Secure Logout"
+            className="p-2 text-zinc-400 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition-colors cursor-pointer"
+            title="Sign Out"
           >
             <LogOut className="w-4 h-4" />
           </button>
@@ -302,38 +268,19 @@ export default function ERPLayoutContent({ children }: { children: React.ReactNo
       <div className="flex-1 flex overflow-hidden">
         {/* Sidebar */}
         <aside
-          className={`fixed inset-y-0 left-0 z-30 w-72 bg-[#070c18] border-r border-white/10 pt-16 lg:pt-0 transform transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${
+          className={`fixed inset-y-0 left-0 z-30 w-64 bg-[#070c18] border-r border-white/10 pt-16 lg:pt-0 transform transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${
             sidebarOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
         >
           <div className="h-full flex flex-col justify-between p-4 overflow-y-auto">
-            <div className="space-y-5">
-              {/* Active Entity Info Badge */}
-              <div className="p-3 rounded-xl bg-gradient-to-br from-blue-950/40 via-indigo-950/20 to-[#040813] border border-blue-500/20">
-                <div className="flex items-center justify-between text-xs font-semibold text-blue-300">
-                  <span className="font-mono text-[10px] uppercase text-[#FFB800]">Entity Context</span>
-                  <Lock className="w-3 h-3 text-emerald-400" />
-                </div>
-                <div className="font-bold text-white text-xs mt-1 truncate">
-                  {activeCompany === 'CONSOLIDATED'
-                    ? 'Consolidated Holding View'
-                    : currentCompProfile?.name}
-                </div>
-                <div className="text-[10px] text-zinc-400 font-mono mt-0.5">
-                  {activeCompany === 'CONSOLIDATED'
-                    ? 'Group Elimination Active'
-                    : `CIDA: ${currentCompProfile?.cidaGrade?.split(' ')[0]} • ${currentCompProfile?.vatNumber}`}
-                </div>
-              </div>
-
-              {/* 12 Core Construction Modules */}
+            <div className="space-y-6">
+              {/* Primary Navigation */}
               <div>
-                <div className="text-[10px] font-mono uppercase text-zinc-400 tracking-wider px-3 mb-2 flex items-center justify-between">
-                  <span>12 Core Modules</span>
-                  <span className="text-[#FFB800]">v4.2</span>
+                <div className="text-[10px] uppercase font-bold text-[#FFB800] tracking-wider px-3 mb-2">
+                  Main Navigation
                 </div>
                 <nav className="space-y-1">
-                  {CORE_MODULES.map((item) => {
+                  {PRIMARY_NAV.map((item) => {
                     const Icon = item.icon;
                     const isActive = pathname === item.href;
                     return (
@@ -341,41 +288,27 @@ export default function ERPLayoutContent({ children }: { children: React.ReactNo
                         key={item.href}
                         href={item.href}
                         onClick={() => setSidebarOpen(false)}
-                        className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
+                        className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
                           isActive
                             ? 'bg-gradient-to-r from-[#0038B8] to-[#1D4ED8] text-white shadow-lg shadow-blue-900/40 border border-blue-400/30'
                             : 'text-zinc-300 hover:text-white hover:bg-white/5'
                         }`}
                       >
-                        <div className="flex items-center gap-2.5">
-                          <span className="text-[10px] font-mono text-zinc-400 font-bold">{item.moduleNumber}</span>
-                          <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#FFB800]' : 'text-zinc-400'}`} />
-                          <span className="truncate">{item.label}</span>
-                        </div>
-                        {item.badge && (
-                          <span
-                            className={`text-[9px] px-1.5 py-0.5 rounded font-mono ${
-                              isActive
-                                ? 'bg-black/30 text-white'
-                                : 'bg-white/5 text-zinc-400 border border-white/5'
-                            }`}
-                          >
-                            {item.badge}
-                          </span>
-                        )}
+                        <Icon className={`w-4 h-4 ${isActive ? 'text-[#FFB800]' : 'text-zinc-400'}`} />
+                        <span className="truncate">{item.label}</span>
                       </Link>
                     );
                   })}
                 </nav>
               </div>
 
-              {/* Secondary Specialized Portals */}
+              {/* Site Operations */}
               <div>
-                <div className="text-[10px] font-mono uppercase text-zinc-400 tracking-wider px-3 mb-2">
-                  Operational Hubs
+                <div className="text-[10px] uppercase font-bold text-zinc-400 tracking-wider px-3 mb-2">
+                  Site Operations
                 </div>
                 <nav className="space-y-1">
-                  {SECONDARY_LINKS.map((item) => {
+                  {SITE_OPERATIONS_NAV.map((item) => {
                     const Icon = item.icon;
                     const isActive = pathname === item.href;
                     return (
@@ -383,21 +316,42 @@ export default function ERPLayoutContent({ children }: { children: React.ReactNo
                         key={item.href}
                         href={item.href}
                         onClick={() => setSidebarOpen(false)}
-                        className={`flex items-center justify-between px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${
+                        className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
                           isActive
-                            ? 'bg-white/10 text-white font-bold border border-white/20'
-                            : 'text-zinc-400 hover:text-white hover:bg-white/5'
+                            ? 'bg-gradient-to-r from-[#0038B8] to-[#1D4ED8] text-white shadow-lg shadow-blue-900/40 border border-blue-400/30'
+                            : 'text-zinc-300 hover:text-white hover:bg-white/5'
                         }`}
                       >
-                        <div className="flex items-center gap-2">
-                          <Icon className="w-3.5 h-3.5 text-zinc-400" />
-                          <span>{item.label}</span>
-                        </div>
-                        {item.badge && (
-                          <span className="text-[9px] px-1 py-0.2 rounded font-mono text-zinc-400">
-                            {item.badge}
-                          </span>
-                        )}
+                        <Icon className={`w-4 h-4 ${isActive ? 'text-[#FFB800]' : 'text-zinc-400'}`} />
+                        <span className="truncate">{item.label}</span>
+                      </Link>
+                    );
+                  })}
+                </nav>
+              </div>
+
+              {/* Finance & Management */}
+              <div>
+                <div className="text-[10px] uppercase font-bold text-zinc-400 tracking-wider px-3 mb-2">
+                  Finance &amp; Admin
+                </div>
+                <nav className="space-y-1">
+                  {MANAGEMENT_NAV.map((item) => {
+                    const Icon = item.icon;
+                    const isActive = pathname === item.href;
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setSidebarOpen(false)}
+                        className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
+                          isActive
+                            ? 'bg-gradient-to-r from-[#0038B8] to-[#1D4ED8] text-white shadow-lg shadow-blue-900/40 border border-blue-400/30'
+                            : 'text-zinc-300 hover:text-white hover:bg-white/5'
+                        }`}
+                      >
+                        <Icon className={`w-4 h-4 ${isActive ? 'text-[#FFB800]' : 'text-zinc-400'}`} />
+                        <span className="truncate">{item.label}</span>
                       </Link>
                     );
                   })}
@@ -405,23 +359,13 @@ export default function ERPLayoutContent({ children }: { children: React.ReactNo
               </div>
             </div>
 
-            {/* Sidebar Footer System Health */}
-            <div className="pt-4 border-t border-white/10 space-y-1.5">
-              <div className="flex items-center justify-between text-xs text-zinc-400">
-                <span className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                  <span>Dual Entity Multi-Tenant</span>
-                </span>
-                <span className="font-mono text-[10px] text-zinc-400">99.98% SLA</span>
+            {/* Sidebar Footer */}
+            <div className="pt-4 border-t border-white/10 text-xs text-zinc-400 space-y-1">
+              <div className="flex items-center gap-2 font-medium text-white">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span>CONTEC Kandy Operations</span>
               </div>
-              <div className="flex items-center justify-between text-[10px] text-zinc-500 font-mono">
-                <span>Database Engine</span>
-                <span className="text-blue-400">MySQL Local (.env)</span>
-              </div>
-              <div className="flex items-center justify-between text-[10px] text-zinc-500 font-mono">
-                <span>Statutory Standards</span>
-                <span className="text-[#FFB800]">CIDA 102/2024 • FIDIC</span>
-              </div>
+              <p className="text-[11px] text-zinc-500">Design, Engineering &amp; Build</p>
             </div>
           </div>
         </aside>
