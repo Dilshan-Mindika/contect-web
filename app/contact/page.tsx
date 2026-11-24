@@ -1,26 +1,26 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import {
   MapPin,
   Phone,
   Mail,
-  MessageSquare,
   Clock,
   ShieldCheck,
   CheckCircle2,
   Building2,
   ChevronDown,
-  Calendar,
   Layers,
   ArrowRight,
   Compass,
   Home,
   Hammer,
   Zap,
-  User
+  User,
+  Check,
+  Star
 } from "lucide-react";
 
 interface FAQItem {
@@ -47,7 +47,7 @@ const FAQS: FAQItem[] = [
   },
   {
     question: "What warranties and support do you give after construction?",
-    answer: "Every CONTEC build includes 1 full year of free repairs for any defects. We also provide a 25-year structural warranty on concrete foundations and frames, plus a 10-year leak-free warranty on roofs and waterproofing backed by our House Master division.",
+    answer: "Every CONTEC build includes 1 full year of free repairs for any defects. We also provide a 25-year structural warranty on concrete foundations and frames, plus a 10-year leak-free warranty on all roofs and waterproofing.",
   },
 ];
 
@@ -62,7 +62,7 @@ const TYPOLOGY_OPTIONS: TypologyOption[] = [
   { id: "Hillside Villa / Luxury House", label: "Hillside Villa / Luxury House", icon: Home, desc: "Custom homes designed for hill slopes and scenic views" },
   { id: "Commercial Building / Shop / Hotel", label: "Commercial / Shop / Hotel", icon: Building2, desc: "Offices, retail shops, restaurants, and boutique hotels" },
   { id: "Complete Home Renovation", label: "Complete Home Renovation", icon: Hammer, desc: "Upgrades, structural repairs, and modern extensions" },
-  { id: "House Master (Waterproofing & Repairs)", label: "House Master Home Care", icon: ShieldCheck, desc: "Roof leak repair, damp proofing, and maintenance" },
+  { id: "Roof Waterproofing & Structural Repairs", label: "Roof Waterproofing & Repairs", icon: ShieldCheck, desc: "Roof leak repair, damp proofing, and maintenance" },
   { id: "Solar Power & Retaining Walls", label: "Solar Power & Retaining Walls", icon: Zap, desc: "Rooftop solar setups, retaining walls, and earthworks" },
 ];
 
@@ -100,11 +100,29 @@ export default function ContactPage() {
     message: "",
   });
 
-  const [activeTab, setActiveTab] = useState<"Kandy HQ" | "Colombo Hub">("Kandy HQ");
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [inquiryId, setInquiryId] = useState<string | null>(null);
+
+  // Custom Dropdown Menus States & Click-Outside Handling
+  const [budgetOpen, setBudgetOpen] = useState(false);
+  const [timelineOpen, setTimelineOpen] = useState(false);
+  const budgetRef = useRef<HTMLDivElement>(null);
+  const timelineRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (budgetRef.current && !budgetRef.current.contains(event.target as Node)) {
+        setBudgetOpen(false);
+      }
+      if (timelineRef.current && !timelineRef.current.contains(event.target as Node)) {
+        setTimelineOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -150,7 +168,7 @@ export default function ContactPage() {
           </h1>
 
           <p className="text-zinc-300 text-base sm:text-lg lg:text-xl max-w-3xl leading-relaxed font-light">
-            Whether you are planning a hillside home in Kandy, a modern commercial building, a complete renovation, or need roof waterproofing with House Master, our experienced architects and engineers are here to guide you every step of the way.
+            Whether you are planning a hillside home in Kandy, a modern commercial building, or a complete renovation, our experienced architects and engineers are here to guide you every step of the way.
           </p>
 
           {/* Quick Action Channels Banner */}
@@ -162,7 +180,9 @@ export default function ContactPage() {
               className="p-4 rounded-2xl bg-[#080e1c]/80 border border-emerald-500/30 hover:border-emerald-500/60 hover:bg-emerald-500/10 transition-all duration-300 group flex items-center gap-3.5 shadow-lg"
             >
               <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                <MessageSquare className="w-5 h-5" />
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z" />
+                </svg>
               </div>
               <div className="overflow-hidden">
                 <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-400 block">WhatsApp Priority</span>
@@ -210,7 +230,7 @@ export default function ContactPage() {
 
         {/* ================= MAIN INTERACTIVE CONSULTATION SECTION ================= */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
 
             {/* Left 7 Columns: Interactive Consultation Form */}
             <div className="lg:col-span-7">
@@ -229,8 +249,8 @@ export default function ContactPage() {
                     </h3>
                     
                     {inquiryId && (
-                      <div className="inline-block px-4 py-2 bg-white/10 border border-[#FFB800]/50 rounded-xl text-xs font-mono text-[#FFB800] mb-5">
-                        Inquiry Reference ID: {inquiryId}
+                      <div className="inline-block px-4 py-1.5 bg-white/5 border border-white/10 rounded-full text-xs text-zinc-300 mb-5">
+                        Inquiry Reference: <span className="font-semibold text-[#FFB800]">{inquiryId}</span>
                       </div>
                     )}
                     
@@ -245,7 +265,9 @@ export default function ContactPage() {
                         rel="noopener noreferrer"
                         className="w-full sm:w-auto px-6 py-3 rounded-full bg-emerald-500 hover:bg-emerald-600 text-black font-extrabold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/40"
                       >
-                        <MessageSquare className="w-4 h-4" />
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z" />
+                        </svg>
                         <span>Chat on WhatsApp Now</span>
                       </a>
                       <button
@@ -273,19 +295,12 @@ export default function ContactPage() {
                   <form onSubmit={handleSubmit} className="space-y-7">
                     {/* Header */}
                     <div className="border-b border-white/10 pb-5">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-                            Start Your Project Inquiry
-                          </h2>
-                          <p className="text-xs text-zinc-400 mt-1">
-                            Tell us about your land and ideas so our architects and engineers can provide practical advice and clear estimates.
-                          </p>
-                        </div>
-                        <span className="text-[11px] font-mono px-2.5 py-1 rounded bg-[#0038B8]/30 border border-[#0038B8]/50 text-[#FFB800]">
-                          CIDA Grade CS2 Certified
-                        </span>
-                      </div>
+                      <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+                        Start Your Project Inquiry
+                      </h2>
+                      <p className="text-xs text-zinc-400 mt-1">
+                        Tell us about your land and ideas so our architects and engineers can provide practical advice and clear estimates.
+                      </p>
                     </div>
 
                     {/* 1. Project Typology Visual Selector */}
@@ -401,7 +416,7 @@ export default function ContactPage() {
                             type="text"
                             value={formData.location}
                             onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                            placeholder="e.g. Kandy, Digana, Peradeniya, Colombo, Galle"
+                            placeholder="e.g. Kandy, Digana, Peradeniya, Katugastota"
                             className="w-full pl-10 pr-4 py-3 rounded-xl bg-black/60 border border-white/15 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-[#FFB800] focus:ring-1 focus:ring-[#FFB800]/30 transition-all"
                           />
                         </div>
@@ -434,45 +449,130 @@ export default function ContactPage() {
                       </div>
                     </div>
 
-                    {/* 5. Investment Range & Timeline */}
+                    {/* 5. Investment Range & Timeline (Custom Themed Dropdowns) */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                      {/* Budget Dropdown */}
                       <div>
                         <label className="block text-xs font-bold uppercase tracking-wider text-zinc-300 mb-2">
                           Estimated Budget (LKR)
                         </label>
-                        <div className="relative">
-                          <select
-                            value={formData.budget}
-                            onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
-                            className="w-full px-4 py-3 rounded-xl bg-black/80 border border-white/15 text-xs text-white focus:outline-none focus:border-[#FFB800] focus:ring-1 focus:ring-[#FFB800]/30 transition-all cursor-pointer appearance-none"
+                        <div className="relative" ref={budgetRef}>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setBudgetOpen(!budgetOpen);
+                              setTimelineOpen(false);
+                            }}
+                            className={`w-full px-4 py-3 rounded-xl bg-black/60 border text-left text-xs transition-all flex items-center justify-between cursor-pointer ${
+                              budgetOpen
+                                ? "border-[#FFB800] ring-1 ring-[#FFB800]/30 bg-black/80 shadow-lg shadow-amber-500/10"
+                                : "border-white/15 hover:border-white/30 text-white"
+                            }`}
                           >
-                            {BUDGET_OPTIONS.map((b) => (
-                              <option key={b.label} value={b.label}>
-                                {b.label} • {b.desc}
-                              </option>
-                            ))}
-                          </select>
-                          <ChevronDown className="w-4 h-4 text-zinc-400 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                            <span className="font-semibold text-white truncate">
+                              {formData.budget}
+                            </span>
+                            <ChevronDown
+                              className={`w-4 h-4 transition-transform duration-200 shrink-0 ml-2 ${
+                                budgetOpen ? "rotate-180 text-[#FFB800]" : "text-zinc-400"
+                              }`}
+                            />
+                          </button>
+
+                          {budgetOpen && (
+                            <div className="absolute left-0 right-0 top-full mt-2 z-50 p-1.5 rounded-2xl bg-[#080e1c] border border-blue-500/40 shadow-2xl backdrop-blur-xl animate-fadeIn space-y-1 max-h-72 overflow-y-auto ring-1 ring-black/80">
+                              {BUDGET_OPTIONS.map((b) => {
+                                const isSelected = formData.budget === b.label;
+                                return (
+                                  <button
+                                    type="button"
+                                    key={b.label}
+                                    onClick={() => {
+                                      setFormData({ ...formData, budget: b.label });
+                                      setBudgetOpen(false);
+                                    }}
+                                    className={`w-full p-2.5 rounded-xl text-left transition-all flex items-center justify-between cursor-pointer ${
+                                      isSelected
+                                        ? "bg-gradient-to-r from-[#0038B8]/40 via-[#0038B8]/20 to-transparent border border-[#FFB800]/50 text-white shadow-md"
+                                        : "hover:bg-white/[0.08] text-zinc-300 hover:text-white"
+                                    }`}
+                                  >
+                                    <div className="min-w-0 pr-2">
+                                      <span className={`text-xs block ${isSelected ? "font-bold text-[#FFB800]" : "font-medium text-white"}`}>
+                                        {b.label}
+                                      </span>
+                                      <span className="text-[11px] text-zinc-400 block truncate mt-0.5">
+                                        {b.desc}
+                                      </span>
+                                    </div>
+                                    {isSelected && (
+                                      <Check className="w-4 h-4 text-[#FFB800] shrink-0" />
+                                    )}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          )}
                         </div>
                       </div>
 
+                      {/* Timeline Dropdown */}
                       <div>
                         <label className="block text-xs font-bold uppercase tracking-wider text-zinc-300 mb-2">
                           When would you like to start?
                         </label>
-                        <div className="relative">
-                          <select
-                            value={formData.timeline}
-                            onChange={(e) => setFormData({ ...formData, timeline: e.target.value })}
-                            className="w-full px-4 py-3 rounded-xl bg-black/80 border border-white/15 text-xs text-white focus:outline-none focus:border-[#FFB800] focus:ring-1 focus:ring-[#FFB800]/30 transition-all cursor-pointer appearance-none"
+                        <div className="relative" ref={timelineRef}>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setTimelineOpen(!timelineOpen);
+                              setBudgetOpen(false);
+                            }}
+                            className={`w-full px-4 py-3 rounded-xl bg-black/60 border text-left text-xs transition-all flex items-center justify-between cursor-pointer ${
+                              timelineOpen
+                                ? "border-[#FFB800] ring-1 ring-[#FFB800]/30 bg-black/80 shadow-lg shadow-amber-500/10"
+                                : "border-white/15 hover:border-white/30 text-white"
+                            }`}
                           >
-                            {TIMELINE_OPTIONS.map((t) => (
-                              <option key={t} value={t}>
-                                {t}
-                              </option>
-                            ))}
-                          </select>
-                          <ChevronDown className="w-4 h-4 text-zinc-400 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                            <span className="font-semibold text-white truncate">
+                              {formData.timeline}
+                            </span>
+                            <ChevronDown
+                              className={`w-4 h-4 transition-transform duration-200 shrink-0 ml-2 ${
+                                timelineOpen ? "rotate-180 text-[#FFB800]" : "text-zinc-400"
+                              }`}
+                            />
+                          </button>
+
+                          {timelineOpen && (
+                            <div className="absolute left-0 right-0 top-full mt-2 z-50 p-1.5 rounded-2xl bg-[#080e1c] border border-blue-500/40 shadow-2xl backdrop-blur-xl animate-fadeIn space-y-1 ring-1 ring-black/80">
+                              {TIMELINE_OPTIONS.map((t) => {
+                                const isSelected = formData.timeline === t;
+                                return (
+                                  <button
+                                    type="button"
+                                    key={t}
+                                    onClick={() => {
+                                      setFormData({ ...formData, timeline: t });
+                                      setTimelineOpen(false);
+                                    }}
+                                    className={`w-full p-2.5 rounded-xl text-left transition-all flex items-center justify-between cursor-pointer ${
+                                      isSelected
+                                        ? "bg-gradient-to-r from-[#0038B8]/40 via-[#0038B8]/20 to-transparent border border-[#FFB800]/50 text-white shadow-md"
+                                        : "hover:bg-white/[0.08] text-zinc-300 hover:text-white"
+                                    }`}
+                                  >
+                                    <span className={`text-xs ${isSelected ? "font-bold text-[#FFB800]" : "font-medium text-white"}`}>
+                                      {t}
+                                    </span>
+                                    {isSelected && (
+                                      <Check className="w-4 h-4 text-[#FFB800] shrink-0" />
+                                    )}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -520,196 +620,180 @@ export default function ContactPage() {
               </div>
             </div>
 
-            {/* Right 5 Columns: Studio Locations & Interactive Maps */}
+            {/* Right 5 Columns: Studio Locations & Priority Consultation */}
             <div className="lg:col-span-5 space-y-6">
 
-              {/* Location Tabs Card */}
-              <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-blue-500/25 bg-[#080e1c]/80 shadow-2xl">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-xs uppercase font-bold text-[#FFB800] tracking-widest flex items-center gap-2">
-                    <Compass className="w-4 h-4" />
-                    <span>Our Offices</span>
-                  </h3>
+              {/* Card 1: Head Office & Studio */}
+              <div className="glass-panel p-6 sm:p-7 rounded-3xl border border-blue-500/25 bg-[#080e1c]/80 shadow-2xl space-y-4">
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-xs uppercase font-bold text-[#FFB800] tracking-widest flex items-center gap-2">
+                      <Compass className="w-4 h-4" />
+                      <span>Head Office & Studio</span>
+                    </h3>
+                    <span className="text-[11px] text-zinc-400 font-medium">Kandy, Sri Lanka</span>
+                  </div>
 
-                  <div className="flex items-center p-1 rounded-xl bg-black/60 border border-white/10">
-                    <button
-                      onClick={() => setActiveTab("Kandy HQ")}
-                      className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                        activeTab === "Kandy HQ"
-                          ? "bg-[#0038B8] text-white shadow-md"
-                          : "text-zinc-400 hover:text-white"
-                      }`}
-                    >
-                      Kandy Main Office
-                    </button>
-                    <button
-                      onClick={() => setActiveTab("Colombo Hub")}
-                      className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                        activeTab === "Colombo Hub"
-                          ? "bg-[#0038B8] text-white shadow-md"
-                          : "text-zinc-400 hover:text-white"
-                      }`}
-                    >
-                      Colombo
-                    </button>
+                  <h4 className="text-base sm:text-lg font-bold text-white">
+                    Kandy Main Office
+                  </h4>
+                  <p className="text-xs text-zinc-300 leading-relaxed mt-1">
+                    No. 167, George E. De Silva Mawatha, Kandy, Sri Lanka, 20000
+                  </p>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/5 space-y-2 text-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="text-zinc-400">Direct Phone / WhatsApp:</span>
+                    <a href="tel:+94777812141" className="text-[#FFB800] font-bold hover:underline">
+                      +94 77 781 2141
+                    </a>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-zinc-400">Office Email:</span>
+                    <a href="mailto:conteckandy@gmail.com" className="text-zinc-200 hover:text-[#FFB800]">
+                      conteckandy@gmail.com
+                    </a>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-zinc-400">Visiting Hours:</span>
+                    <span className="text-zinc-300 font-medium">Mon–Sat: 08:30 – 18:00</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-zinc-400">Specialty:</span>
+                    <span className="text-zinc-300 font-medium truncate ml-2">Hillside Homes, Retaining Walls & Luxury Builds</span>
                   </div>
                 </div>
 
-                {activeTab === "Kandy HQ" ? (
-                  <div className="space-y-4 animate-fadeIn">
-                    <div className="flex items-center justify-between">
-                      <h4 className="text-base font-bold text-white flex items-center gap-2">
-                        <span>Kandy Main Office (Headquarters)</span>
-                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                      </h4>
-                      <span className="text-[11px] font-mono text-zinc-400">7.2906° N, 80.6337° E</span>
-                    </div>
-
-                    <p className="text-xs text-zinc-300 leading-relaxed">
-                      No. 167, George E. De Silva Mawatha, Kandy, Sri Lanka, 20000
-                    </p>
-
-                    <div className="p-3.5 rounded-xl bg-white/[0.03] border border-white/5 space-y-2 text-xs">
-                      <div className="flex items-center justify-between">
-                        <span className="text-zinc-400">Direct Phone / WhatsApp:</span>
-                        <a href="tel:+94777812141" className="text-[#FFB800] font-bold hover:underline">
-                          +94 77 781 2141
-                        </a>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-zinc-400">Office Email:</span>
-                        <a href="mailto:conteckandy@gmail.com" className="text-zinc-200 hover:text-[#FFB800]">
-                          conteckandy@gmail.com
-                        </a>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-zinc-400">Specialty:</span>
-                        <span className="text-zinc-300 font-medium">Hillside Homes, Retaining Walls & Luxury Construction</span>
-                      </div>
-                    </div>
-
-                    {/* Dark Styled Map Embed */}
-                    <div className="relative w-full h-44 rounded-2xl overflow-hidden border border-white/10 shadow-inner group mt-4">
-                      <iframe
-                        title="CONTEC Kandy Head Office Map"
-                        src="https://maps.google.com/maps?q=George+E.+De+Silva+Mawatha,+Kandy,+Sri+Lanka&t=&z=15&ie=UTF8&iwloc=&output=embed"
-                        className="w-full h-full border-0 filter invert-[90%] hue-rotate-180 contrast-[110%] brightness-[90%]"
-                        loading="lazy"
-                        referrerPolicy="no-referrer-when-downgrade"
-                      />
-                      <a
-                        href="https://maps.google.com/?q=George+E.+De+Silva+Mawatha,+Kandy,+Sri+Lanka"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="absolute bottom-2.5 right-2.5 px-3 py-1.5 rounded-lg bg-black/80 hover:bg-[#FFB800] hover:text-black text-white text-[11px] font-bold backdrop-blur-md border border-white/20 transition-all flex items-center gap-1.5 shadow-lg"
-                      >
-                        <MapPin className="w-3.5 h-3.5" />
-                        <span>Open Directions ↗</span>
-                      </a>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="space-y-4 animate-fadeIn">
-                    <div className="flex items-center justify-between">
-                      <h4 className="text-base font-bold text-white flex items-center gap-2">
-                        <span>Colombo Consultation Office</span>
-                        <span className="w-2 h-2 rounded-full bg-blue-400" />
-                      </h4>
-                      <span className="text-[11px] font-mono text-zinc-400">World Trade Center</span>
-                    </div>
-
-                    <p className="text-xs text-zinc-300 leading-relaxed">
-                      Level 12, West Tower, World Trade Center, Colombo 01, Sri Lanka
-                    </p>
-
-                    <div className="p-3.5 rounded-xl bg-white/[0.03] border border-white/5 space-y-2 text-xs">
-                      <div className="flex items-center justify-between">
-                        <span className="text-zinc-400">Appointments:</span>
-                        <span className="text-[#FFB800] font-bold">By Prior Booking</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-zinc-400">Direct Hotline:</span>
-                        <a href="tel:+94777812141" className="text-zinc-200 hover:text-[#FFB800]">
-                          +94 77 781 2141
-                        </a>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-zinc-400">Specialty:</span>
-                        <span className="text-zinc-300 font-medium">Commercial Buildings & Urban Properties</span>
-                      </div>
-                    </div>
-
-                    {/* Dark Styled Map Embed for Colombo */}
-                    <div className="relative w-full h-44 rounded-2xl overflow-hidden border border-white/10 shadow-inner group mt-4">
-                      <iframe
-                        title="CONTEC Colombo Office Map"
-                        src="https://maps.google.com/maps?q=World+Trade+Center,+Colombo,+Sri+Lanka&t=&z=15&ie=UTF8&iwloc=&output=embed"
-                        className="w-full h-full border-0 filter invert-[90%] hue-rotate-180 contrast-[110%] brightness-[90%]"
-                        loading="lazy"
-                        referrerPolicy="no-referrer-when-downgrade"
-                      />
-                      <a
-                        href="https://maps.google.com/?q=World+Trade+Center,+Colombo,+Sri+Lanka"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="absolute bottom-2.5 right-2.5 px-3 py-1.5 rounded-lg bg-black/80 hover:bg-[#FFB800] hover:text-black text-white text-[11px] font-bold backdrop-blur-md border border-white/20 transition-all flex items-center gap-1.5 shadow-lg"
-                      >
-                        <MapPin className="w-3.5 h-3.5" />
-                        <span>Open Directions ↗</span>
-                      </a>
-                    </div>
-                  </div>
-                )}
+                {/* Dark Styled Map Embed */}
+                <div className="relative w-full h-56 rounded-2xl overflow-hidden border border-white/10 shadow-inner group">
+                  <iframe
+                    title="CONTEC Kandy Head Office Map"
+                    src="https://maps.google.com/maps?q=George+E.+De+Silva+Mawatha,+Kandy,+Sri+Lanka&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                    className="w-full h-full border-0 filter invert-[90%] hue-rotate-180 contrast-[110%] brightness-[90%]"
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                  />
+                  <a
+                    href="https://maps.google.com/?q=George+E.+De+Silva+Mawatha,+Kandy,+Sri+Lanka"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="absolute bottom-2.5 right-2.5 px-3.5 py-1.5 rounded-lg bg-black/85 hover:bg-[#FFB800] hover:text-black text-white text-[11px] font-bold backdrop-blur-md border border-white/20 transition-all flex items-center gap-1.5 shadow-lg"
+                  >
+                    <MapPin className="w-3.5 h-3.5" />
+                    <span>Open Directions ↗</span>
+                  </a>
+                </div>
               </div>
 
-              {/* House Master Division Card */}
-              <div className="glass-panel p-6 sm:p-7 rounded-3xl border border-blue-500/30 bg-[#0038B8]/15 shadow-xl relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-[#FFB800]/10 rounded-full blur-2xl pointer-events-none" />
+              {/* Card 2: Priority Consultation & Client Guarantees */}
+              <div className="glass-panel p-6 sm:p-7 rounded-3xl border border-blue-500/30 bg-gradient-to-br from-[#0038B8]/20 via-[#080e1c]/90 to-amber-950/20 shadow-2xl relative overflow-hidden space-y-4">
+                <div className="absolute top-0 right-0 w-44 h-44 bg-[#FFB800]/10 rounded-full blur-3xl pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-36 h-36 bg-[#0038B8]/15 rounded-full blur-2xl pointer-events-none" />
 
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs uppercase font-extrabold text-[#FFB800] tracking-wider">
-                      House Master Kandy
-                    </span>
-                    <span className="px-2 py-0.5 rounded-md text-[10px] bg-[#FFB800] text-black font-extrabold uppercase">
-                      Home Repairs & Care
-                    </span>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs font-bold">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                      <span>Free On-Site Feasibility Check</span>
+                    </div>
+                    <span className="text-[11px] text-zinc-400 font-semibold">Kandy District</span>
                   </div>
-                  <ShieldCheck className="w-4 h-4 text-[#FFB800]" />
+
+                  <div>
+                    <h4 className="text-base sm:text-lg font-bold text-white tracking-tight">
+                      Prefer an In-Person Meeting or Site Visit?
+                    </h4>
+                    <p className="text-xs text-zinc-300 leading-relaxed mt-1 font-light">
+                      Building on a hillside or have architectural questions? Our chartered architect and senior structural engineer can inspect your land in Kandy for a free initial evaluation.
+                    </p>
+                  </div>
+
+                  {/* Direct Action Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                    <a
+                      href="https://wa.me/94777812141?text=Hello%20CONTEC%20Architect%2C%20I%20would%20like%20to%20request%20a%20site%20visit%20and%20consultation%20for%20my%20land%20in%20Kandy."
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-3 rounded-2xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 text-emerald-300 text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-md group"
+                    >
+                      <svg className="w-4 h-4 fill-currentColor shrink-0" viewBox="0 0 24 24">
+                        <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z" />
+                      </svg>
+                      <span>Chat on WhatsApp ↗</span>
+                    </a>
+
+                    <a
+                      href="tel:+94777812141"
+                      className="p-3 rounded-2xl bg-[#0038B8]/25 hover:bg-[#0038B8]/40 border border-blue-500/40 text-white text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-md group"
+                    >
+                      <Phone className="w-4 h-4 text-[#FFB800] shrink-0" />
+                      <span>Call Chief Engineer</span>
+                    </a>
+                  </div>
                 </div>
 
-                <p className="text-xs text-zinc-300 leading-relaxed mb-4">
-                  Emergency roof waterproofing, damp proofing, foundation inspection, plumbing & electrical repairs, and routine maintenance for homes across Kandy and the Central Province.
-                </p>
-
-                <a
-                  href="https://wa.me/94777812141?text=Hello%20CONTEC%2C%20I%20would%20like%20to%20book%20a%20House%20Master%20inspection%20for%20my%20home."
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#0038B8]/30 hover:bg-[#0038B8]/50 border border-[#0038B8]/60 text-white text-xs font-bold transition-all shadow-md group"
-                >
-                  <MessageSquare className="w-3.5 h-3.5 text-[#FFB800]" />
-                  <span>Book House Master on WhatsApp</span>
-                  <span className="group-hover:translate-x-0.5 transition-transform text-[#FFB800]">↗</span>
-                </a>
-              </div>
-
-              {/* Guarantees & Credentials */}
-              <div className="p-6 rounded-3xl bg-[#080e1c]/60 border border-white/10 space-y-3.5">
-                <span className="text-xs uppercase font-bold text-zinc-400 tracking-wider block mb-1">
-                  Why Clients Trust Us
-                </span>
-                {[
-                  "CIDA Grade CS2 Certified Building Contractor",
-                  "Qualified Chartered Architects & Structural Engineers",
-                  "Itemized BOQ with Guaranteed Fixed Pricing (No hidden costs)",
-                  "1-Year Free Maintenance & 25-Year Structural Warranty"
-                ].map((item, idx) => (
-                  <div key={idx} className="flex items-center gap-2.5 text-xs text-zinc-300">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                    <span>{item}</span>
+                {/* 4 Trust Commitments */}
+                <div className="p-3.5 rounded-2xl bg-black/40 border border-white/5 space-y-2">
+                  <span className="text-[11px] uppercase font-bold text-zinc-400 tracking-wider block">
+                    Our Guarantees to Every Client
+                  </span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] text-zinc-300">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                      <span>CIDA Grade CS2 Certified</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                      <span>100% Guaranteed Fixed BOQ</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                      <span>Chartered Architects & Engs</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                      <span>25-Yr Structural Warranty</span>
+                    </div>
                   </div>
-                ))}
+                </div>
+
+                {/* 3 Metric Highlights */}
+                <div className="pt-2 border-t border-white/10 grid grid-cols-3 gap-2 text-center">
+                  <div className="p-2 rounded-xl bg-white/[0.03] border border-white/5">
+                    <span className="text-sm font-extrabold text-[#FFB800] block">100%</span>
+                    <span className="text-[10px] text-zinc-400 block mt-0.5">Fixed BOQ</span>
+                  </div>
+                  <div className="p-2 rounded-xl bg-white/[0.03] border border-white/5">
+                    <span className="text-sm font-extrabold text-blue-400 block">48 Hours</span>
+                    <span className="text-[10px] text-zinc-400 block mt-0.5">Concept</span>
+                  </div>
+                  <div className="p-2 rounded-xl bg-white/[0.03] border border-white/5">
+                    <span className="text-sm font-extrabold text-emerald-400 block">25 Years</span>
+                    <span className="text-[10px] text-zinc-400 block mt-0.5">Warranty</span>
+                  </div>
+                </div>
+
+                {/* Client Quote Strip */}
+                <div className="p-3 rounded-2xl bg-black/50 border border-white/10 space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1">
+                      {[...Array(5)].map((_, idx) => (
+                        <Star key={idx} className="w-3 h-3 fill-[#FFB800] text-[#FFB800]" />
+                      ))}
+                    </div>
+                    <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">
+                      Verified Client
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-zinc-300 italic leading-snug">
+                    &ldquo;CONTEC built our hillside villa in Digana with exceptional engineering and zero budget surprises.&rdquo;
+                  </p>
+                  <span className="text-[10px] text-[#FFB800] font-semibold block">
+                    — Eng. R. Wickramasinghe, Digana Residence
+                  </span>
+                </div>
+
               </div>
 
             </div>
@@ -720,10 +804,9 @@ export default function ContactPage() {
         {/* ================= SECTION: 4-STEP DISCOVERY TIMELINE ================= */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 border-t border-white/10 mt-12">
           <div className="text-center max-w-2xl mx-auto mb-14">
-            <div className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#0038B8]/25 border border-[#0038B8]/40 text-[#FFB800] text-xs font-bold uppercase tracking-wider mb-3">
-              <Calendar className="w-3.5 h-3.5" />
-              <span>Simple & Clear Process</span>
-            </div>
+            <span className="text-xs uppercase font-bold text-[#FFB800] tracking-widest block mb-3">
+              Simple & Clear Process
+            </span>
             <h2 className="text-3xl sm:text-4xl font-extrabold uppercase tracking-tight text-white">
               How We Work <span className="gradient-text-gold">With You</span>
             </h2>
@@ -768,7 +851,7 @@ export default function ContactPage() {
                 className="relative p-6 rounded-2xl bg-[#080e1c]/80 border border-white/10 hover:border-blue-500/40 transition-all duration-300 group shadow-lg"
               >
                 <div className="flex items-center justify-between mb-4">
-                  <span className="text-2xl font-black text-[#FFB800] font-mono">{st.step}</span>
+                  <span className="text-2xl font-black text-[#FFB800]">{st.step}</span>
                   <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-white/10 text-zinc-300">
                     {st.time}
                   </span>
