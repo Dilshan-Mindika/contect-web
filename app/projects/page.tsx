@@ -86,6 +86,7 @@ export default function ProjectsPage() {
                     src={project.image}
                     alt={project.title}
                     fill
+                    unoptimized
                     className="object-cover group-hover:scale-105 transition-transform duration-700"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#050811] via-transparent to-black/30" />
@@ -149,6 +150,7 @@ export default function ProjectsPage() {
                   src={selectedProject.image}
                   alt={selectedProject.title}
                   fill
+                  unoptimized
                   className="object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#080e1c] via-transparent to-black/50" />

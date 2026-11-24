@@ -17,7 +17,6 @@ import {
   ChevronDown,
   Menu,
   X,
-  ExternalLink,
   Lock,
   Sparkles,
   FileText,
@@ -238,17 +237,6 @@ export default function ERPLayoutContent({ children }: { children: React.ReactNo
               </div>
             )}
           </div>
-
-          {/* View Public Website */}
-          <Link
-            href="/"
-            target="_blank"
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-zinc-200 hover:text-white bg-white/5 hover:bg-white/10 rounded-xl border border-white/10 transition-colors"
-            title="Open Public Website"
-          >
-            <ExternalLink className="w-3.5 h-3.5 text-[#FFB800]" />
-            <span className="hidden sm:inline">Public Website</span>
-          </Link>
 
           {/* Logout */}
           <button

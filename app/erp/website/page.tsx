@@ -9,7 +9,6 @@ import {
   Globe,
   Plus,
   Trash2,
-  ExternalLink,
   Sparkles,
   Coins,
 } from 'lucide-react';
@@ -73,15 +72,6 @@ export default function WebsiteManagementPage() {
         </div>
 
         <div className="flex items-center gap-2">
-          <Link
-            href="/"
-            target="_blank"
-            className="px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/15 text-xs font-semibold text-zinc-200 flex items-center gap-1.5 transition-colors"
-          >
-            <ExternalLink className="w-3.5 h-3.5 text-[#FFB800]" />
-            <span>Open Public Site</span>
-          </Link>
-
           <button
             onClick={() => setShowAddProjectModal(true)}
             className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#0038B8] to-[#1D4ED8] hover:from-[#1D4ED8] hover:to-[#2563EB] text-white text-xs font-bold shadow-lg shadow-blue-900/40 border border-blue-400/40 flex items-center gap-1.5 transition-all"
@@ -143,6 +133,7 @@ export default function WebsiteManagementPage() {
                     src={p.imageUrl}
                     alt={p.title}
                     fill
+                    unoptimized
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   {p.featured && (

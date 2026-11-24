@@ -8,7 +8,6 @@ import { useERP } from '@/lib/erp/AuthContext';
 import {
   ShieldCheck,
   Lock,
-  ArrowRight,
   AlertCircle,
   Building2,
   Eye,
@@ -55,7 +54,7 @@ export default function ERPLoginPage() {
 
       {/* Header */}
       <header className="relative z-10 p-6 max-w-7xl mx-auto w-full flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-3">
+        <Link href="/erp/login" className="flex items-center gap-3">
           <div className="relative h-10 w-44">
             <Image
               src="/branding/contec-white-logo.png"
@@ -67,13 +66,10 @@ export default function ERPLoginPage() {
             />
           </div>
         </Link>
-        <Link
-          href="/"
-          className="text-xs font-semibold text-zinc-400 hover:text-[#FFB800] transition-colors flex items-center gap-1.5"
-        >
-          <span>Back to Main Website</span>
-          <ArrowRight className="w-3.5 h-3.5" />
-        </Link>
+        <div className="flex items-center gap-1.5 text-xs text-zinc-400 font-medium bg-white/5 border border-white/10 px-3 py-1.5 rounded-full">
+          <ShieldCheck className="w-3.5 h-3.5 text-[#FFB800]" />
+          <span>Staff Access Only</span>
+        </div>
       </header>
 
       {/* Main Login Card */}
