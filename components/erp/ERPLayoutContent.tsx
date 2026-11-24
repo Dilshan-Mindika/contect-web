@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
@@ -36,39 +36,57 @@ import {
   CheckCircle2,
   Mail,
   User,
+  Search,
+  ArrowRight,
+  TrendingUp,
 } from 'lucide-react';
 
 const PRIMARY_NAV = [
   { label: 'Dashboard Overview', href: '/erp', icon: LayoutDashboard },
   { label: 'Website Projects', href: '/erp/website', icon: Globe },
   { label: 'Website Services', href: '/erp/services', icon: Layers },
-  { label: 'Client Inquiries & CRM', href: '/erp/crm', icon: Users },
-  { label: 'Quotations & Fixed BOQ', href: '/erp/quotations', icon: FileText },
+  { label: 'Client Inquiries', href: '/erp/inquiries', icon: Mail },
+  { label: 'CRM Pipeline', href: '/erp/crm', icon: TrendingUp },
+  { label: 'Quotations', href: '/erp/quotations', icon: FileText },
 ];
 
 const SITE_OPERATIONS_NAV = [
   { label: 'Construction Projects', href: '/erp/projects', icon: HardHat },
   { label: 'Daily Site Logs', href: '/erp/site-logs', icon: Clock },
-  { label: 'Materials & Inventory', href: '/erp/inventory', icon: Boxes },
-  { label: 'Machinery & Vehicles', href: '/erp/machinery', icon: Wrench },
-  { label: 'Procurement & Orders', href: '/erp/procurement', icon: ShoppingCart },
-  { label: 'Site Labour & Workers', href: '/erp/site-labour', icon: Activity },
+  { label: 'Materials Inventory', href: '/erp/inventory', icon: Boxes },
+  { label: 'Machinery Fleet', href: '/erp/machinery', icon: Wrench },
+  { label: 'Procurement', href: '/erp/procurement', icon: ShoppingCart },
+  { label: 'Site Labour', href: '/erp/site-labour', icon: Activity },
 ];
 
 const MANAGEMENT_NAV = [
-  { label: 'Invoices & Billing', href: '/erp/finance', icon: CreditCard },
-  { label: 'Cost Control & Budget', href: '/erp/budgeting', icon: Calculator },
-  { label: 'CIDA & Contracts', href: '/erp/contracts', icon: ShieldCheck },
-  { label: 'Site Safety & Checks', href: '/erp/safety', icon: ShieldAlert },
+  { label: 'Invoices', href: '/erp/finance', icon: CreditCard },
+  { label: 'Cost Control', href: '/erp/budgeting', icon: Calculator },
+  { label: 'Contracts', href: '/erp/contracts', icon: ShieldCheck },
+  { label: 'Site Safety', href: '/erp/safety', icon: ShieldAlert },
   { label: 'Team Directory', href: '/erp/hr', icon: Users },
-  { label: 'Company Profile & Info', href: '/erp/company', icon: Building2 },
-  { label: 'Audit & Security Logs', href: '/erp/audit', icon: Lock },
+  { label: 'Company Profile', href: '/erp/company', icon: Building2 },
+  { label: 'Audit Logs', href: '/erp/audit', icon: Lock },
 ];
 
 export default function ERPLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, isLoading, logout, activeCompany, setActiveCompany, companies } = useERP();
+  const {
+    user,
+    isLoading,
+    logout,
+    activeCompany,
+    setActiveCompany,
+    companies,
+    projects,
+    invoices,
+    websiteInquiries,
+    leads,
+    inventory,
+    machinery,
+    employees,
+  } = useERP();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [companyMenuOpen, setCompanyMenuOpen] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
@@ -76,6 +94,37 @@ export default function ERPLayoutContent({ children }: { children: React.ReactNo
   const [passwordForm, setPasswordForm] = useState({ current: '', newPass: '', confirm: '' });
   const [passwordStatus, setPasswordStatus] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+
+  // Global Advanced Search State
+  const [globalQuery, setGlobalQuery] = useState('');
+  const [searchFocused, setSearchFocused] = useState(false);
+  const [searchScope, setSearchScope] = useState<'ALL' | 'PAGES' | 'PROJECTS' | 'INQUIRIES' | 'FINANCE' | 'INVENTORY'>('ALL');
+  const searchRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+        setSearchFocused(true);
+      }
+      if (e.key === 'Escape') {
+        setSearchFocused(false);
+      }
+    };
+    const handleClickOutside = (e: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setSearchFocused(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const handleUpdatePassword = (e: React.FormEvent) => {
     e.preventDefault();
@@ -120,11 +169,179 @@ export default function ERPLayoutContent({ children }: { children: React.ReactNo
 
   const currentCompProfile = companies.find((c) => c.id === activeCompany);
 
+  // Build Advanced Global Search Index
+  const q = globalQuery.trim().toLowerCase();
+  const allNavItems = [...PRIMARY_NAV, ...SITE_OPERATIONS_NAV, ...MANAGEMENT_NAV];
+
+  const searchResults = (() => {
+    if (!q) return [];
+    const results: {
+      id: string;
+      category: 'PAGES' | 'PROJECTS' | 'INQUIRIES' | 'FINANCE' | 'INVENTORY';
+      badge: string;
+      title: string;
+      subtitle: string;
+      href: string;
+    }[] = [];
+
+    if (searchScope === 'ALL' || searchScope === 'PAGES') {
+      allNavItems
+        .filter((n) => n.label.toLowerCase().includes(q) || n.href.toLowerCase().includes(q))
+        .forEach((n) =>
+          results.push({
+            id: `nav-${n.href}`,
+            category: 'PAGES',
+            badge: 'Module',
+            title: n.label,
+            subtitle: n.href,
+            href: n.href,
+          })
+        );
+    }
+
+    if (searchScope === 'ALL' || searchScope === 'PROJECTS') {
+      projects
+        .filter(
+          (p) =>
+            p.name.toLowerCase().includes(q) ||
+            p.code.toLowerCase().includes(q) ||
+            p.client.toLowerCase().includes(q) ||
+            p.location.toLowerCase().includes(q)
+        )
+        .forEach((p) =>
+          results.push({
+            id: `prj-${p.id}`,
+            category: 'PROJECTS',
+            badge: p.code,
+            title: p.name,
+            subtitle: `${p.client} • ${p.location} (${p.progress}%)`,
+            href: '/erp/projects',
+          })
+        );
+    }
+
+    if (searchScope === 'ALL' || searchScope === 'INQUIRIES') {
+      websiteInquiries
+        .filter(
+          (inq) =>
+            inq.clientName.toLowerCase().includes(q) ||
+            inq.email.toLowerCase().includes(q) ||
+            inq.projectType.toLowerCase().includes(q) ||
+            inq.phone.toLowerCase().includes(q)
+        )
+        .forEach((inq) =>
+          results.push({
+            id: `inq-${inq.id}`,
+            category: 'INQUIRIES',
+            badge: inq.status,
+            title: inq.clientName,
+            subtitle: `${inq.projectType} • ${inq.budgetRange}`,
+            href: '/erp/inquiries',
+          })
+        );
+
+      leads
+        .filter(
+          (l) =>
+            l.company.toLowerCase().includes(q) ||
+            l.clientName.toLowerCase().includes(q) ||
+            l.projectType.toLowerCase().includes(q)
+        )
+        .forEach((l) =>
+          results.push({
+            id: `lead-${l.id}`,
+            category: 'INQUIRIES',
+            badge: l.stage,
+            title: `${l.company} (${l.clientName})`,
+            subtitle: `${l.projectType} • CRM Tender`,
+            href: '/erp/crm',
+          })
+        );
+    }
+
+    if (searchScope === 'ALL' || searchScope === 'FINANCE') {
+      invoices
+        .filter(
+          (inv) =>
+            inv.invoiceNumber.toLowerCase().includes(q) ||
+            inv.clientName.toLowerCase().includes(q) ||
+            inv.projectName.toLowerCase().includes(q)
+        )
+        .forEach((inv) =>
+          results.push({
+            id: `inv-${inv.id}`,
+            category: 'FINANCE',
+            badge: inv.status,
+            title: `${inv.invoiceNumber} — ${inv.clientName}`,
+            subtitle: inv.projectName,
+            href: '/erp/finance',
+          })
+        );
+    }
+
+    if (searchScope === 'ALL' || searchScope === 'INVENTORY') {
+      inventory
+        .filter(
+          (item) =>
+            item.name.toLowerCase().includes(q) ||
+            item.sku.toLowerCase().includes(q) ||
+            item.category.toLowerCase().includes(q)
+        )
+        .forEach((item) =>
+          results.push({
+            id: `invt-${item.id}`,
+            category: 'INVENTORY',
+            badge: item.sku,
+            title: item.name,
+            subtitle: `${item.quantity} ${item.unit} • ${item.status}`,
+            href: '/erp/inventory',
+          })
+        );
+
+      machinery
+        .filter(
+          (m) =>
+            m.name.toLowerCase().includes(q) ||
+            m.assetId.toLowerCase().includes(q)
+        )
+        .forEach((m) =>
+          results.push({
+            id: `mach-${m.id}`,
+            category: 'INVENTORY',
+            badge: m.assetId,
+            title: m.name,
+            subtitle: `Fleet • ${m.status}`,
+            href: '/erp/machinery',
+          })
+        );
+
+      employees
+        .filter(
+          (emp) =>
+            emp.name.toLowerCase().includes(q) ||
+            emp.empId.toLowerCase().includes(q) ||
+            emp.department.toLowerCase().includes(q)
+        )
+        .forEach((emp) =>
+          results.push({
+            id: `emp-${emp.id}`,
+            category: 'INVENTORY',
+            badge: emp.empId,
+            title: emp.name,
+            subtitle: `${emp.role} • ${emp.department}`,
+            href: '/erp/hr',
+          })
+        );
+    }
+
+    return results.slice(0, 12);
+  })();
+
   return (
     <div className="min-h-screen bg-[#050811] text-[#f4f4f7] flex flex-col antialiased">
       {/* Top Header Bar */}
-      <header className="sticky top-0 z-40 h-20 bg-[#080e1c]/95 backdrop-blur-xl border-b border-white/10 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      <header className="sticky top-0 z-40 h-20 bg-[#080e1c]/95 backdrop-blur-xl border-b border-white/10 px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3 shrink-0">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className="lg:hidden p-2 text-zinc-300 hover:text-white rounded-lg hover:bg-white/5 transition-colors cursor-pointer"
@@ -135,7 +352,7 @@ export default function ERPLayoutContent({ children }: { children: React.ReactNo
 
           {/* Official CONTEC Navbar Logo - Large & Prominent */}
           <Link href="/erp" className="flex items-center group py-2">
-            <div className="relative h-12 sm:h-14 w-56 sm:w-68 md:w-80 transition-transform duration-300 group-hover:scale-102 flex items-center">
+            <div className="relative h-12 sm:h-14 w-44 sm:w-52 lg:w-56 transition-transform duration-300 group-hover:scale-102 flex items-center">
               <Image
                 src="/branding/contec-white-logo.png"
                 alt="CONTEC Design & Build"
@@ -146,6 +363,106 @@ export default function ERPLayoutContent({ children }: { children: React.ReactNo
               />
             </div>
           </Link>
+        </div>
+
+        {/* Advanced Global Search Bar */}
+        <div ref={searchRef} className="hidden md:block flex-1 max-w-md mx-2 relative">
+          <div className="relative flex items-center">
+            <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 pointer-events-none" />
+            <input
+              ref={searchInputRef}
+              type="text"
+              value={globalQuery}
+              onFocus={() => setSearchFocused(true)}
+              onChange={(e) => {
+                setGlobalQuery(e.target.value);
+                setSearchFocused(true);
+              }}
+              placeholder="Search projects, invoices, inquiries, stock, modules..."
+              className="w-full h-12 pl-10 pr-20 rounded-xl bg-white/[0.04] hover:bg-white/[0.07] focus:bg-[#050811] border border-white/10 focus:border-[#FFB800]/60 text-xs text-white placeholder-zinc-400 focus:outline-none transition-all"
+            />
+            {globalQuery ? (
+              <button
+                type="button"
+                onClick={() => setGlobalQuery('')}
+                className="absolute right-3 p-1 rounded-md text-zinc-400 hover:text-white hover:bg-white/10 cursor-pointer"
+                aria-label="Clear global search"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            ) : (
+              <span className="absolute right-3 px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[10px] font-mono text-zinc-400 pointer-events-none">
+                Ctrl K
+              </span>
+            )}
+          </div>
+
+          {searchFocused && (
+            <div className="absolute left-0 right-0 mt-2 rounded-2xl bg-[#080f24] border border-white/15 shadow-2xl p-3 z-50 animate-fadeIn space-y-2.5">
+              {/* Scope Filter Pills */}
+              <div className="flex flex-wrap items-center gap-1 pb-2 border-b border-white/10">
+                {(
+                  [
+                    { id: 'ALL', label: 'All' },
+                    { id: 'PAGES', label: 'Modules' },
+                    { id: 'PROJECTS', label: 'Projects' },
+                    { id: 'INQUIRIES', label: 'Inquiries' },
+                    { id: 'FINANCE', label: 'Invoices' },
+                    { id: 'INVENTORY', label: 'Resources' },
+                  ] as const
+                ).map((sc) => (
+                  <button
+                    key={sc.id}
+                    type="button"
+                    onClick={() => setSearchScope(sc.id)}
+                    className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition-colors cursor-pointer ${
+                      searchScope === sc.id
+                        ? 'bg-[#0038B8] text-white'
+                        : 'bg-white/5 text-zinc-400 hover:text-white'
+                    }`}
+                  >
+                    {sc.label}
+                  </button>
+                ))}
+              </div>
+
+              {!q ? (
+                <div className="py-3 px-2 text-center text-[11px] text-zinc-400">
+                  Type to search across all {allNavItems.length} ERP modules, MySQL projects, invoices, inquiries, materials, and staff.
+                </div>
+              ) : searchResults.length === 0 ? (
+                <div className="py-4 px-2 text-center text-xs text-zinc-400">
+                  No matches found for &ldquo;<span className="text-white font-semibold">{globalQuery}</span>&rdquo;.
+                </div>
+              ) : (
+                <div className="max-h-80 overflow-y-auto space-y-1">
+                  {searchResults.map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => {
+                        setSearchFocused(false);
+                        setGlobalQuery('');
+                        router.push(item.href);
+                      }}
+                      className="w-full text-left p-2.5 rounded-xl hover:bg-white/[0.06] border border-transparent hover:border-white/10 flex items-center justify-between gap-3 transition-all cursor-pointer group"
+                    >
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#0038B8]/30 border border-blue-400/30 text-[#FFB800] shrink-0">
+                            {item.badge}
+                          </span>
+                          <span className="text-xs font-bold text-white truncate">{item.title}</span>
+                        </div>
+                        <div className="text-[11px] text-zinc-400 truncate mt-0.5">{item.subtitle}</div>
+                      </div>
+                      <ArrowRight className="w-3.5 h-3.5 text-zinc-500 group-hover:text-[#FFB800] shrink-0" />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Center / Right controls */}

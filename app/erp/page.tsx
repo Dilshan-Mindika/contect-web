@@ -438,7 +438,7 @@ export default function ERPDashboardPage() {
               </h2>
               <p className="text-xs text-zinc-400">Homeowners seeking feasibility checks and consultations</p>
             </div>
-            <Link href="/erp/crm" className="text-xs text-[#FFB800] hover:underline flex items-center gap-1">
+            <Link href="/erp/inquiries" className="text-xs text-[#FFB800] hover:underline flex items-center gap-1">
               <span>View All Inquiries</span>
               <ArrowRight className="w-3 h-3" />
             </Link>
@@ -475,7 +475,7 @@ export default function ERPDashboardPage() {
                     <span>Call Client</span>
                   </a>
                   <Link
-                    href="/erp/crm"
+                    href="/erp/inquiries"
                     className="px-2.5 py-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 text-blue-300 text-xs font-semibold flex items-center gap-1 transition-colors"
                   >
                     <span>Details →</span>
