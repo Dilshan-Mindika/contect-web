@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useERP } from '@/lib/erp/AuthContext';
+import UniversalRecordManager from '@/components/erp/UniversalRecordManager';
 import { formatLKR, formatLKRFull } from '@/lib/erp/currency';
 import { Employee, LeaveStatus } from '@/lib/erp/types';
 import {
@@ -203,70 +204,38 @@ export default function HRPage() {
                 </button>
               ))}
             </div>
-
-            <div className="relative w-full sm:w-64">
-              <Search className="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                placeholder="Search staff, NIC, ID, title..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#0038B8]"
-              />
-            </div>
           </div>
 
-          <div className="rounded-2xl bg-[#080e1c]/80 border border-white/10 overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs text-left">
-                <thead className="bg-white/5 text-zinc-400 border-b border-white/10 font-mono">
-                  <tr>
-                    <th className="p-4">Staff ID</th>
-                    <th className="p-4">Employee Name & Role</th>
-                    <th className="p-4">Division</th>
-                    <th className="p-4">Monthly Salary (LKR)</th>
-                    <th className="p-4">CIDA / Trade Credential</th>
-                    <th className="p-4">Join Date</th>
-                    <th className="p-4">Status</th>
-                    <th className="p-4 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/5">
-                  {filteredEmployees.map((emp) => (
-                    <tr key={emp.id} className="hover:bg-white/[0.02]">
-                      <td className="p-4 font-mono font-bold text-blue-300">{emp.empId}</td>
-                      <td className="p-4">
-                        <div className="font-bold text-white text-sm">{emp.name}</div>
-                        <div className="text-[11px] text-zinc-400">{emp.role}</div>
-                      </td>
-                      <td className="p-4 text-zinc-300">{emp.department}</td>
-                      <td className="p-4 font-mono font-bold text-white">{formatLKR(emp.salary)}</td>
-                      <td className="p-4">
-                        <span className="text-[10px] px-2 py-0.5 rounded bg-blue-500/10 text-blue-300 font-mono">
-                          {emp.tradeCertification || 'CIDA Certified'}
-                        </span>
-                      </td>
-                      <td className="p-4 font-mono text-zinc-400">{emp.joinDate}</td>
-                      <td className="p-4">
-                        <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                          {emp.status}
-                        </span>
-                      </td>
-                      <td className="p-4 text-right">
-                        <button
-                          onClick={() => setSelectedPayslipEmp(emp)}
-                          className="px-2.5 py-1 rounded-lg bg-blue-600/30 hover:bg-blue-600/50 text-[11px] font-bold text-blue-300 border border-blue-500/30 flex items-center gap-1.5 ml-auto"
-                        >
-                          <Printer className="w-3 h-3" />
-                          <span>Payslip</span>
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <UniversalRecordManager
+            title="Team & Staff Directory (Create, View, Edit, Delete & View Modes)"
+            items={(selectedDept === 'ALL' ? employees : employees.filter((e) => e.department === selectedDept)) as unknown as Record<string, unknown>[]}
+            createLabel="Add Staff Member"
+            searchPlaceholder="Search staff by name, role, NIC, department..."
+            sortOptions={[
+              { value: 'name', label: 'Full Name' },
+              { value: 'department', label: 'Department' },
+              { value: 'salary', label: 'Salary (LKR)' },
+            ]}
+            fields={[
+              { key: 'name', label: 'Full Name', isTitle: true, required: true },
+              { key: 'empId', label: 'Employee ID', required: true },
+              { key: 'role', label: 'Designation / Role', required: true },
+              { key: 'department', label: 'Department', isBadge: true },
+              { key: 'email', label: 'Email' },
+              { key: 'salary', label: 'Monthly Salary (LKR)', type: 'number', isCurrency: true },
+            ]}
+            renderRowActions={(item) => (
+              <button
+                type="button"
+                onClick={() => setSelectedPayslipEmp(item as unknown as (typeof employees)[number])}
+                className="px-2 py-1 rounded-lg bg-blue-600/30 hover:bg-blue-600/50 text-[11px] font-bold text-blue-300 border border-blue-500/30 flex items-center gap-1 cursor-pointer"
+                title="View Official Payslip"
+              >
+                <Printer className="w-3 h-3" />
+                <span>Payslip</span>
+              </button>
+            )}
+          />
         </div>
       )}
 
@@ -575,6 +544,7 @@ export default function HRPage() {
           </div>
         </div>
       )}
+
     </div>
   );
 }

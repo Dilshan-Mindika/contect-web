@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useERP } from '@/lib/erp/AuthContext';
 import { formatLKR, formatLKRFull } from '@/lib/erp/currency';
+import UniversalRecordManager from '@/components/erp/UniversalRecordManager';
 import {
   ShoppingCart,
   Plus,
@@ -217,59 +218,39 @@ export default function ProcurementPage() {
       {/* TAB 1: PURCHASE ORDERS */}
       {activeTab === 'PO' && (
         <div className="space-y-4">
-          <div className="rounded-2xl bg-[#080e1c] border border-white/10 overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs text-left">
-                <thead className="bg-white/5 text-zinc-400 border-b border-white/10 font-mono">
-                  <tr>
-                    <th className="p-4">PO Number</th>
-                    <th className="p-4">Supplier Entity</th>
-                    <th className="p-4">Date Issued</th>
-                    <th className="p-4">PR Reference</th>
-                    <th className="p-4">Total Amount (LKR)</th>
-                    <th className="p-4">Authorized By</th>
-                    <th className="p-4">Status</th>
-                    <th className="p-4 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/5 font-mono">
-                  {filteredPOs.map((po) => (
-                    <tr key={po.id} className="hover:bg-white/[0.02]">
-                      <td className="p-4 font-bold text-white text-sm">{po.poNumber}</td>
-                      <td className="p-4 font-sans font-medium text-white">{po.supplier}</td>
-                      <td className="p-4 text-zinc-400">{po.date}</td>
-                      <td className="p-4 text-blue-300">{po.prReference || 'PR-Direct'}</td>
-                      <td className="p-4 font-bold text-emerald-400 text-sm">{formatLKR(po.totalAmount)}</td>
-                      <td className="p-4 font-sans text-zinc-300">{po.approvedBy || 'Finance Director'}</td>
-                      <td className="p-4">
-                        <span
-                          className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                            po.status === 'FULFILLED'
-                              ? 'bg-emerald-500/20 text-emerald-400'
-                              : po.status === 'APPROVED'
-                              ? 'bg-blue-500/20 text-blue-300'
-                              : 'bg-amber-500/20 text-amber-400'
-                          }`}
-                        >
-                          {po.status}
-                        </span>
-                      </td>
-                      <td className="p-4 text-right font-sans">
-                        {po.status !== 'FULFILLED' && (
-                          <button
-                            onClick={() => updatePOStatus(po.id, 'FULFILLED')}
-                            className="px-2.5 py-1 rounded-lg bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-300 text-[11px] font-bold"
-                          >
-                            Mark Fulfilled
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <UniversalRecordManager
+            title="Purchase Orders Directory (Create, View, Edit, Delete & View Modes)"
+            items={filteredPOs as unknown as Record<string, unknown>[]}
+            createLabel="New Purchase Order"
+            searchPlaceholder="Search POs by number, supplier..."
+            sortOptions={[
+              { value: 'poNumber', label: 'PO #' },
+              { value: 'supplier', label: 'Supplier' },
+              { value: 'totalAmount', label: 'Amount (LKR)' },
+              { value: 'status', label: 'Status' },
+            ]}
+            fields={[
+              { key: 'poNumber', label: 'PO Number', isTitle: true },
+              { key: 'supplier', label: 'Supplier', required: true },
+              { key: 'projectCode', label: 'Project Code', required: true },
+              { key: 'totalAmount', label: 'Total (LKR)', type: 'number', isCurrency: true },
+              { key: 'date', label: 'Order Date', type: 'date' },
+              { key: 'status', label: 'Status', type: 'select', options: ['DRAFT', 'ORDERED', 'DELIVERED', 'FULFILLED', 'CANCELLED'], isBadge: true },
+            ]}
+            renderRowActions={(item) => {
+              const id = String(item.id || '');
+              const st = String(item.status || '');
+              return st !== 'FULFILLED' ? (
+                <button
+                  type="button"
+                  onClick={() => updatePOStatus(id, 'FULFILLED')}
+                  className="px-2 py-1 rounded-lg bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-300 text-[10px] font-bold cursor-pointer"
+                >
+                  Fulfill
+                </button>
+              ) : null;
+            }}
+          />
         </div>
       )}
 
@@ -609,6 +590,7 @@ export default function ProcurementPage() {
           </div>
         </div>
       )}
+
     </div>
   );
 }

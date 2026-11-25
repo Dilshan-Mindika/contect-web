@@ -5,6 +5,7 @@ import { useERP } from '@/lib/erp/AuthContext';
 import { InvoiceStatus, Invoice, JournalLine } from '@/lib/erp/types';
 import { formatLKR, formatLKRFull } from '@/lib/erp/currency';
 import ModuleAnalytics from '@/components/erp/ModuleAnalytics';
+import UniversalRecordManager from '@/components/erp/UniversalRecordManager';
 import {
   CreditCard,
   Plus,
@@ -25,6 +26,8 @@ import {
 export default function FinancePage() {
   const {
     invoices,
+    updateInvoice,
+    deleteInvoice,
     updateInvoiceStatus,
     addInvoice,
     activeCompany,
@@ -193,15 +196,6 @@ export default function FinancePage() {
         </div>
 
         <div className="flex items-center gap-2">
-          {financeTab === 'IPC' && (
-            <button
-              onClick={() => setShowCreateInvoiceModal(true)}
-              className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#0038B8] to-[#1D4ED8] hover:from-[#1D4ED8] hover:to-[#2563EB] text-white text-xs font-bold shadow-lg shadow-blue-900/40 border border-blue-400/40 flex items-center gap-2 transition-all"
-            >
-              <Plus className="w-4 h-4 text-[#FFB800]" />
-              <span>Issue Interim Certificate (IPC)</span>
-            </button>
-          )}
           {financeTab === 'GL' && (
             <button
               onClick={() => setShowCreateJvModal(true)}
@@ -350,92 +344,54 @@ export default function FinancePage() {
                 </button>
               ))}
             </div>
-
-            <div className="relative w-full sm:w-64">
-              <Search className="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                placeholder="Search IPC, project, client..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#0038B8]"
-              />
-            </div>
           </div>
 
-          <div className="rounded-2xl bg-[#080e1c]/80 border border-white/10 overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs text-left">
-                <thead className="bg-white/5 text-zinc-400 border-b border-white/10 font-mono">
-                  <tr>
-                    <th className="p-4">Certificate #</th>
-                    <th className="p-4">Project / Employer</th>
-                    <th className="p-4">Subtotal (LKR)</th>
-                    <th className="p-4">5% Retention</th>
-                    <th className="p-4">Net Total Due (LKR)</th>
-                    <th className="p-4">Due Date</th>
-                    <th className="p-4">Status</th>
-                    <th className="p-4 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/5">
-                  {filteredInvoices.map((inv) => (
-                    <tr key={inv.id} className="hover:bg-white/[0.02] transition-colors">
-                      <td className="p-4">
-                        <div className="font-bold text-white font-mono">{inv.invoiceNumber}</div>
-                        <div className="text-[10px] text-blue-300 font-mono">{inv.ipcNumber || 'RA Bill'}</div>
-                      </td>
-                      <td className="p-4">
-                        <div className="font-semibold text-white">{inv.projectName}</div>
-                        <div className="text-[11px] text-zinc-400">{inv.clientName}</div>
-                      </td>
-                      <td className="p-4 font-mono font-medium text-zinc-300">
-                        {formatLKR(inv.subtotal)}
-                      </td>
-                      <td className="p-4 font-mono text-[#FFB800]">
-                        -{formatLKR(inv.retentionDeducted || Math.round(inv.subtotal * 0.05))}
-                      </td>
-                      <td className="p-4 font-mono font-bold text-white text-sm">
-                        {formatLKR(inv.total)}
-                      </td>
-                      <td className="p-4 font-mono text-zinc-400">{inv.dueDate}</td>
-                      <td className="p-4">
-                        <span
-                          className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
-                            inv.status === 'PAID'
-                              ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                              : inv.status === 'PENDING'
-                              ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                              : 'bg-red-500/20 text-red-400 border border-red-500/30'
-                          }`}
-                        >
-                          {inv.status}
-                        </span>
-                      </td>
-                      <td className="p-4 text-right">
-                        <div className="flex items-center justify-end gap-1.5">
-                          <button
-                            onClick={() => setSelectedInvoice(inv)}
-                            className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-[11px] text-zinc-300 transition-colors"
-                          >
-                            Inspect
-                          </button>
-                          {inv.status !== 'PAID' && (
-                            <button
-                              onClick={() => updateInvoiceStatus(inv.id, 'PAID')}
-                              className="px-2.5 py-1 rounded-lg bg-emerald-600/30 hover:bg-emerald-600/50 text-[11px] text-emerald-300 font-bold border border-emerald-500/30 transition-colors"
-                            >
-                              Settle
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <UniversalRecordManager
+            title="Invoices & IPC Registry (MySQL CRUD, Sort & View Modes)"
+            items={filteredInvoices as unknown as Record<string, unknown>[]}
+            createLabel="New Invoice"
+            searchPlaceholder="Search invoices by number, client, project..."
+            sortOptions={[
+              { value: 'invoiceNumber', label: 'Invoice #' },
+              { value: 'total', label: 'Total (LKR)' },
+              { value: 'dueDate', label: 'Due Date' },
+              { value: 'status', label: 'Status' },
+            ]}
+            fields={[
+              { key: 'invoiceNumber', label: 'Invoice #', isTitle: true },
+              { key: 'clientName', label: 'Client', required: true },
+              { key: 'projectName', label: 'Project', required: true },
+              { key: 'total', label: 'Total (LKR)', type: 'number', isCurrency: true, required: true },
+              { key: 'dueDate', label: 'Due Date', type: 'date' },
+              { key: 'status', label: 'Status', type: 'select', options: ['PENDING', 'PAID', 'OVERDUE'], isBadge: true },
+            ]}
+            onCreate={(d) => addInvoice({ clientName: String(d.clientName), projectName: String(d.projectName), issueDate: new Date().toISOString().split('T')[0], dueDate: String(d.dueDate || new Date().toISOString().split('T')[0]), items: [], subtotal: Number(d.total || 0), tax: 0, total: Number(d.total || 0), status: (d.status as InvoiceStatus) || 'PENDING' })}
+            onUpdate={(id, d) => updateInvoice(id, d)}
+            onDelete={(id) => deleteInvoice(id)}
+            renderRowActions={(item) => {
+              const inv = item as unknown as (typeof filteredInvoices)[number];
+              return (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedInvoice(inv)}
+                    className="px-2 py-1 rounded-lg bg-white/5 hover:bg-white/15 text-[10px] text-zinc-300 cursor-pointer"
+                  >
+                    Inspect
+                  </button>
+                  {inv.status !== 'PAID' && (
+                    <button
+                      type="button"
+                      onClick={() => updateInvoiceStatus(inv.id, 'PAID')}
+                      className="px-2 py-1 rounded-lg bg-emerald-600/30 hover:bg-emerald-600/50 text-[10px] text-emerald-300 font-bold border border-emerald-500/30 cursor-pointer"
+                    >
+                      Settle
+                    </button>
+                  )}
+                </>
+              );
+            }}
+          />
         </div>
       )}
 
@@ -890,6 +846,7 @@ export default function FinancePage() {
           </div>
         </div>
       )}
+
     </div>
   );
 }

@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useERP } from '@/lib/erp/AuthContext';
+import UniversalRecordManager from '@/components/erp/UniversalRecordManager';
 import { formatLKR, formatLKRFull } from '@/lib/erp/currency';
 import {
   Building2,
@@ -514,6 +515,26 @@ export default function CompanyAdministrationPage() {
           </div>
         </div>
       )}
+
+      <UniversalRecordManager
+        title="Operating Divisions & Legal Entities (Create, View, Edit, Delete & View Modes)"
+        items={companies as unknown as Record<string, unknown>[]}
+        createLabel="Add Division"
+        searchPlaceholder="Search divisions by name, CIDA grade, TIN..."
+        sortOptions={[
+          { value: 'tradeName', label: 'Trade Name' },
+          { value: 'cidaGrade', label: 'CIDA Grade' },
+        ]}
+        fields={[
+          { key: 'tradeName', label: 'Trade Name', isTitle: true, required: true },
+          { key: 'name', label: 'Legal Entity Name', required: true },
+          { key: 'registrationNumber', label: 'Reg. Number', required: true },
+          { key: 'cidaGrade', label: 'CIDA Grade', isBadge: true },
+          { key: 'tin', label: 'TIN' },
+          { key: 'phone', label: 'Hotline', showInTable: false },
+          { key: 'address', label: 'Address', showInTable: false },
+        ]}
+      />
     </div>
   );
 }

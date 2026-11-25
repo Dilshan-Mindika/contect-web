@@ -5,6 +5,7 @@ import { useERP } from '@/lib/erp/AuthContext';
 import { ConstructionQuotation, BOQItem, BOQSection } from '@/lib/erp/types';
 import { formatLKR } from '@/lib/erp/currency';
 import QuotationPDFModal from '@/components/erp/QuotationPDFModal';
+import UniversalRecordManager from '@/components/erp/UniversalRecordManager';
 import {
   FileText,
   Plus,
@@ -170,14 +171,6 @@ export default function QuotationsPage() {
             CESMM4 / SLS 573 Bill of Quantities generator, CIDA SBD-02 tax schedules, 1-click A4 PDF export, and direct email dispatch.
           </p>
         </div>
-
-        <button
-          onClick={() => setShowCreateModal(true)}
-          className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#0038B8] to-[#1D4ED8] hover:from-[#1D4ED8] hover:to-[#2563EB] text-white text-xs font-bold shadow-lg shadow-blue-900/40 border border-blue-400/40 flex items-center gap-2 self-start sm:self-auto transition-all"
-        >
-          <Plus className="w-4 h-4 text-[#FFB800]" />
-          <span>Generate New BOQ Tender (LKR)</span>
-        </button>
       </div>
 
       {/* KPI Cards in LKR */}
@@ -213,91 +206,6 @@ export default function QuotationsPage() {
           <span className="text-[11px] text-zinc-400 mt-1 block">
             Plus 18% VAT & 2.5% SSCL per Sri Lankan Construction Law
           </span>
-        </div>
-      </div>
-
-      {/* Search Bar */}
-      <div className="relative max-w-md">
-        <Search className="w-4 h-4 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
-        <input
-          type="text"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Search by tender #, developer entity, or project scope..."
-          className="w-full pl-9 pr-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:outline-none focus:border-[#FFB800]"
-        />
-      </div>
-
-      {/* Quotation Table */}
-      <div className="rounded-2xl bg-[#080e1c]/85 border border-white/10 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-white/[0.03] text-zinc-400 font-mono text-[11px] border-b border-white/10 uppercase tracking-wider">
-              <tr>
-                <th className="py-3.5 px-4">Tender #</th>
-                <th className="py-3.5 px-4">Developer & Project Scope</th>
-                <th className="py-3.5 px-4">Validity Date</th>
-                <th className="py-3.5 px-4 text-center">BOQ Items</th>
-                <th className="py-3.5 px-4 text-right">Tender Sum (LKR)</th>
-                <th className="py-3.5 px-4 text-center">Status</th>
-                <th className="py-3.5 px-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-white/5 text-zinc-300">
-              {filteredQuotations.map((q) => (
-                <tr key={q.id} className="hover:bg-white/[0.02] transition-colors">
-                  <td className="py-3.5 px-4 font-mono font-bold text-white">{q.quoteNumber}</td>
-                  <td className="py-3.5 px-4 max-w-xs">
-                    <div className="font-semibold text-white">{q.clientCompany}</div>
-                    <div className="text-[11px] text-zinc-400 line-clamp-1">{q.projectScope}</div>
-                  </td>
-                  <td className="py-3.5 px-4 font-mono text-zinc-400">{q.validUntil}</td>
-                  <td className="py-3.5 px-4 text-center font-mono">
-                    <span className="px-2 py-0.5 rounded bg-white/5 text-blue-300 font-bold">
-                      {q.boqItems.length} Lines
-                    </span>
-                  </td>
-                  <td className="py-3.5 px-4 text-right font-extrabold text-[#FFB800] text-sm font-mono">
-                    {formatLKR(q.grandTotal)}
-                  </td>
-                  <td className="py-3.5 px-4 text-center">
-                    <span
-                      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold ${
-                        q.status === 'ACCEPTED'
-                          ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                          : q.status === 'ISSUED'
-                          ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
-                          : 'bg-zinc-500/20 text-zinc-300 border border-zinc-500/30'
-                      }`}
-                    >
-                      {q.status}
-                    </span>
-                  </td>
-                  <td className="py-3.5 px-4 text-right">
-                    <div className="flex items-center justify-end gap-1.5">
-                      <button
-                        onClick={() => setSelectedQuotation(q)}
-                        className="px-3 py-1.5 rounded-lg bg-[#0038B8]/30 hover:bg-[#0038B8] text-white text-xs font-bold border border-blue-500/40 flex items-center gap-1 transition-colors"
-                      >
-                        <Printer className="w-3.5 h-3.5 text-[#FFB800]" />
-                        <span>PDF / Email</span>
-                      </button>
-
-                      {q.status !== 'ACCEPTED' && (
-                        <button
-                          onClick={() => updateQuotationStatus(q.id, 'ACCEPTED')}
-                          className="px-2 py-1.5 rounded-lg bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-200 text-xs font-semibold border border-emerald-500/30 transition-colors"
-                          title="Mark Accepted / Contract Awarded"
-                        >
-                          ✓
-                        </button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
         </div>
       </div>
 
@@ -529,6 +437,44 @@ export default function QuotationsPage() {
           </div>
         </div>
       )}
+
+      <UniversalRecordManager
+        title="Quotations & Fixed BOQ Registry (Create, View, Edit, Delete & View Modes)"
+        items={quotations as unknown as Record<string, unknown>[]}
+        createLabel="New Quotation"
+        searchPlaceholder="Search quotations by tender #, developer, or scope..."
+        sortOptions={[
+          { value: 'quoteNumber', label: 'Quote #' },
+          { value: 'grandTotal', label: 'Grand Total' },
+          { value: 'status', label: 'Status' },
+          { value: 'validUntil', label: 'Valid Until' },
+        ]}
+        fields={[
+          { key: 'quoteNumber', label: 'Quote #', isTitle: true },
+          { key: 'clientName', label: 'Client Name', required: true },
+          { key: 'clientCompany', label: 'Company', required: true },
+          { key: 'projectScope', label: 'Project Scope', required: true },
+          { key: 'grandTotal', label: 'Grand Total (LKR)', type: 'number', isCurrency: true },
+          { key: 'status', label: 'Status', type: 'select', options: ['DRAFT', 'ISSUED', 'ACCEPTED', 'REVISED', 'DECLINED'], isBadge: true },
+          { key: 'validUntil', label: 'Valid Until', type: 'date' },
+          { key: 'clientEmail', label: 'Client Email', showInTable: false },
+          { key: 'termsAndConditions', label: 'Terms', type: 'textarea', showInTable: false },
+        ]}
+        renderRowActions={(item) => {
+          const q = item as unknown as (typeof quotations)[number];
+          return (
+            <button
+              type="button"
+              onClick={() => setSelectedQuotation(q)}
+              className="px-2 py-1 rounded-lg bg-[#0038B8]/30 hover:bg-[#0038B8] text-white text-[11px] font-bold border border-blue-500/40 flex items-center gap-1 cursor-pointer"
+              title="PDF / Email"
+            >
+              <Printer className="w-3 h-3 text-[#FFB800]" />
+              <span>PDF</span>
+            </button>
+          );
+        }}
+      />
     </div>
   );
 }

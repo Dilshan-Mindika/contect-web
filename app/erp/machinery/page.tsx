@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useERP } from '@/lib/erp/AuthContext';
 import { MachineryStatus } from '@/lib/erp/types';
 import { formatLKR, formatLKRFull } from '@/lib/erp/currency';
+import UniversalRecordManager from '@/components/erp/UniversalRecordManager';
 import {
   Wrench,
   Search,
@@ -26,6 +27,8 @@ export default function MachineryPage() {
   const {
     machinery,
     addMachinery,
+    updateMachinery,
+    deleteMachinery,
     updateMachineryStatus,
     fuelLogs,
     addFuelLog,
@@ -250,124 +253,54 @@ export default function MachineryPage() {
                 </button>
               ))}
             </div>
-
-            <div className="relative w-full sm:w-64">
-              <Search className="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                placeholder="Search asset ID, crane, site..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#0038B8]"
-              />
-            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredMachinery.map((m) => (
-              <div
-                key={m.id}
-                className="p-5 rounded-2xl bg-[#080e1c] border border-white/10 space-y-4 relative overflow-hidden"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30">
-                      {m.assetId}
-                    </span>
-                    <span className="text-[10px] font-mono text-zinc-400">
-                      {m.category.replace('_', ' ')}
-                    </span>
-                  </div>
-                  <span
-                    className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
-                      m.status === 'OPERATIONAL'
-                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                        : m.status === 'STANDBY'
-                        ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
-                        : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                    }`}
-                  >
-                    {m.status}
-                  </span>
-                </div>
-
-                <div>
-                  <h3 className="font-bold text-white text-base">{m.name}</h3>
-                  <div className="flex items-center gap-1.5 text-xs text-zinc-400 mt-1">
-                    <MapPin className="w-3.5 h-3.5 text-blue-400" />
-                    <span>{m.assignedSite}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-xs text-zinc-400 mt-0.5">
-                    <User className="w-3.5 h-3.5 text-amber-400" />
-                    <span>Operator: {m.operatorName}</span>
-                  </div>
-                </div>
-
-                {/* Telematics Gauges */}
-                <div className="p-3 rounded-xl bg-black/40 border border-white/5 space-y-2">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-zinc-400 flex items-center gap-1">
-                      <Fuel className="w-3.5 h-3.5 text-amber-400" />
-                      <span>Fuel Tank Level:</span>
-                    </span>
-                    <span className="font-mono font-bold text-white">
-                      {m.fuelCapacityPct}% ({m.fuelCapacityLiters || 400}L)
-                    </span>
-                  </div>
-                  <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
-                    <div
-                      className={`h-full rounded-full ${
-                        m.fuelCapacityPct > 50
-                          ? 'bg-emerald-500'
-                          : m.fuelCapacityPct > 20
-                          ? 'bg-amber-500'
-                          : 'bg-red-500'
-                      }`}
-                      style={{ width: `${m.fuelCapacityPct}%` }}
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between text-xs pt-1">
-                    <span className="text-zinc-400 flex items-center gap-1">
-                      <Clock className="w-3.5 h-3.5 text-blue-400" />
-                      <span>Meter Hours:</span>
-                    </span>
-                    <span className="font-mono font-bold text-white">
-                      {m.operatingHours.toLocaleString()} hrs
-                    </span>
-                  </div>
-                </div>
-
-                {/* Rates & Actions */}
-                <div className="pt-2 border-t border-white/5 flex items-center justify-between text-xs">
-                  <div>
-                    <span className="text-[10px] text-zinc-400 font-mono block">Daily Hire Rate</span>
-                    <span className="font-mono font-extrabold text-[#FFB800]">
-                      {formatLKR(m.dailyHireRateLkr || 95000)} / day
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-1">
-                    {m.status !== 'OPERATIONAL' ? (
-                      <button
-                        onClick={() => updateMachineryStatus(m.id, 'OPERATIONAL')}
-                        className="px-2.5 py-1 rounded-lg bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-300 text-[10px] font-bold"
-                      >
-                        Set Active
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => updateMachineryStatus(m.id, 'MAINTENANCE')}
-                        className="px-2.5 py-1 rounded-lg bg-amber-600/30 hover:bg-amber-600/50 text-amber-300 text-[10px] font-bold"
-                      >
-                        Service
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <UniversalRecordManager
+            title="Machinery Fleet Directory (MySQL CRUD, Sort & View Modes)"
+            items={(selectedCategory === 'ALL' ? filteredMachinery : filteredMachinery.filter((m) => m.category === selectedCategory)) as unknown as Record<string, unknown>[]}
+            createLabel="New Fleet Asset"
+            searchPlaceholder="Search machinery by name, asset ID, site..."
+            sortOptions={[
+              { value: 'name', label: 'Equipment Name' },
+              { value: 'assetId', label: 'Asset ID' },
+              { value: 'operatingHours', label: 'Operating Hours' },
+              { value: 'status', label: 'Status' },
+            ]}
+            fields={[
+              { key: 'name', label: 'Equipment Name', isTitle: true, required: true },
+              { key: 'assetId', label: 'Asset ID', required: true },
+              { key: 'category', label: 'Category', type: 'select', options: ['EXCAVATOR', 'TOWER_CRANE', 'BOOM_PUMP', 'BULLDOZER', 'GENERATOR'] },
+              { key: 'assignedSite', label: 'Assigned Site' },
+              { key: 'operatorName', label: 'Operator' },
+              { key: 'operatingHours', label: 'Hours', type: 'number' },
+              { key: 'dailyHireRateLkr', label: 'Daily Rate (LKR)', type: 'number', isCurrency: true, showInTable: false },
+              { key: 'status', label: 'Status', type: 'select', options: ['OPERATIONAL', 'MAINTENANCE', 'STANDBY', 'REPAIR'], isBadge: true },
+            ]}
+            onCreate={(d) => addMachinery(d as Parameters<typeof addMachinery>[0])}
+            onUpdate={(id, d) => updateMachinery(id, d)}
+            onDelete={(id) => deleteMachinery(id)}
+            renderRowActions={(item) => {
+              const id = String(item.id || '');
+              const st = String(item.status || '');
+              return st !== 'OPERATIONAL' ? (
+                <button
+                  type="button"
+                  onClick={() => updateMachineryStatus(id, 'OPERATIONAL')}
+                  className="px-2 py-1 rounded-lg bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-300 text-[10px] font-bold cursor-pointer"
+                >
+                  Set Active
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => updateMachineryStatus(id, 'MAINTENANCE')}
+                  className="px-2 py-1 rounded-lg bg-amber-600/30 hover:bg-amber-600/50 text-amber-300 text-[10px] font-bold cursor-pointer"
+                >
+                  Service
+                </button>
+              );
+            }}
+          />
         </div>
       )}
 
@@ -688,6 +621,7 @@ export default function MachineryPage() {
           </div>
         </div>
       )}
+
     </div>
   );
 }

@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useERP } from '@/lib/erp/AuthContext';
 import { formatLKR, formatLKRFull } from '@/lib/erp/currency';
+import UniversalRecordManager from '@/components/erp/UniversalRecordManager';
 import { LabourTrade, SiteLabourWorker } from '@/lib/erp/types';
 import {
   Activity,
@@ -334,40 +335,26 @@ export default function SiteLabourManagementPage() {
       {/* TAB 3: WORKER MASTER & TRADE RATES */}
       {activeTab === 'WORKERS' && (
         <div className="space-y-4">
-          <div className="rounded-2xl bg-[#080e1c] border border-white/10 overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs text-left">
-                <thead className="bg-white/5 text-zinc-400 border-b border-white/10 font-mono">
-                  <tr>
-                    <th className="p-3">Worker ID</th>
-                    <th className="p-3">Full Name</th>
-                    <th className="p-3">Trade Craft</th>
-                    <th className="p-3">Assigned Site</th>
-                    <th className="p-3">Daily Wage Rate</th>
-                    <th className="p-3">OT Hourly Scale</th>
-                    <th className="p-3">Contact Phone</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/5">
-                  {filteredWorkers.map((w) => (
-                    <tr key={w.id} className="hover:bg-white/[0.02]">
-                      <td className="p-3 font-mono font-bold text-blue-300">{w.workerCode}</td>
-                      <td className="p-3 font-bold text-white">{w.fullName}</td>
-                      <td className="p-3">
-                        <span className="px-2 py-0.5 rounded font-mono text-[10px] bg-white/5 text-zinc-300">
-                          {w.trade}
-                        </span>
-                      </td>
-                      <td className="p-3 font-mono text-zinc-300">{w.assignedProjectCode}</td>
-                      <td className="p-3 font-mono font-bold text-emerald-400">{formatLKR(w.dailyWageRateLkr)} / day</td>
-                      <td className="p-3 font-mono text-amber-300">{formatLKR(w.otHourlyRateLkr)} / hr</td>
-                      <td className="p-3 font-mono text-zinc-400">{w.phone}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <UniversalRecordManager
+            title="Site Labour Registry (Create, View, Edit, Delete & View Modes)"
+            items={filteredWorkers as unknown as Record<string, unknown>[]}
+            createLabel="Register Worker"
+            searchPlaceholder="Search workers by name, trade, site..."
+            sortOptions={[
+              { value: 'fullName', label: 'Worker Name' },
+              { value: 'trade', label: 'Trade' },
+              { value: 'dailyWageRateLkr', label: 'Daily Wage' },
+            ]}
+            fields={[
+              { key: 'fullName', label: 'Full Name', isTitle: true, required: true },
+              { key: 'workerCode', label: 'Worker Code', required: true },
+              { key: 'trade', label: 'Trade / Skill', isBadge: true, required: true },
+              { key: 'assignedProjectCode', label: 'Assigned Site' },
+              { key: 'dailyWageRateLkr', label: 'Daily Wage (LKR)', type: 'number', isCurrency: true },
+              { key: 'otHourlyRateLkr', label: 'OT Rate (LKR/hr)', type: 'number', isCurrency: true, showInTable: false },
+              { key: 'phone', label: 'Contact Phone' },
+            ]}
+          />
         </div>
       )}
 
@@ -563,6 +550,7 @@ export default function SiteLabourManagementPage() {
           </div>
         </div>
       )}
+
     </div>
   );
 }

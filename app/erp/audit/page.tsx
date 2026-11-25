@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useERP } from '@/lib/erp/AuthContext';
+import UniversalRecordManager from '@/components/erp/UniversalRecordManager';
 import {
   AuditSeverity,
   AuditModule,
@@ -625,120 +626,28 @@ export default function AuditAndVaultPage() {
                 </button>
               ))}
             </div>
-
-            <div className="relative w-full lg:w-64">
-              <Search className="w-4 h-4 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                value={auditSearchTerm}
-                onChange={(e) => setAuditSearchTerm(e.target.value)}
-                placeholder="Search action, actor, or details..."
-                className="w-full pl-9 pr-4 py-1.5 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:outline-none focus:border-[#FFB800]"
-              />
-            </div>
           </div>
 
-          {/* Module Filter Pills */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-2 scrollbar-none">
-            {(
-              [
-                'ALL',
-                'AUTH',
-                'COMPANY',
-                'FINANCE',
-                'PROJECTS',
-                'INVENTORY',
-                'PROCUREMENT',
-                'HR',
-                'SITE_LABOUR',
-                'MACHINERY',
-                'COST_CONTROL',
-                'CONTRACTS',
-                'SAFETY',
-                'DOCUMENTS',
-                'SECURITY',
-                'CRM',
-              ] as const
-            ).map((mod) => (
-              <button
-                key={mod}
-                onClick={() => setSelectedModule(mod)}
-                className={`px-2.5 py-1 rounded-lg text-[11px] font-mono whitespace-nowrap transition-colors ${
-                  selectedModule === mod
-                    ? 'bg-[#FFB800]/20 text-[#FFB800] border border-[#FFB800]/40'
-                    : 'bg-[#080e1c] hover:bg-white/5 text-zinc-400 border border-white/5'
-                }`}
-              >
-                {mod}
-              </button>
-            ))}
-          </div>
-
-          {/* Audit Log Table */}
-          <div className="rounded-2xl bg-[#080e1c]/85 border border-white/10 overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-white/[0.03] text-zinc-400 font-mono text-[11px] border-b border-white/10 uppercase tracking-wider">
-                  <tr>
-                    <th className="py-3.5 px-4">Timestamp (UTC)</th>
-                    <th className="py-3.5 px-4">Company</th>
-                    <th className="py-3.5 px-4">Action & Module</th>
-                    <th className="py-3.5 px-4">Event Details</th>
-                    <th className="py-3.5 px-4">Operator</th>
-                    <th className="py-3.5 px-4 text-center">Severity</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/5 text-zinc-300">
-                  {filteredLogs.map((log) => (
-                    <tr key={log.id} className="hover:bg-white/[0.02] transition-colors">
-                      <td className="py-3.5 px-4 font-mono text-zinc-400 whitespace-nowrap text-[11px]">
-                        {log.timestamp}
-                      </td>
-                      <td className="py-3.5 px-4 whitespace-nowrap">
-                        <span
-                          className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
-                            log.companyId === 'COMP_A'
-                              ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
-                              : log.companyId === 'COMP_B'
-                              ? 'bg-amber-500/20 text-[#FFB800] border border-amber-500/30'
-                              : 'bg-zinc-800 text-zinc-400'
-                          }`}
-                        >
-                          {log.companyId || 'CONSOLIDATED'}
-                        </span>
-                      </td>
-                      <td className="py-3.5 px-4">
-                        <div className="font-bold text-white">{log.action}</div>
-                        <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-white/5 text-blue-300">
-                          {log.module}
-                        </span>
-                      </td>
-                      <td className="py-3.5 px-4 text-zinc-300 max-w-md leading-relaxed">
-                        {log.details}
-                      </td>
-                      <td className="py-3.5 px-4">
-                        <div className="font-medium text-white">{log.actorName}</div>
-                        <div className="text-[10px] text-zinc-400">{log.role}</div>
-                      </td>
-                      <td className="py-3.5 px-4 text-center">
-                        <span
-                          className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold ${
-                            log.severity === 'CRITICAL'
-                              ? 'bg-red-500/20 text-red-300 border border-red-500/30'
-                              : log.severity === 'WARNING'
-                              ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                              : 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
-                          }`}
-                        >
-                          {log.severity}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <UniversalRecordManager
+            title="Security Audit Trail (View, Search, Sort & View Modes)"
+            items={filteredLogs as unknown as Record<string, unknown>[]}
+            createLabel="Log Manual Audit"
+            searchPlaceholder="Search audit logs by actor, action, module..."
+            sortOptions={[
+              { value: 'timestamp', label: 'Timestamp' },
+              { value: 'actorName', label: 'Actor' },
+              { value: 'module', label: 'Module' },
+              { value: 'severity', label: 'Severity' },
+            ]}
+            fields={[
+              { key: 'action', label: 'Action', isTitle: true, required: true },
+              { key: 'actorName', label: 'Actor', required: true },
+              { key: 'module', label: 'Module', required: true },
+              { key: 'severity', label: 'Severity', type: 'select', options: ['INFO', 'WARNING', 'CRITICAL'], isBadge: true },
+              { key: 'timestamp', label: 'Timestamp' },
+              { key: 'details', label: 'Details', type: 'textarea', showInTable: false },
+            ]}
+          />
         </div>
       )}
 
@@ -989,6 +898,7 @@ export default function AuditAndVaultPage() {
           </div>
         </div>
       )}
+
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { useERP } from '@/lib/erp/AuthContext';
 import { LeadStage } from '@/lib/erp/types';
 import { formatLKR } from '@/lib/erp/currency';
 import ModuleAnalytics from '@/components/erp/ModuleAnalytics';
+import UniversalRecordManager from '@/components/erp/UniversalRecordManager';
 import {
   TrendingUp,
   Plus,
@@ -87,14 +88,6 @@ export default function CRMPage() {
             Manage multi-billion rupee infrastructure tenders, CIDA CS2 feasibility assessments, and turnkey project awards.
           </p>
         </div>
-
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#0038B8] to-[#1D4ED8] hover:from-[#1D4ED8] hover:to-[#2563EB] text-white text-xs font-bold shadow-lg shadow-blue-900/40 border border-blue-400/40 flex items-center gap-2 self-start sm:self-auto transition-all"
-        >
-          <Plus className="w-4 h-4 text-[#FFB800]" />
-          <span>Register New Tender (LKR)</span>
-        </button>
       </div>
 
       {/* Stat Boxes, Graph View & CSV/Print Reports */}
@@ -179,115 +172,6 @@ export default function CRMPage() {
             Transferred to Field Site Operations
           </span>
         </div>
-      </div>
-
-      {/* Search Bar */}
-      <div className="relative max-w-md">
-        <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-        <input
-          type="text"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Filter by developer, typology, or client..."
-          className="w-full pl-10 pr-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:outline-none focus:border-[#FFB800]"
-        />
-      </div>
-
-      {/* Pipeline Board Columns in LKR */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-        {STAGES.map((col) => {
-          const colLeads = filteredLeads.filter((l) => l.stage === col.key);
-          const colValue = colLeads.reduce((acc, l) => acc + l.estimatedValue, 0);
-
-          return (
-            <div
-              key={col.key}
-              className="p-3.5 rounded-2xl bg-[#080e1c]/70 border border-white/10 flex flex-col justify-between space-y-3"
-            >
-              <div>
-                <div className="flex items-center justify-between pb-2 border-b border-white/10">
-                  <span className={`text-xs font-bold uppercase tracking-wider ${col.color}`}>
-                    {col.label}
-                  </span>
-                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/5 text-zinc-300">
-                    {colLeads.length}
-                  </span>
-                </div>
-                <div className="text-[11px] text-zinc-400 mt-1 font-mono font-bold">
-                  {formatLKR(colValue, true)} Total
-                </div>
-
-                {/* Cards in LKR */}
-                <div className="space-y-3 mt-3">
-                  {colLeads.map((lead) => (
-                    <div
-                      key={lead.id}
-                      className="p-3.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/10 space-y-2.5 transition-all shadow-sm"
-                    >
-                      <div className="flex items-start justify-between gap-2">
-                        <h4 className="font-bold text-white text-xs line-clamp-1">
-                          {lead.company}
-                        </h4>
-                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#FFB800]/15 text-[#FFB800] shrink-0 font-bold">
-                          {lead.probability}%
-                        </span>
-                      </div>
-
-                      <p className="text-[11px] text-blue-300 font-medium line-clamp-2">
-                        {lead.projectType}
-                      </p>
-
-                      <div className="text-sm font-extrabold text-[#FFB800] font-mono">
-                        {formatLKR(lead.estimatedValue)}
-                      </div>
-
-                      {lead.cidaCategory && (
-                        <div className="text-[9px] font-mono text-zinc-400 bg-white/5 px-1.5 py-0.5 rounded flex items-center gap-1">
-                          <Award className="w-2.5 h-2.5 text-[#FFB800]" />
-                          <span>{lead.cidaCategory}</span>
-                        </div>
-                      )}
-
-                      <div className="text-[10px] text-zinc-400 space-y-1 pt-1 border-t border-white/5">
-                        <div className="flex items-center gap-1.5 truncate">
-                          <Mail className="w-3 h-3 text-zinc-400" />
-                          <span className="truncate">{lead.contactEmail}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <Phone className="w-3 h-3 text-zinc-400" />
-                          <span>{lead.phone}</span>
-                        </div>
-                      </div>
-
-                      {/* Stage Mover Selector */}
-                      <div className="pt-2 border-t border-white/5 flex items-center justify-between">
-                        <span className="text-[10px] text-zinc-400">Advance:</span>
-                        <select
-                          value={lead.stage}
-                          onChange={(e) => updateLeadStage(lead.id, e.target.value as LeadStage)}
-                          className="bg-black/60 border border-white/15 text-[10px] rounded px-1.5 py-1 text-white focus:outline-none"
-                        >
-                          <option value="NEW">New</option>
-                          <option value="QUALIFIED">Qualified</option>
-                          <option value="PROPOSAL">Proposal</option>
-                          <option value="NEGOTIATION">Negotiate</option>
-                          <option value="WON">Won ✓</option>
-                          <option value="LOST">Lost ✕</option>
-                        </select>
-                      </div>
-                    </div>
-                  ))}
-
-                  {colLeads.length === 0 && (
-                    <div className="p-4 rounded-xl border border-dashed border-white/10 text-center text-xs text-zinc-400">
-                      No proposals in this phase
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          );
-        })}
       </div>
 
       {/* Modal: Register New Tender in LKR */}
@@ -396,6 +280,31 @@ export default function CRMPage() {
           </div>
         </div>
       )}
+
+      <UniversalRecordManager
+        title="CRM Tender Directory (Create, View, Edit, Delete & View Modes)"
+        items={leads as unknown as Record<string, unknown>[]}
+        createLabel="New Tender Lead"
+        searchPlaceholder="Search CRM tenders..."
+        sortOptions={[
+          { value: 'company', label: 'Company' },
+          { value: 'estimatedValue', label: 'Contract Value' },
+          { value: 'probability', label: 'Win Probability' },
+          { value: 'stage', label: 'Stage' },
+        ]}
+        fields={[
+          { key: 'company', label: 'Company / Authority', isTitle: true, required: true },
+          { key: 'clientName', label: 'Contact Person', required: true },
+          { key: 'projectType', label: 'Project Scope', required: true },
+          { key: 'estimatedValue', label: 'Value (LKR)', type: 'number', isCurrency: true },
+          { key: 'stage', label: 'Stage', type: 'select', options: ['NEW', 'QUALIFIED', 'PROPOSAL', 'NEGOTIATION', 'WON'], isBadge: true },
+          { key: 'probability', label: 'Win %', type: 'number' },
+          { key: 'contactEmail', label: 'Email', showInTable: false },
+          { key: 'phone', label: 'Phone', showInTable: false },
+          { key: 'notes', label: 'Notes', type: 'textarea', showInTable: false },
+        ]}
+        onCreate={(d) => addLead({ ...(d as Parameters<typeof addLead>[0]), stage: (d.stage as LeadStage) || 'NEW', probability: Number(d.probability || 30), assignedTo: user?.name || 'Director' })}
+      />
     </div>
   );
 }

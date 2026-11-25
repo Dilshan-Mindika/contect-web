@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useERP } from '@/lib/erp/AuthContext';
 import { formatLKR, formatLKRFull } from '@/lib/erp/currency';
+import UniversalRecordManager from '@/components/erp/UniversalRecordManager';
 import {
   Calculator,
   TrendingUp,
@@ -247,6 +248,25 @@ export default function ProjectBudgetingCostControlPage() {
           </table>
         </div>
       </div>
+
+      <UniversalRecordManager
+        title="Budget Baselines Manager (Create, View, Edit, Delete & View Modes)"
+        items={budgetBaselines as unknown as Record<string, unknown>[]}
+        createLabel="New Budget Line"
+        searchPlaceholder="Search budget baselines..."
+        sortOptions={[
+          { value: 'projectCode', label: 'Project Code' },
+          { value: 'costCode', label: 'Cost Code' },
+          { value: 'baselineBudgetLkr', label: 'Baseline Budget' },
+        ]}
+        fields={[
+          { key: 'description', label: 'Cost Element', isTitle: true, required: true },
+          { key: 'projectCode', label: 'Project Code', required: true },
+          { key: 'costCode', label: 'Cost Code', isBadge: true },
+          { key: 'baselineBudgetLkr', label: 'Baseline (LKR)', type: 'number', isCurrency: true },
+          { key: 'actualSpentLkr', label: 'Actual Spent (LKR)', type: 'number', isCurrency: true },
+        ]}
+      />
     </div>
   );
 }

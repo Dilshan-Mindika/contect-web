@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useERP } from '@/lib/erp/AuthContext';
+import UniversalRecordManager from '@/components/erp/UniversalRecordManager';
 import {
   ShieldAlert,
   ShieldCheck,
@@ -168,44 +169,27 @@ export default function HealthSafetyPage() {
       {/* TAB 1: SAFETY INSPECTIONS */}
       {activeTab === 'INSPECTIONS' && (
         <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {filteredInspections.map((si) => (
-              <div key={si.id} className="p-5 rounded-2xl bg-[#080e1c] border border-white/10 space-y-4">
-                <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                  <div>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-500/20 text-blue-300">
-                      {si.projectCode}
-                    </span>
-                    <h3 className="font-bold text-white text-base mt-1">Weekly HSE Audit Checklist</h3>
-                    <div className="text-xs text-zinc-400 font-mono">Date: {si.inspectionDate} • Lead: {si.inspectorName}</div>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-xs text-zinc-400 block">Audit Score</span>
-                    <span className="text-xl font-extrabold text-emerald-400 font-mono">{si.scorePct}%</span>
-                  </div>
-                </div>
-
-                <div className="space-y-2 text-xs">
-                  <div className="flex justify-between py-1 border-b border-white/5">
-                    <span className="text-zinc-400">Scaffolding Green-Tag Status:</span>
-                    <span className="font-bold text-emerald-400">{si.scaffoldingStatus}</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-white/5">
-                    <span className="text-zinc-400">Electrical Earthing & Temporary Power:</span>
-                    <span className="font-bold text-blue-300">{si.electricalEarthingStatus}</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-white/5">
-                    <span className="text-zinc-400">PPE Mandatory Wearing Rate:</span>
-                    <span className="font-mono font-bold text-white">{si.ppeCompliancePct}%</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-white/5">
-                    <span className="text-zinc-400">Deep Excavation & Shoring Stability:</span>
-                    <span className="font-bold text-emerald-400">{si.excavationShoringStatus}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <UniversalRecordManager
+            title="HSE Inspections Directory (Create, View, Edit, Delete & View Modes)"
+            items={safetyInspections as unknown as Record<string, unknown>[]}
+            createLabel="New HSE Inspection"
+            searchPlaceholder="Search inspections by site, inspector..."
+            sortOptions={[
+              { value: 'projectCode', label: 'Project Code' },
+              { value: 'scorePct', label: 'Safety Score %' },
+              { value: 'status', label: 'Status' },
+            ]}
+            fields={[
+              { key: 'projectCode', label: 'Project Code', isTitle: true, required: true },
+              { key: 'inspectorName', label: 'Inspector', required: true },
+              { key: 'inspectionDate', label: 'Date', type: 'date' },
+              { key: 'scorePct', label: 'Score (%)', type: 'number' },
+              { key: 'scaffoldingStatus', label: 'Scaffolding', showInTable: false },
+              { key: 'ppeCompliancePct', label: 'PPE %', type: 'number', showInTable: false },
+              { key: 'status', label: 'Status', type: 'select', options: ['PASS', 'CONDITIONAL', 'FAIL'], isBadge: true },
+              { key: 'findings', label: 'Findings', type: 'textarea', showInTable: false },
+            ]}
+          />
         </div>
       )}
 
@@ -415,13 +399,14 @@ export default function HealthSafetyPage() {
                   type="submit"
                   className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs"
                 >
-                  Broadcast HSE Alert & Log
+                  Broadcast HSE Alert &amp; Log
                 </button>
               </div>
             </form>
           </div>
         </div>
       )}
+
     </div>
   );
 }

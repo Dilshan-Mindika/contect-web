@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useERP } from '@/lib/erp/AuthContext';
 import { formatLKR, formatLKRFull } from '@/lib/erp/currency';
+import UniversalRecordManager from '@/components/erp/UniversalRecordManager';
 import { CIDA102IPC } from '@/lib/erp/types';
 import {
   FileText,
@@ -29,7 +30,7 @@ export default function GovernmentContractsPage() {
     companies,
   } = useERP();
 
-  const [activeTab, setActiveTab] = useState<'IPC_ENGINE' | 'CONTRACTS' | 'BONDS' | 'VARIATIONS'>('IPC_ENGINE');
+  const [activeTab, setActiveTab] = useState<'IPC_ENGINE' | 'IPC_REGISTRY' | 'CONTRACTS' | 'BONDS' | 'VARIATIONS'>('IPC_ENGINE');
   const [selectedIpc, setSelectedIpc] = useState<CIDA102IPC | null>(cidaIpcs[0] || null);
   const [showNewIpcModal, setShowNewIpcModal] = useState(false);
 
@@ -159,9 +160,10 @@ export default function GovernmentContractsPage() {
       <div className="flex items-center gap-2 border-b border-white/10 overflow-x-auto pb-1">
         {[
           { key: 'IPC_ENGINE', label: '01. CIDA Directive 102/2024 IPC Engine', icon: FileText },
-          { key: 'CONTRACTS', label: '02. Government Contracts & Agreements', icon: Landmark },
-          { key: 'BONDS', label: '03. Bid Bonds & Performance Guarantees', icon: ShieldCheck },
-          { key: 'VARIATIONS', label: '04. Variation Orders (VO) & EOT Claims', icon: Scale },
+          { key: 'IPC_REGISTRY', label: '02. IPC Master Directory', icon: Scale },
+          { key: 'CONTRACTS', label: '03. Government Contracts & Agreements', icon: Landmark },
+          { key: 'BONDS', label: '04. Bid Bonds & Performance Guarantees', icon: ShieldCheck },
+          { key: 'VARIATIONS', label: '05. Variation Orders (VO) & EOT Claims', icon: Scale },
         ].map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.key;
@@ -568,12 +570,33 @@ export default function GovernmentContractsPage() {
                   type="submit"
                   className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs"
                 >
-                  Calculate & Generate Certificate
+                  Calculate &amp; Generate Certificate
                 </button>
               </div>
             </form>
           </div>
         </div>
+      )}
+
+      {activeTab === 'IPC_REGISTRY' && (
+        <UniversalRecordManager
+          title="CIDA IPC Certificates Directory (Create, View, Edit, Delete & View Modes)"
+          items={cidaIpcs as unknown as Record<string, unknown>[]}
+          createLabel="New IPC Certificate"
+          searchPlaceholder="Search IPCs by number, project..."
+          sortOptions={[
+            { value: 'ipcNumber', label: 'IPC #' },
+            { value: 'grandTotalCertifiedPayableLkr', label: 'Grand Certified Due' },
+            { value: 'status', label: 'Status' },
+          ]}
+          fields={[
+            { key: 'ipcNumber', label: 'IPC Number', isTitle: true },
+            { key: 'projectName', label: 'Project Name', required: true },
+            { key: 'contractNumber', label: 'Contract #', required: true },
+            { key: 'grandTotalCertifiedPayableLkr', label: 'Certified Due (LKR)', type: 'number', isCurrency: true },
+            { key: 'status', label: 'Status', type: 'select', options: ['DRAFT', 'CERTIFIED_BY_CONSULTANT', 'PAID'], isBadge: true },
+          ]}
+        />
       )}
     </div>
   );
