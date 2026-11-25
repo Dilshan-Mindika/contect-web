@@ -186,6 +186,7 @@ interface ERPContextType {
   addQuotation: (quotation: Omit<ConstructionQuotation, 'id' | 'quoteNumber' | 'createdDate'>) => void;
   updateQuotationStatus: (id: string, status: QuotationStatus) => void;
   addSiteDailyLog: (log: Omit<SiteDailyLog, 'id'>) => void;
+  addMachinery: (asset: Omit<MachineryFleet, 'id'>) => void;
   updateMachineryStatus: (id: string, status: MachineryStatus) => void;
   addWebsiteProject: (project: Omit<WebsiteShowcaseProject, 'id'>) => void;
   deleteWebsiteProject: (id: string) => void;
@@ -256,6 +257,9 @@ export function ERPProvider({ children }: { children: React.ReactNode }) {
             if (payload.data.invoices?.length) setInvoices(payload.data.invoices);
             if (payload.data.websiteInquiries?.length) setWebsiteInquiries(payload.data.websiteInquiries);
             if (payload.data.inventory?.length) setInventory(payload.data.inventory);
+            if (payload.data.machinery?.length) setMachinery(payload.data.machinery);
+            if (payload.data.siteLogs?.length) setSiteLogs(payload.data.siteLogs);
+            if (payload.data.quotations?.length) setQuotations(payload.data.quotations);
             if (payload.data.auditLogs?.length) setAuditLogs(payload.data.auditLogs);
           }
         }
@@ -630,7 +634,7 @@ export function ERPProvider({ children }: { children: React.ReactNode }) {
     logAuditEvent('INVOICE_STATUS_UPDATED', 'FINANCE', `Invoice ${id} marked as ${status}`);
   };
 
-  const addProject = (projectData: Omit<Project, 'id' | 'code' | 'tasks'>) => {
+  const addProject = (projectData: Omit<Project, 'id' | 'code' | 'tasks'> & Record<string, unknown>) => {
     const company = activeCompany === 'CONSOLIDATED' ? 'COMP_A' : activeCompany;
     const code = `${company === 'COMP_A' ? 'A' : 'B'}-PRJ-${Math.floor(100 + Math.random() * 900)}`;
     const newProject: Project = {
@@ -641,6 +645,11 @@ export function ERPProvider({ children }: { children: React.ReactNode }) {
       tasks: [],
     };
     setProjects((prev) => [newProject, ...prev]);
+    fetch('/api/erp/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'ADD_PROJECT', payload: { ...projectData, id: newProject.id, code, companyId: company } }),
+    }).catch(() => {});
     logAuditEvent('PROJECT_REGISTERED', 'PROJECTS', `Registered site project ${newProject.name} (${newProject.code})`);
   };
 
@@ -739,7 +748,7 @@ export function ERPProvider({ children }: { children: React.ReactNode }) {
     logAuditEvent('QUOTATION_STATUS_UPDATED', 'BOQ', `Quotation ${id} set to ${status}`);
   };
 
-  const addSiteDailyLog = (logData: Omit<SiteDailyLog, 'id'>) => {
+  const addSiteDailyLog = (logData: Omit<SiteDailyLog, 'id'> & Record<string, unknown>) => {
     const company = activeCompany === 'CONSOLIDATED' ? 'COMP_A' : activeCompany;
     const newLog: SiteDailyLog = {
       ...logData,
@@ -747,13 +756,39 @@ export function ERPProvider({ children }: { children: React.ReactNode }) {
       companyId: company,
     };
     setSiteLogs((prev) => [newLog, ...prev]);
+    fetch('/api/erp/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'ADD_SITE_LOG', payload: { ...logData, id: newLog.id, companyId: company } }),
+    }).catch(() => {});
     logAuditEvent('SITE_LOG_FILED', 'SITE_LOGS', `Filed site log for ${newLog.projectName}`);
+  };
+
+  const addMachinery = (assetData: Omit<MachineryFleet, 'id'> & Record<string, unknown>) => {
+    const company = assetData.companyId || 'COMP_B';
+    const newAsset: MachineryFleet = {
+      ...assetData,
+      id: `eq-${Date.now().toString().slice(-4)}`,
+      companyId: company,
+    };
+    setMachinery((prev) => [newAsset, ...prev]);
+    fetch('/api/erp/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'ADD_MACHINERY', payload: { ...assetData, id: newAsset.id, companyId: company } }),
+    }).catch(() => {});
+    logAuditEvent('MACHINERY_REGISTERED', 'MACHINERY', `Registered asset ${newAsset.name} (${newAsset.assetId})`);
   };
 
   const updateMachineryStatus = (id: string, status: MachineryStatus) => {
     setMachinery((prev) =>
       prev.map((m) => (m.id === id ? { ...m, status } : m))
     );
+    fetch('/api/erp/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'UPDATE_MACHINERY_STATUS', payload: { id, status } }),
+    }).catch(() => {});
     logAuditEvent('MACHINERY_STATUS_UPDATED', 'MACHINERY', `Fleet asset ${id} updated to ${status}`);
   };
 
@@ -889,6 +924,7 @@ export function ERPProvider({ children }: { children: React.ReactNode }) {
         addQuotation,
         updateQuotationStatus,
         addSiteDailyLog,
+        addMachinery,
         updateMachineryStatus,
         addWebsiteProject,
         deleteWebsiteProject,

@@ -20,18 +20,22 @@ export default function SiteLogsPage() {
   const [showLogModal, setShowLogModal] = useState(false);
   const [safetyAlertSent, setSafetyAlertSent] = useState<string | null>(null);
 
-  // Form State
+  // Form State (Full Construction Site Diary Fields)
   const [projectId, setProjectId] = useState(projects[0]?.id || 'prj-01');
-  const [weatherSummary, setWeatherSummary] = useState('Partly Cloudy, 30°C, Wind 12 km/h SW, Humidity 76%');
-  const ambientTempC = 30.0;
+  const [logDate, setLogDate] = useState(new Date().toISOString().split('T')[0]);
+  const [weatherSummary, setWeatherSummary] = useState('Partly Cloudy, Wind 12 km/h SW, Humidity 76%');
+  const [ambientTempC, setAmbientTempC] = useState(30.0);
   const [workforceCount, setWorkforceCount] = useState(86);
-  const skilledWorkersCount = Math.round(workforceCount * 0.65);
-  const unskilledWorkersCount = workforceCount - skilledWorkersCount;
+  const [skilledWorkersCount, setSkilledWorkersCount] = useState(56);
+  const [unskilledWorkersCount, setUnskilledWorkersCount] = useState(30);
+  const [concreteGrade, setConcreteGrade] = useState('G40');
   const [concretePouredM3, setConcretePouredM3] = useState(420.0);
   const [slumpTestMm, setSlumpTestMm] = useState(120.0);
   const [toolboxTalkTopic, setToolboxTalkTopic] = useState('Scaffold Safety, Green Tag Inspection & Fall Arrest Protocols');
-  const safetyIncidents = 0;
-  const oshaStatus: OSHAStatus = 'COMPLIANT';
+  const [safetyIncidents, setSafetyIncidents] = useState(0);
+  const [oshaStatus, setOshaStatus] = useState<OSHAStatus>('COMPLIANT');
+  const [drawingRef, setDrawingRef] = useState('');
+  const [visitorNotes, setVisitorNotes] = useState('');
   const [supervisorNotes, setSupervisorNotes] = useState('');
 
   const totalConcretePoured = siteLogs.reduce((acc, l) => acc + l.concretePouredM3, 0);
@@ -41,20 +45,23 @@ export default function SiteLogsPage() {
     e.preventDefault();
     const prj = projects.find((p) => p.id === projectId) || projects[0];
 
-    addSiteDailyLog({
+    (addSiteDailyLog as (l: Record<string, unknown>) => void)({
       projectId,
       projectName: prj.name,
-      logDate: new Date().toISOString().split('T')[0],
+      logDate: logDate || new Date().toISOString().split('T')[0],
       weatherSummary,
       ambientTempC: Number(ambientTempC),
       workforceCount: Number(workforceCount),
       skilledWorkersCount: Number(skilledWorkersCount),
       unskilledWorkersCount: Number(unskilledWorkersCount),
+      concreteGrade,
       concretePouredM3: Number(concretePouredM3),
       slumpTestMm: Number(slumpTestMm),
       toolboxTalkTopic,
       safetyIncidents: Number(safetyIncidents),
       oshaStatus,
+      drawingRef,
+      visitorNotes,
       supervisorNotes: supervisorNotes || 'Shift concluded with all structural quality inspection checklists and cube samples logged.',
       supervisorName: user?.name || 'Eng. Marcus Chen',
       cubeTests: [
@@ -339,9 +346,18 @@ export default function SiteLogsPage() {
                 </select>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-zinc-300 mb-1">Weather & Conditions</label>
+                  <label className="block text-xs font-semibold text-zinc-300 mb-1">Log Date</label>
+                  <input
+                    type="date"
+                    value={logDate}
+                    onChange={(e) => setLogDate(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white text-xs"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-zinc-300 mb-1">Weather &amp; Conditions</label>
                   <input
                     type="text"
                     value={weatherSummary}
@@ -350,7 +366,20 @@ export default function SiteLogsPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-zinc-300 mb-1">Total Workforce Count</label>
+                  <label className="block text-xs font-semibold text-zinc-300 mb-1">Ambient Temp (°C)</label>
+                  <input
+                    type="number"
+                    step="0.5"
+                    value={ambientTempC}
+                    onChange={(e) => setAmbientTempC(Number(e.target.value))}
+                    className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white text-xs font-mono"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-zinc-300 mb-1">Total Workforce</label>
                   <input
                     type="number"
                     value={workforceCount}
@@ -358,9 +387,41 @@ export default function SiteLogsPage() {
                     className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white text-xs font-mono"
                   />
                 </div>
+                <div>
+                  <label className="block text-xs font-semibold text-zinc-300 mb-1">Skilled Workers</label>
+                  <input
+                    type="number"
+                    value={skilledWorkersCount}
+                    onChange={(e) => setSkilledWorkersCount(Number(e.target.value))}
+                    className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white text-xs font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-zinc-300 mb-1">Unskilled Labour</label>
+                  <input
+                    type="number"
+                    value={unskilledWorkersCount}
+                    onChange={(e) => setUnskilledWorkersCount(Number(e.target.value))}
+                    className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white text-xs font-mono"
+                  />
+                </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-zinc-300 mb-1">Concrete Grade</label>
+                  <select
+                    value={concreteGrade}
+                    onChange={(e) => setConcreteGrade(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-[#080e1c] border border-white/15 text-white text-xs"
+                  >
+                    <option value="G25">Grade 25 (G25)</option>
+                    <option value="G30">Grade 30 (G30)</option>
+                    <option value="G35">Grade 35 (G35)</option>
+                    <option value="G40">Grade 40 (G40)</option>
+                    <option value="G50">Grade 50 (G50)</option>
+                  </select>
+                </div>
                 <div>
                   <label className="block text-xs font-semibold text-zinc-300 mb-1">Concrete Placed (m³)</label>
                   <input
@@ -379,6 +440,52 @@ export default function SiteLogsPage() {
                     className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white text-xs font-mono"
                   />
                 </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-zinc-300 mb-1">OSHA / HSE Status</label>
+                  <select
+                    value={oshaStatus}
+                    onChange={(e) => setOshaStatus(e.target.value as OSHAStatus)}
+                    className="w-full px-3 py-2 rounded-xl bg-[#080e1c] border border-white/15 text-white text-xs"
+                  >
+                    <option value="COMPLIANT">COMPLIANT</option>
+                    <option value="OBSERVATION">OBSERVATION</option>
+                    <option value="BREACH">BREACH</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-zinc-300 mb-1">Safety Incidents</label>
+                  <input
+                    type="number"
+                    min={0}
+                    value={safetyIncidents}
+                    onChange={(e) => setSafetyIncidents(Number(e.target.value))}
+                    className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white text-xs font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-zinc-300 mb-1">Drawing / RFI Ref (Optional)</label>
+                  <input
+                    type="text"
+                    value={drawingRef}
+                    onChange={(e) => setDrawingRef(e.target.value)}
+                    placeholder="e.g. STR-DWG-042 Rev B"
+                    className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white text-xs"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-zinc-300 mb-1">Consultant / Client Visitor Notes (Optional)</label>
+                <input
+                  type="text"
+                  value={visitorNotes}
+                  onChange={(e) => setVisitorNotes(e.target.value)}
+                  placeholder="e.g. Resident Engineer inspected reinforcement cage & approved pour..."
+                  className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white text-xs"
+                />
               </div>
 
               <div>

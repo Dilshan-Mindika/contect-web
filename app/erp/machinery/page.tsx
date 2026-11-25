@@ -25,6 +25,7 @@ import {
 export default function MachineryPage() {
   const {
     machinery,
+    addMachinery,
     updateMachineryStatus,
     fuelLogs,
     addFuelLog,
@@ -37,6 +38,44 @@ export default function MachineryPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('ALL');
   const [showFuelModal, setShowFuelModal] = useState(false);
+  const [showAssetModal, setShowAssetModal] = useState(false);
+
+  // Asset Registration Form
+  const [assetName, setAssetName] = useState('');
+  const [assetCode, setAssetCode] = useState('');
+  const [assetCat, setAssetCat] = useState<'TOWER_CRANE' | 'EXCAVATOR' | 'BOOM_PUMP' | 'BULLDOZER' | 'GENERATOR'>('EXCAVATOR');
+  const [assetSite, setAssetSite] = useState(projects[0]?.name || 'Hanthana Hillside Site');
+  const [assetOperator, setAssetOperator] = useState('');
+  const [assetSerial, setAssetSerial] = useState('');
+  const [assetHireRate, setAssetHireRate] = useState(95000);
+  const [assetFuelPct, setAssetFuelPct] = useState(100);
+  const [assetHours, setAssetHours] = useState(0);
+  const [assetServiceDate, setAssetServiceDate] = useState('2026-12-30');
+  const [assetInsuranceExpiry, setAssetInsuranceExpiry] = useState('2027-06-30');
+
+  const handleRegisterAsset = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!assetName) return;
+    (addMachinery as (a: Record<string, unknown>) => void)({
+      companyId: 'COMP_B',
+      assetId: assetCode || `CNT-EQ-${Math.floor(100 + Math.random() * 900)}`,
+      name: assetName,
+      category: assetCat,
+      assignedSite: assetSite,
+      operatorName: assetOperator || 'Assigned Operator',
+      serialNumber: assetSerial,
+      dailyHireRateLkr: Number(assetHireRate),
+      fuelCapacityPct: Number(assetFuelPct),
+      operatingHours: Number(assetHours),
+      nextServiceDate: assetServiceDate,
+      insuranceExpiry: assetInsuranceExpiry,
+      status: 'OPERATIONAL',
+    });
+    setAssetName('');
+    setAssetCode('');
+    setAssetSerial('');
+    setShowAssetModal(false);
+  };
 
   // Fuel Form
   const [fuelMachineryId, setFuelMachineryId] = useState(machinery[0]?.id || 'eq-01');
@@ -104,13 +143,22 @@ export default function MachineryPage() {
           </p>
         </div>
 
-        <button
-          onClick={() => setShowFuelModal(true)}
-          className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 to-yellow-600 text-white text-xs font-bold shadow-lg border border-amber-400/40 flex items-center gap-2 self-start sm:self-auto transition-all"
-        >
-          <Fuel className="w-4 h-4 text-white" />
-          <span>Record Fuel Tanker Discharge</span>
-        </button>
+        <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+          <button
+            onClick={() => setShowAssetModal(true)}
+            className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#0038B8] to-[#1D4ED8] text-white text-xs font-bold shadow-lg border border-blue-400/40 flex items-center gap-2 transition-all cursor-pointer"
+          >
+            <Plus className="w-4 h-4 text-[#FFB800]" />
+            <span>Register Fleet Asset</span>
+          </button>
+          <button
+            onClick={() => setShowFuelModal(true)}
+            className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 to-yellow-600 text-white text-xs font-bold shadow-lg border border-amber-400/40 flex items-center gap-2 transition-all cursor-pointer"
+          >
+            <Fuel className="w-4 h-4 text-white" />
+            <span>Record Fuel Tanker Discharge</span>
+          </button>
+        </div>
       </div>
 
       {/* KPI Cards */}
@@ -481,6 +529,159 @@ export default function MachineryPage() {
                   className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs"
                 >
                   Confirm Fuel Issue
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Register Fleet Asset Modal */}
+      {showAssetModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
+          <div className="w-full max-w-xl bg-[#080f24] border border-blue-500/30 rounded-3xl p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-white/10">
+              <h3 className="text-base font-bold text-white flex items-center gap-2">
+                <Wrench className="w-4 h-4 text-[#FFB800]" />
+                <span>Register Heavy Machinery / Fleet Asset</span>
+              </h3>
+              <button onClick={() => setShowAssetModal(false)} className="text-zinc-400 hover:text-white cursor-pointer">✕</button>
+            </div>
+            <form onSubmit={handleRegisterAsset} className="space-y-3 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-semibold text-zinc-300 mb-1">Equipment Name *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Caterpillar 320D Excavator"
+                    value={assetName}
+                    onChange={(e) => setAssetName(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block font-semibold text-zinc-300 mb-1">Asset ID / Fleet Code</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. CNT-EXC-04"
+                    value={assetCode}
+                    onChange={(e) => setAssetCode(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white font-mono"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-semibold text-zinc-300 mb-1">Category</label>
+                  <select
+                    value={assetCat}
+                    onChange={(e) => setAssetCat(e.target.value as typeof assetCat)}
+                    className="w-full px-3 py-2 rounded-xl bg-[#080e1c] border border-white/15 text-white"
+                  >
+                    <option value="EXCAVATOR">Excavator</option>
+                    <option value="TOWER_CRANE">Tower Crane</option>
+                    <option value="BOOM_PUMP">Concrete Boom Pump</option>
+                    <option value="BULLDOZER">Bulldozer</option>
+                    <option value="GENERATOR">Heavy Generator</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block font-semibold text-zinc-300 mb-1">Assigned Site</label>
+                  <input
+                    type="text"
+                    value={assetSite}
+                    onChange={(e) => setAssetSite(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-semibold text-zinc-300 mb-1">Operator Name</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. K. Bandara (Licensed)"
+                    value={assetOperator}
+                    onChange={(e) => setAssetOperator(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block font-semibold text-zinc-300 mb-1">Chassis / Serial Number</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. CAT0320D-99812"
+                    value={assetSerial}
+                    onChange={(e) => setAssetSerial(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white font-mono"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <label className="block font-semibold text-zinc-300 mb-1">Daily Hire Rate (LKR)</label>
+                  <input
+                    type="number"
+                    value={assetHireRate}
+                    onChange={(e) => setAssetHireRate(Number(e.target.value))}
+                    className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="block font-semibold text-zinc-300 mb-1">Fuel Level (%)</label>
+                  <input
+                    type="number"
+                    min={0}
+                    max={100}
+                    value={assetFuelPct}
+                    onChange={(e) => setAssetFuelPct(Number(e.target.value))}
+                    className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="block font-semibold text-zinc-300 mb-1">Hour Meter</label>
+                  <input
+                    type="number"
+                    value={assetHours}
+                    onChange={(e) => setAssetHours(Number(e.target.value))}
+                    className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white font-mono"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-semibold text-zinc-300 mb-1">Next Service Date</label>
+                  <input
+                    type="date"
+                    value={assetServiceDate}
+                    onChange={(e) => setAssetServiceDate(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block font-semibold text-zinc-300 mb-1">Insurance / Emission Expiry</label>
+                  <input
+                    type="date"
+                    value={assetInsuranceExpiry}
+                    onChange={(e) => setAssetInsuranceExpiry(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white"
+                  />
+                </div>
+              </div>
+              <div className="pt-3 border-t border-white/10 flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowAssetModal(false)}
+                  className="px-4 py-2 rounded-xl bg-white/5 text-zinc-300 text-xs cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 rounded-xl bg-[#0038B8] hover:bg-[#1D4ED8] text-white font-bold text-xs cursor-pointer"
+                >
+                  Save to MySQL Fleet
                 </button>
               </div>
             </form>

@@ -41,46 +41,66 @@ export default function ProjectsPage() {
   const [showNewModal, setShowNewModal] = useState(false);
   const [projectDetailTab, setProjectDetailTab] = useState<'KANBAN' | 'COCKPIT_360' | 'TEAM' | 'HANDOVER'>('KANBAN');
 
-  // Form State in LKR
+  // Form State in LKR + Full Optional Construction Fields
   const [name, setName] = useState('');
   const [client, setClient] = useState('');
   const [location, setLocation] = useState('');
-  const [budget, setBudget] = useState(2450000000); // LKR 2.45 Billion default
+  const [budget, setBudget] = useState(2450000000);
   const [phase, setPhase] = useState<ProjectPhase>('FOUNDATION');
   const [category, setCategory] = useState<'GOVERNMENT' | 'PRIVATE'>('GOVERNMENT');
   const [cidaClassification, setCidaClassification] = useState('Building & Heavy Civil (CIDA Grade CS2)');
-  const siteEngineer = 'Eng. Maya Lin (Chartered Structural Eng)';
+  const [siteEngineerInput, setSiteEngineerInput] = useState('Eng. Maya Lin (Chartered Structural Eng)');
+  const [projectManager, setProjectManager] = useState('Eng. Marcus Chen (VP Operations)');
+  const [consultantArchitect, setConsultantArchitect] = useState('');
+  const [soilFoundationType, setSoilFoundationType] = useState('Rock-Anchored / Bored Piles');
+  const [permitNumber, setPermitNumber] = useState('');
+  const [insurancePolicy, setInsurancePolicy] = useState('');
+  const [retentionPct, setRetentionPct] = useState(5);
+  const [ladPerDayLkr, setLadPerDayLkr] = useState(250000);
+  const [defectLiabilityMonths, setDefectLiabilityMonths] = useState(12);
+  const [gpsCoordinates, setGpsCoordinates] = useState('');
+  const [targetCompletion, setTargetCompletion] = useState('2028-06-30');
+  const [notes, setNotes] = useState('');
 
   const activeProject = filteredProjects.find((p) => p.id === selectedProjectId) || filteredProjects[0] || projects[0];
 
   const handleCreateProject = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !client) return;
-    addProject({
+    (addProject as (p: Record<string, unknown>) => void)({
       name,
       client,
-      location: location || 'Colombo Financial Centre, Sri Lanka',
+      location: location || 'Kandy / Colombo, Sri Lanka',
       budget: Number(budget),
       spent: 0,
       progress: 5,
       phase,
       category,
-      siteEngineer: siteEngineer || user?.name || 'Eng. Maya Lin',
-      projectManager: 'Eng. Marcus Chen (VP Operations)',
+      siteEngineer: siteEngineerInput || user?.name || 'Eng. Maya Lin',
+      projectManager: projectManager || 'Eng. Marcus Chen',
+      consultantArchitect,
+      soilFoundationType,
+      permitNumber,
+      insurancePolicy,
+      retentionPct: Number(retentionPct),
+      defectLiabilityMonths: Number(defectLiabilityMonths),
+      gpsCoordinates,
+      notes,
       startDate: new Date().toISOString().split('T')[0],
-      targetCompletion: '2028-06-30',
+      targetCompletion: targetCompletion || '2028-06-30',
       cidaClassification,
       plannedValueLkr: Math.round(Number(budget) * 0.05),
       earnedValueLkr: 0,
       cpi: 1.0,
       spi: 1.0,
-      ladAmountPerDayLkr: 250000,
+      ladAmountPerDayLkr: Number(ladPerDayLkr),
       retentionHeldLkr: 0,
       originalContractSumLkr: Number(budget),
       approvedVariationsLkr: 0,
     });
     setName('');
     setClient('');
+    setNotes('');
     setShowNewModal(false);
   };
 
@@ -577,14 +597,149 @@ export default function ProjectsPage() {
                 </div>
               </div>
 
-              <div>
-                <label className="block font-semibold text-zinc-300 mb-1">CIDA Classification</label>
-                <input
-                  type="text"
-                  value={cidaClassification}
-                  onChange={(e) => setCidaClassification(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white"
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-semibold text-zinc-300 mb-1">CIDA Classification</label>
+                  <input
+                    type="text"
+                    value={cidaClassification}
+                    onChange={(e) => setCidaClassification(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block font-semibold text-zinc-300 mb-1">Target Handover Date</label>
+                  <input
+                    type="date"
+                    value={targetCompletion}
+                    onChange={(e) => setTargetCompletion(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white"
+                  />
+                </div>
+              </div>
+
+              {/* Optional Engineering & Contract Fields */}
+              <div className="pt-2 border-t border-white/10 space-y-3">
+                <span className="text-[11px] font-bold text-[#FFB800] uppercase tracking-wider block">
+                  Optional Engineering, Permits &amp; Contract Terms
+                </span>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block font-semibold text-zinc-300 mb-1">Project Manager</label>
+                    <input
+                      type="text"
+                      value={projectManager}
+                      onChange={(e) => setProjectManager(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-semibold text-zinc-300 mb-1">Lead Site Engineer</label>
+                    <input
+                      type="text"
+                      value={siteEngineerInput}
+                      onChange={(e) => setSiteEngineerInput(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block font-semibold text-zinc-300 mb-1">Consultant / Architect Firm</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. CECB / Private Architect"
+                      value={consultantArchitect}
+                      onChange={(e) => setConsultantArchitect(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-semibold text-zinc-300 mb-1">Soil &amp; Foundation Type</label>
+                    <input
+                      type="text"
+                      value={soilFoundationType}
+                      onChange={(e) => setSoilFoundationType(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="block font-semibold text-zinc-300 mb-1">Municipal / UDA Permit #</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. KMC/BP/2026/084"
+                      value={permitNumber}
+                      onChange={(e) => setPermitNumber(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-semibold text-zinc-300 mb-1">CAR Insurance Policy #</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. SLIC-CAR-9921"
+                      value={insurancePolicy}
+                      onChange={(e) => setInsurancePolicy(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-semibold text-zinc-300 mb-1">GPS Coordinates</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. 7.2906, 80.6337"
+                      value={gpsCoordinates}
+                      onChange={(e) => setGpsCoordinates(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="block font-semibold text-zinc-300 mb-1">Retention (%)</label>
+                    <input
+                      type="number"
+                      value={retentionPct}
+                      onChange={(e) => setRetentionPct(Number(e.target.value))}
+                      className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white font-mono"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-semibold text-zinc-300 mb-1">LAD / Day (LKR)</label>
+                    <input
+                      type="number"
+                      value={ladPerDayLkr}
+                      onChange={(e) => setLadPerDayLkr(Number(e.target.value))}
+                      className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white font-mono"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-semibold text-zinc-300 mb-1">Defect Liability (Months)</label>
+                    <input
+                      type="number"
+                      value={defectLiabilityMonths}
+                      onChange={(e) => setDefectLiabilityMonths(Number(e.target.value))}
+                      className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white font-mono"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block font-semibold text-zinc-300 mb-1">Contract &amp; Structural Notes</label>
+                  <textarea
+                    rows={2}
+                    placeholder="Special soil conditions, hillside retaining requirements, milestone clauses..."
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white"
+                  />
+                </div>
               </div>
 
               <div className="pt-3 border-t border-white/10 flex items-center justify-end gap-2">
