@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { motion } from "framer-motion";
 import { getPublicServices, DEFAULT_SERVICES, PublicService } from "@/lib/publicData";
 
 const FAQS = [
@@ -93,9 +94,13 @@ export default function ServicesPage() {
           {servicesList.map((service, idx) => {
             const isEven = idx % 2 === 1;
             return (
-              <div
+              <motion.div
                 id={service.id}
                 key={service.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.15 }}
+                transition={{ duration: 0.4 }}
                 className={`glass-panel rounded-3xl border border-white/15 bg-white/[0.02] p-6 sm:p-10 lg:p-12 flex flex-col lg:flex-row gap-10 items-center scroll-mt-28 hover:border-blue-500/30 transition-all ${
                   isEven ? "lg:flex-row-reverse" : ""
                 }`}
@@ -152,7 +157,7 @@ export default function ServicesPage() {
                     </Link>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             );
           })}
         </section>

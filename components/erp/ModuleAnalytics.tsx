@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import {
   BarChart3,
   Download,
@@ -164,9 +165,13 @@ export default function ModuleAnalytics({
         {stats.map((s, idx) => {
           const accentClass = ACCENT_STYLES[s.accent || 'blue'];
           return (
-            <div
+            <motion.div
               key={idx}
-              className="p-4 sm:p-5 rounded-2xl bg-[#080e1c]/85 border border-white/10 shadow-lg hover:border-white/20 transition-all"
+              initial={{ opacity: 1, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2, delay: idx * 0.04 }}
+              whileHover={{ y: -2 }}
+              className="p-4 sm:p-5 rounded-2xl bg-[#080e1c]/85 border border-white/10 shadow-lg hover:border-white/20 transition-colors"
             >
               <div className="flex items-center justify-between gap-2">
                 <span className="text-xs font-medium text-zinc-400">{s.label}</span>
@@ -188,7 +193,7 @@ export default function ModuleAnalytics({
                   )}
                 </div>
               )}
-            </div>
+            </motion.div>
           );
         })}
       </div>

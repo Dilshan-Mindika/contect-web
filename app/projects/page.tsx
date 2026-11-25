@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { motion } from "framer-motion";
 import { getPublicProjects, DEFAULT_PROJECTS, PublicProject } from "@/lib/publicData";
 
 export default function ProjectsPage() {
@@ -83,9 +84,13 @@ export default function ProjectsPage() {
         {/* Project Grid */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10">
-            {filteredProjects.map((project) => (
-              <div
+            {filteredProjects.map((project, idx) => (
+              <motion.div
                 key={project.id}
+                initial={{ opacity: 0, y: 18 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.15 }}
+                transition={{ duration: 0.35, delay: idx * 0.05 }}
                 onClick={() => setSelectedProject(project)}
                 className="group glass-panel rounded-3xl overflow-hidden border border-white/15 bg-white/[0.02] hover:border-[#FFB800]/50 hover:bg-white/[0.05] transition-all duration-500 cursor-pointer flex flex-col justify-between"
               >
@@ -144,7 +149,7 @@ export default function ProjectsPage() {
                     </div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </section>

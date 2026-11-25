@@ -10,6 +10,7 @@
     "db:seed": "node database/seed.js"
   },
   "dependencies": {
+    "framer-motion": "^14.14.0",
     "jose": "^6.2.13",
     "lucide-react": "^1.63.0",
     "mysql2": "^3.24.6",

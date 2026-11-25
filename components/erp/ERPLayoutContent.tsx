@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useERP } from '@/lib/erp/AuthContext';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard,
   CreditCard,
@@ -39,6 +40,8 @@ import {
   Search,
   ArrowRight,
   TrendingUp,
+  Sun,
+  Moon,
 } from 'lucide-react';
 
 const PRIMARY_NAV = [
@@ -86,11 +89,26 @@ export default function ERPLayoutContent({ children }: { children: React.ReactNo
     inventory,
     machinery,
     employees,
+    auditLogs,
   } = useERP();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [companyMenuOpen, setCompanyMenuOpen] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [erpTheme, setErpTheme] = useState<'dark' | 'light'>('dark');
+
+  useEffect(() => {
+    const saved = localStorage.getItem('contec_erp_theme');
+    if (saved === 'light' || saved === 'dark') {
+      setErpTheme(saved);
+    }
+  }, []);
+
+  const toggleErpTheme = () => {
+    const next = erpTheme === 'dark' ? 'light' : 'dark';
+    setErpTheme(next);
+    localStorage.setItem('contec_erp_theme', next);
+  };
   const [passwordForm, setPasswordForm] = useState({ current: '', newPass: '', confirm: '' });
   const [passwordStatus, setPasswordStatus] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
   const [showPassword, setShowPassword] = useState(false);
@@ -337,24 +355,42 @@ export default function ERPLayoutContent({ children }: { children: React.ReactNo
     return results.slice(0, 12);
   })();
 
+  const isLight = erpTheme === 'light';
+  const unreadInquiries = websiteInquiries.filter((i) => i.status === 'NEW');
+  const lowStockAlerts = inventory.filter((i) => i.status !== 'OPTIMAL');
+  const totalAlertCount = unreadInquiries.length + lowStockAlerts.length;
+
   return (
-    <div className="min-h-screen bg-[#050811] text-[#f4f4f7] flex flex-col antialiased">
+    <div
+      data-erp-theme={erpTheme}
+      className={`min-h-screen flex flex-col antialiased transition-colors duration-300 ${
+        isLight ? 'bg-[#f4f6fb] text-slate-900' : 'bg-[#050811] text-[#f4f4f7]'
+      }`}
+    >
       {/* Top Header Bar */}
-      <header className="sticky top-0 z-40 h-20 bg-[#080e1c]/95 backdrop-blur-xl border-b border-white/10 px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-3">
+      <header
+        className={`sticky top-0 z-40 h-16 sm:h-18 backdrop-blur-xl border-b px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-3 transition-colors duration-300 ${
+          isLight
+            ? 'bg-white/95 border-slate-200 shadow-xs'
+            : 'bg-[#080e1c]/95 border-white/10'
+        }`}
+      >
         <div className="flex items-center gap-3 shrink-0">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="lg:hidden p-2 text-zinc-300 hover:text-white rounded-lg hover:bg-white/5 transition-colors cursor-pointer"
+            className={`lg:hidden p-2 rounded-lg transition-colors cursor-pointer ${
+              isLight ? 'text-slate-600 hover:bg-slate-100' : 'text-zinc-300 hover:text-white hover:bg-white/5'
+            }`}
             aria-label="Toggle Navigation"
           >
             {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
 
-          {/* Official CONTEC Navbar Logo - Large & Prominent */}
-          <Link href="/erp" className="flex items-center group py-2">
-            <div className="relative h-12 sm:h-14 w-44 sm:w-52 lg:w-56 transition-transform duration-300 group-hover:scale-102 flex items-center">
+          {/* Official CONTEC Navbar Logo - Dynamic Dark/Light */}
+          <Link href="/erp" className="flex items-center group py-1.5">
+            <div className="relative h-10 sm:h-12 w-40 sm:w-48 lg:w-52 transition-transform duration-300 group-hover:scale-102 flex items-center">
               <Image
-                src="/branding/contec-white-logo.png"
+                src={isLight ? '/branding/contec-logo.png' : '/branding/contec-white-logo.png'}
                 alt="CONTEC Design & Build"
                 fill
                 className="object-contain object-left"
@@ -465,85 +501,106 @@ export default function ERPLayoutContent({ children }: { children: React.ReactNo
           )}
         </div>
 
-        {/* Center / Right controls */}
-        <div className="flex items-center gap-2.5 sm:gap-3">
-          {/* 1. Operating Division Selector - Standardized h-12 */}
+        {/* Center / Right controls - Clean & Uniform h-10 */}
+        <div className="flex items-center gap-2 shrink-0">
+          {/* 1. Operating Division Selector */}
           <div className="relative">
             <button
               onClick={() => setCompanyMenuOpen(!companyMenuOpen)}
-              className="h-12 flex items-center gap-2.5 px-3.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs text-zinc-200 transition-all cursor-pointer focus:outline-none"
+              className={`h-10 flex items-center gap-2 px-3 rounded-xl border text-xs font-semibold transition-all cursor-pointer focus:outline-none ${
+                isLight
+                  ? 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-800'
+                  : 'bg-white/[0.04] hover:bg-white/[0.08] border-white/10 text-zinc-200'
+              }`}
             >
-              <div className="w-8 h-8 rounded-lg bg-[#FFB800]/10 border border-[#FFB800]/25 flex items-center justify-center text-[#FFB800] shrink-0">
-                <Building2 className="w-4 h-4" />
-              </div>
-              <div className="text-left hidden sm:block">
-                <div className="text-[10px] text-zinc-400 font-semibold uppercase tracking-wider leading-none mb-1">Operating Division</div>
-                <div className="font-bold text-white text-xs truncate max-w-[140px] md:max-w-[170px] leading-tight">
-                  {activeCompany === 'CONSOLIDATED'
-                    ? 'All Divisions'
-                    : currentCompProfile?.tradeName || activeCompany}
-                </div>
-              </div>
-              <ChevronDown className={`w-3.5 h-3.5 text-zinc-400 transition-transform duration-200 ml-0.5 ${companyMenuOpen ? 'rotate-180' : ''}`} />
+              <Building2 className={`w-4 h-4 shrink-0 ${isLight ? 'text-[#0038B8]' : 'text-[#FFB800]'}`} />
+              <span className="hidden xl:inline truncate max-w-[140px]">
+                {activeCompany === 'CONSOLIDATED'
+                  ? 'All Divisions'
+                  : currentCompProfile?.tradeName || activeCompany}
+              </span>
+              <ChevronDown className={`w-3.5 h-3.5 opacity-60 transition-transform duration-200 ${companyMenuOpen ? 'rotate-180' : ''}`} />
             </button>
 
-            {companyMenuOpen && (
-              <div className="absolute right-0 mt-2 w-72 rounded-xl bg-[#080f24] border border-white/15 shadow-2xl p-2 z-50 animate-fadeIn">
-                <div className="px-3 py-2 border-b border-white/10 mb-1">
-                  <span className="text-xs font-bold text-white block">Operating Division</span>
-                  <p className="text-[11px] text-zinc-400">Select branch or view consolidated company operations</p>
-                </div>
-                <div className="space-y-1">
-                  {companies.map((comp) => {
-                    const isSelected = activeCompany === comp.id;
-                    return (
-                      <button
-                        key={comp.id}
-                        onClick={() => {
-                          setActiveCompany(comp.id);
-                          setCompanyMenuOpen(false);
-                        }}
-                        className={`w-full text-left p-2.5 rounded-lg text-xs transition-all cursor-pointer ${
-                          isSelected
-                            ? 'bg-[#0038B8]/30 border border-blue-400 text-white font-bold'
-                            : 'hover:bg-white/5 text-zinc-300 border border-transparent'
-                        }`}
-                      >
-                        <div className="font-semibold text-white">{comp.tradeName}</div>
-                        <div className="text-[10px] text-zinc-400 mt-0.5">{comp.name}</div>
-                      </button>
-                    );
-                  })}
+            <AnimatePresence>
+              {companyMenuOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 6, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 6, scale: 0.98 }}
+                  transition={{ duration: 0.16 }}
+                  className={`absolute right-0 mt-2 w-72 rounded-xl border shadow-2xl p-2 z-50 ${
+                    isLight ? 'bg-white border-slate-200 text-slate-800' : 'bg-[#080f24] border-white/15 text-white'
+                  }`}
+                >
+                  <div className={`px-3 py-2 border-b mb-1 ${isLight ? 'border-slate-100' : 'border-white/10'}`}>
+                    <span className="text-xs font-bold block">Operating Division</span>
+                    <p className={`text-[11px] ${isLight ? 'text-slate-500' : 'text-zinc-400'}`}>
+                      Select branch or consolidated view
+                    </p>
+                  </div>
+                  <div className="space-y-1">
+                    {companies.map((comp) => {
+                      const isSelected = activeCompany === comp.id;
+                      return (
+                        <button
+                          key={comp.id}
+                          onClick={() => {
+                            setActiveCompany(comp.id);
+                            setCompanyMenuOpen(false);
+                          }}
+                          className={`w-full text-left p-2.5 rounded-lg text-xs transition-all cursor-pointer ${
+                            isSelected
+                              ? 'bg-[#0038B8] text-white font-bold'
+                              : isLight
+                              ? 'hover:bg-slate-100 text-slate-700'
+                              : 'hover:bg-white/5 text-zinc-300'
+                          }`}
+                        >
+                          <div className="font-semibold">{comp.tradeName}</div>
+                          <div className={`text-[10px] mt-0.5 ${isSelected ? 'text-blue-100' : isLight ? 'text-slate-500' : 'text-zinc-400'}`}>
+                            {comp.name}
+                          </div>
+                        </button>
+                      );
+                    })}
 
-                  <button
-                    onClick={() => {
-                      setActiveCompany('CONSOLIDATED');
-                      setCompanyMenuOpen(false);
-                    }}
-                    className={`w-full text-left p-2.5 rounded-lg text-xs transition-all mt-1 cursor-pointer ${
-                      activeCompany === 'CONSOLIDATED'
-                        ? 'bg-blue-600/30 border border-blue-400 text-white font-bold'
-                        : 'hover:bg-white/5 text-zinc-300 border border-white/5'
-                    }`}
-                  >
-                    <div className="font-semibold text-blue-300">🏢 Combined Overview</div>
-                    <div className="text-[10px] text-zinc-400 mt-0.5">
-                      All projects and financial metrics across CONTEC
-                    </div>
-                  </button>
-                </div>
-              </div>
-            )}
+                    <button
+                      onClick={() => {
+                        setActiveCompany('CONSOLIDATED');
+                        setCompanyMenuOpen(false);
+                      }}
+                      className={`w-full text-left p-2.5 rounded-lg text-xs transition-all mt-1 cursor-pointer ${
+                        activeCompany === 'CONSOLIDATED'
+                          ? 'bg-[#0038B8] text-white font-bold'
+                          : isLight
+                          ? 'hover:bg-slate-100 text-slate-700'
+                          : 'hover:bg-white/5 text-zinc-300'
+                      }`}
+                    >
+                      <div className="font-semibold">Combined Overview</div>
+                      <div className={`text-[10px] mt-0.5 ${activeCompany === 'CONSOLIDATED' ? 'text-blue-100' : isLight ? 'text-slate-500' : 'text-zinc-400'}`}>
+                        All projects and financial metrics across CONTEC
+                      </div>
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
-          {/* 2. Secure Staff Profile - Standardized h-12 Button */}
+          {/* 2. Staff Profile Button */}
           <button
             onClick={() => setShowProfileModal(true)}
-            className="h-12 flex items-center gap-2.5 px-3.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-blue-500/40 text-xs transition-all cursor-pointer focus:outline-none text-left"
-            title="View Staff Profile & Enterprise Security Credentials"
+            className={`h-10 flex items-center gap-2 px-3 rounded-xl border text-xs font-semibold transition-all cursor-pointer focus:outline-none ${
+              isLight
+                ? 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-800'
+                : 'bg-white/[0.04] hover:bg-white/[0.08] border-white/10 text-white'
+            }`}
+            title="Staff Profile & Security"
           >
             <div className="relative shrink-0">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#0038B8] to-blue-600 text-white font-bold text-xs flex items-center justify-center border border-white/20 shadow-inner">
+              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#0038B8] to-blue-600 text-white font-bold text-[10px] flex items-center justify-center">
                 {user?.name
                   ? user.name
                       .split(' ')
@@ -553,99 +610,134 @@ export default function ERPLayoutContent({ children }: { children: React.ReactNo
                       .toUpperCase()
                   : 'ST'}
               </div>
-              <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-[#080e1c]" />
+              <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 ring-1 ring-white" />
             </div>
-            <div className="text-left hidden sm:block">
-              <div className="font-bold text-white text-xs truncate max-w-[130px] md:max-w-[160px] leading-tight mb-0.5">
-                {user?.name || 'Staff User'}
-              </div>
-              <div className="text-[10px] text-[#FFB800] font-semibold leading-none truncate max-w-[130px] md:max-w-[160px]">
-                {user?.department || user?.role?.replace(/_/g, ' ') || 'Executive Board'}
-              </div>
-            </div>
-            <ShieldCheck className="w-3.5 h-3.5 text-blue-400 shrink-0 ml-0.5 hidden sm:block" />
+            <span className="hidden sm:inline truncate max-w-[110px]">
+              {user?.name || 'Elena Vance'}
+            </span>
           </button>
 
-          {/* 3. Session Sign Out - Standardized h-12 Button */}
+          {/* 3. Light / Dark Theme Toggle */}
+          <button
+            onClick={toggleErpTheme}
+            className={`h-10 w-10 rounded-xl border flex items-center justify-center transition-all cursor-pointer focus:outline-none ${
+              isLight
+                ? 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-amber-600'
+                : 'bg-white/[0.04] hover:bg-white/[0.08] border-white/10 text-[#FFB800]'
+            }`}
+            title={isLight ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+            aria-label="Toggle Light/Dark Mode"
+          >
+            {isLight ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+          </button>
+
+          {/* 4. Dynamic Notifications Bell */}
+          <div className="relative">
+            <button
+              onClick={() => setNotificationsOpen(!notificationsOpen)}
+              className={`h-10 w-10 rounded-xl border flex items-center justify-center transition-all cursor-pointer relative focus:outline-none ${
+                isLight
+                  ? 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700'
+                  : 'bg-white/[0.04] hover:bg-white/[0.08] border-white/10 text-zinc-300 hover:text-white'
+              }`}
+              title="Live Notifications"
+            >
+              <Bell className="w-4 h-4" />
+              {totalAlertCount > 0 && (
+                <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#FFB800] animate-pulse" />
+              )}
+            </button>
+
+            <AnimatePresence>
+              {notificationsOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 6, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 6, scale: 0.98 }}
+                  transition={{ duration: 0.16 }}
+                  className={`absolute right-0 mt-2 w-80 rounded-2xl border shadow-2xl p-3 z-50 space-y-2 ${
+                    isLight ? 'bg-white border-slate-200 text-slate-800' : 'bg-[#080f24] border-white/15 text-white'
+                  }`}
+                >
+                  <div className={`flex items-center justify-between pb-2 border-b px-1 ${isLight ? 'border-slate-100' : 'border-white/10'}`}>
+                    <span className="text-xs font-bold">Live Notifications</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-500 font-bold">
+                      {totalAlertCount} Active
+                    </span>
+                  </div>
+                  <div className="space-y-1.5 text-xs max-h-64 overflow-y-auto">
+                    {unreadInquiries.slice(0, 2).map((inq) => (
+                      <Link
+                        key={inq.id}
+                        href="/erp/inquiries"
+                        onClick={() => setNotificationsOpen(false)}
+                        className={`block p-2.5 rounded-xl border space-y-0.5 transition-colors ${
+                          isLight ? 'bg-slate-50 border-slate-200 hover:bg-slate-100' : 'bg-white/[0.03] border-white/5 hover:bg-white/[0.06]'
+                        }`}
+                      >
+                        <div className="font-semibold flex items-center justify-between">
+                          <span>New Inquiry: {inq.clientName}</span>
+                          <span className="text-[10px] opacity-60">{inq.date}</span>
+                        </div>
+                        <p className="text-[11px] opacity-75 truncate">{inq.projectType} • {inq.budgetRange}</p>
+                      </Link>
+                    ))}
+                    {lowStockAlerts.slice(0, 2).map((item) => (
+                      <Link
+                        key={item.id}
+                        href="/erp/inventory"
+                        onClick={() => setNotificationsOpen(false)}
+                        className={`block p-2.5 rounded-xl border space-y-0.5 transition-colors ${
+                          isLight ? 'bg-amber-50 border-amber-200 hover:bg-amber-100/60' : 'bg-amber-500/10 border-amber-500/20'
+                        }`}
+                      >
+                        <div className="font-semibold flex items-center justify-between">
+                          <span>Stock Alert: {item.name}</span>
+                          <span className="text-[10px] text-amber-500 font-bold">{item.status}</span>
+                        </div>
+                        <p className="text-[11px] opacity-75">{item.quantity} {item.unit} remaining</p>
+                      </Link>
+                    ))}
+                    {auditLogs[0] && (
+                      <div className={`p-2.5 rounded-xl border space-y-0.5 ${isLight ? 'bg-slate-50 border-slate-200' : 'bg-white/[0.03] border-white/5'}`}>
+                        <div className="font-semibold flex items-center justify-between">
+                          <span>{auditLogs[0].action.replace(/_/g, ' ')}</span>
+                          <span className="text-[10px] opacity-60">{auditLogs[0].module}</span>
+                        </div>
+                        <p className="text-[11px] opacity-75 truncate">{auditLogs[0].details}</p>
+                      </div>
+                    )}
+                  </div>
+                  <div className="pt-1 text-center">
+                    <Link
+                      href="/erp/inquiries"
+                      onClick={() => setNotificationsOpen(false)}
+                      className="text-[11px] text-[#0038B8] dark:text-[#FFB800] hover:underline font-bold inline-block"
+                    >
+                      View All Inquiries →
+                    </Link>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* 5. Sign Out */}
           <button
             onClick={async () => {
               await logout();
               router.push('/erp/login');
             }}
-            className="h-12 flex items-center gap-2.5 px-3.5 rounded-xl text-xs font-semibold text-zinc-300 hover:text-red-300 bg-white/[0.04] hover:bg-red-500/10 border border-white/10 hover:border-red-500/30 group transition-all cursor-pointer focus:outline-none text-left"
-            title="Sign Out of Staff Session"
+            className={`h-10 flex items-center gap-2 px-3 rounded-xl border text-xs font-semibold transition-all cursor-pointer focus:outline-none ${
+              isLight
+                ? 'bg-slate-50 hover:bg-red-50 border-slate-200 hover:border-red-200 text-slate-700 hover:text-red-600'
+                : 'bg-white/[0.04] hover:bg-red-500/10 border-white/10 hover:border-red-500/30 text-zinc-300 hover:text-red-300'
+            }`}
+            title="Sign Out"
           >
-            <div className="w-8 h-8 rounded-lg bg-red-500/10 border border-red-500/25 flex items-center justify-center text-red-400 group-hover:bg-red-500/20 group-hover:text-red-300 transition-colors shrink-0">
-              <LogOut className="w-4 h-4" />
-            </div>
-            <div className="text-left hidden sm:block">
-              <div className="text-[10px] text-zinc-400 font-semibold uppercase tracking-wider leading-none mb-1">Session</div>
-              <div className="font-bold text-zinc-200 group-hover:text-red-300 transition-colors text-xs leading-tight">Sign Out</div>
-            </div>
+            <LogOut className="w-4 h-4 text-red-400" />
+            <span className="hidden md:inline">Sign Out</span>
           </button>
-
-          {/* 4. Quick Activity & Notifications Bell - Standardized h-12 w-12 */}
-          <div className="relative">
-            <button
-              onClick={() => setNotificationsOpen(!notificationsOpen)}
-              className="h-12 w-12 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 flex items-center justify-center text-zinc-300 hover:text-white transition-all cursor-pointer relative focus:outline-none"
-              title="Notifications & Recent Inquiries"
-            >
-              <Bell className="w-4 h-4" />
-              <span className="absolute top-3 right-3 w-2 h-2 rounded-full bg-[#FFB800] ring-2 ring-[#080e1c] animate-pulse" />
-            </button>
-
-            {notificationsOpen && (
-              <div className="absolute right-0 mt-2 w-80 rounded-2xl bg-[#080f24] border border-white/15 shadow-2xl p-3 z-50 animate-fadeIn space-y-2">
-                <div className="flex items-center justify-between pb-2 border-b border-white/10 px-1">
-                  <span className="text-xs font-bold text-white">Notifications &amp; Activity</span>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold">
-                    3 Active
-                  </span>
-                </div>
-                <div className="space-y-1.5 text-xs">
-                  <div className="p-2.5 rounded-xl bg-white/[0.03] border border-white/5 space-y-1">
-                    <div className="font-semibold text-white flex items-center justify-between">
-                      <span>New Website Inquiry</span>
-                      <span className="text-[10px] text-zinc-400">10m ago</span>
-                    </div>
-                    <p className="text-[11px] text-zinc-300 leading-snug">
-                      Dr. K. Jayasundara submitted a hillside villa inquiry from /contact.
-                    </p>
-                  </div>
-
-                  <div className="p-2.5 rounded-xl bg-white/[0.03] border border-white/5 space-y-1">
-                    <div className="font-semibold text-white flex items-center justify-between">
-                      <span>Site Inspection Ready</span>
-                      <span className="text-[10px] text-zinc-400">1h ago</span>
-                    </div>
-                    <p className="text-[11px] text-zinc-300 leading-snug">
-                      Hanthana Hillside Villa foundation stage 02 inspection approved.
-                    </p>
-                  </div>
-
-                  <div className="p-2.5 rounded-xl bg-white/[0.03] border border-white/5 space-y-1">
-                    <div className="font-semibold text-white flex items-center justify-between">
-                      <span>Encrypted Cloud Backup</span>
-                      <span className="text-[10px] text-zinc-400">Today</span>
-                    </div>
-                    <p className="text-[11px] text-zinc-300 leading-snug">
-                      Automated AES-256 cloud sync completed across all 12 modules.
-                    </p>
-                  </div>
-                </div>
-                <div className="pt-1 text-center">
-                  <Link
-                    href="/erp/crm"
-                    onClick={() => setNotificationsOpen(false)}
-                    className="text-[11px] text-[#FFB800] hover:underline font-bold inline-block"
-                  >
-                    View All Inquiries in CRM →
-                  </Link>
-                </div>
-              </div>
-            )}
-          </div>
         </div>
       </header>
 
@@ -653,102 +745,85 @@ export default function ERPLayoutContent({ children }: { children: React.ReactNo
       <div className="flex-1 flex overflow-hidden">
         {/* Sidebar */}
         <aside
-          className={`fixed inset-y-0 left-0 z-30 w-64 bg-[#070c18] border-r border-white/10 pt-20 lg:pt-0 transform transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${
-            sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-          }`}
+          className={`fixed inset-y-0 left-0 z-30 w-64 border-r pt-20 lg:pt-0 transform transition-all duration-300 ease-in-out lg:static lg:translate-x-0 ${
+            isLight ? 'bg-white border-slate-200' : 'bg-[#070c18] border-white/10'
+          } ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
         >
           <div className="h-full flex flex-col justify-between p-4 overflow-y-auto">
             <div className="space-y-6">
-              {/* Primary Navigation */}
-              <div>
-                <div className="text-[10px] uppercase font-bold text-[#FFB800] tracking-wider px-3 mb-2">
-                  Main Navigation
+              {[
+                { title: 'Main Navigation', items: PRIMARY_NAV, accent: true },
+                { title: 'Site Operations', items: SITE_OPERATIONS_NAV, accent: false },
+                { title: 'Finance & Admin', items: MANAGEMENT_NAV, accent: false },
+              ].map((group) => (
+                <div key={group.title}>
+                  <div
+                    className={`text-[10px] uppercase font-bold tracking-wider px-3 mb-2 ${
+                      group.accent
+                        ? isLight
+                          ? 'text-[#0038B8]'
+                          : 'text-[#FFB800]'
+                        : isLight
+                        ? 'text-slate-400'
+                        : 'text-zinc-400'
+                    }`}
+                  >
+                    {group.title}
+                  </div>
+                  <nav className="space-y-1">
+                    {group.items.map((item) => {
+                      const Icon = item.icon;
+                      const isActive = pathname === item.href;
+                      return (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          onClick={() => setSidebarOpen(false)}
+                          className={`relative flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
+                            isActive
+                              ? 'bg-gradient-to-r from-[#0038B8] to-[#1D4ED8] text-white shadow-md shadow-blue-900/25'
+                              : isLight
+                              ? 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                              : 'text-zinc-300 hover:text-white hover:bg-white/5'
+                          }`}
+                        >
+                          <Icon
+                            className={`w-4 h-4 ${
+                              isActive
+                                ? 'text-[#FFB800]'
+                                : isLight
+                                ? 'text-slate-400'
+                                : 'text-zinc-400'
+                            }`}
+                          />
+                          <span className="truncate">{item.label}</span>
+                        </Link>
+                      );
+                    })}
+                  </nav>
                 </div>
-                <nav className="space-y-1">
-                  {PRIMARY_NAV.map((item) => {
-                    const Icon = item.icon;
-                    const isActive = pathname === item.href;
-                    return (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        onClick={() => setSidebarOpen(false)}
-                        className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
-                          isActive
-                            ? 'bg-gradient-to-r from-[#0038B8] to-[#1D4ED8] text-white shadow-lg shadow-blue-900/40 border border-blue-400/30'
-                            : 'text-zinc-300 hover:text-white hover:bg-white/5'
-                        }`}
-                      >
-                        <Icon className={`w-4 h-4 ${isActive ? 'text-[#FFB800]' : 'text-zinc-400'}`} />
-                        <span className="truncate">{item.label}</span>
-                      </Link>
-                    );
-                  })}
-                </nav>
-              </div>
-
-              {/* Site Operations */}
-              <div>
-                <div className="text-[10px] uppercase font-bold text-zinc-400 tracking-wider px-3 mb-2">
-                  Site Operations
-                </div>
-                <nav className="space-y-1">
-                  {SITE_OPERATIONS_NAV.map((item) => {
-                    const Icon = item.icon;
-                    const isActive = pathname === item.href;
-                    return (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        onClick={() => setSidebarOpen(false)}
-                        className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
-                          isActive
-                            ? 'bg-gradient-to-r from-[#0038B8] to-[#1D4ED8] text-white shadow-lg shadow-blue-900/40 border border-blue-400/30'
-                            : 'text-zinc-300 hover:text-white hover:bg-white/5'
-                        }`}
-                      >
-                        <Icon className={`w-4 h-4 ${isActive ? 'text-[#FFB800]' : 'text-zinc-400'}`} />
-                        <span className="truncate">{item.label}</span>
-                      </Link>
-                    );
-                  })}
-                </nav>
-              </div>
-
-              {/* Finance & Management */}
-              <div>
-                <div className="text-[10px] uppercase font-bold text-zinc-400 tracking-wider px-3 mb-2">
-                  Finance &amp; Admin
-                </div>
-                <nav className="space-y-1">
-                  {MANAGEMENT_NAV.map((item) => {
-                    const Icon = item.icon;
-                    const isActive = pathname === item.href;
-                    return (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        onClick={() => setSidebarOpen(false)}
-                        className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
-                          isActive
-                            ? 'bg-gradient-to-r from-[#0038B8] to-[#1D4ED8] text-white shadow-lg shadow-blue-900/40 border border-blue-400/30'
-                            : 'text-zinc-300 hover:text-white hover:bg-white/5'
-                        }`}
-                      >
-                        <Icon className={`w-4 h-4 ${isActive ? 'text-[#FFB800]' : 'text-zinc-400'}`} />
-                        <span className="truncate">{item.label}</span>
-                      </Link>
-                    );
-                  })}
-                </nav>
-              </div>
+              ))}
             </div>
           </div>
         </aside>
 
         {/* Content Viewport */}
-        <main className="flex-1 overflow-y-auto bg-gradient-to-b from-[#050811] via-[#070d1d] to-[#050811] p-4 sm:p-6 lg:p-8">
-          <div className="max-w-7xl mx-auto">{children}</div>
+        <main
+          className={`erp-main flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 transition-colors duration-300 ${
+            isLight
+              ? 'bg-gradient-to-b from-[#f4f6fb] to-[#eef2f8]'
+              : 'bg-gradient-to-b from-[#050811] via-[#070d1d] to-[#050811]'
+          }`}
+        >
+          <motion.div
+            key={pathname}
+            initial={{ opacity: 1, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
+            className="max-w-7xl mx-auto"
+          >
+            {children}
+          </motion.div>
         </main>
       </div>
 

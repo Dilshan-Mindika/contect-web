@@ -259,3 +259,85 @@ html {
   background: rgba(255, 184, 0, 0.4);
   border: 1px solid rgba(255, 184, 0, 0.3);
 }
+
+/* ================= DYNAMIC ERP THEME TOKENS (DARK & LIGHT MODE) ================= */
+:root {
+  --erp-bg: #050811;
+  --erp-surface: #070c18;
+  --erp-header: rgba(8, 14, 28, 0.95);
+  --erp-card: rgba(8, 14, 28, 0.85);
+  --erp-border: rgba(255, 255, 255, 0.1);
+  --erp-text: #f4f4f7;
+  --erp-muted: #94a3b8;
+  --erp-hover: rgba(255, 255, 255, 0.06);
+}
+
+[data-erp-theme="light"] {
+  --erp-bg: #f4f6fb;
+  --erp-surface: #ffffff;
+  --erp-header: rgba(255, 255, 255, 0.94);
+  --erp-card: #ffffff;
+  --erp-border: #e2e8f0;
+  --erp-text: #0f172a;
+  --erp-muted: #64748b;
+  --erp-hover: #f1f5f9;
+}
+
+[data-erp-theme="light"] .erp-main {
+  background: linear-gradient(180deg, #f4f6fb 0%, #eef2f8 100%) !important;
+  color: #0f172a;
+}
+
+[data-erp-theme="light"] .erp-main [class*="bg-[#080e1c]"],
+[data-erp-theme="light"] .erp-main [class*="bg-[#080f24]"],
+[data-erp-theme="light"] .erp-main [class*="bg-[#091536]"],
+[data-erp-theme="light"] .erp-main [class*="bg-black/"] {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04) !important;
+}
+
+[data-erp-theme="light"] .erp-main [class*="bg-white/"] {
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+
+[data-erp-theme="light"] .erp-main .text-white {
+  color: #0f172a !important;
+}
+
+[data-erp-theme="light"] .erp-main [class*="bg-[#0038B8]"] .text-white,
+[data-erp-theme="light"] .erp-main [class*="bg-[#0038B8]"].text-white,
+[data-erp-theme="light"] .erp-main [class*="bg-blue-600"].text-white,
+[data-erp-theme="light"] .erp-main [class*="bg-emerald-600"].text-white,
+[data-erp-theme="light"] .erp-main [class*="from-[#0038B8]"].text-white,
+[data-erp-theme="light"] .erp-main [class*="from-emerald-600"].text-white,
+[data-erp-theme="light"] .erp-main [class*="from-blue-700"].text-white {
+  color: #ffffff !important;
+}
+
+[data-erp-theme="light"] .erp-main .text-zinc-200,
+[data-erp-theme="light"] .erp-main .text-zinc-300 {
+  color: #334155 !important;
+}
+
+[data-erp-theme="light"] .erp-main .text-zinc-400,
+[data-erp-theme="light"] .erp-main .text-zinc-500 {
+  color: #64748b !important;
+}
+
+[data-erp-theme="light"] .erp-main .text-\[\#FFB800\] {
+  color: #b45309 !important;
+}
+
+[data-erp-theme="light"] .erp-main [class*="border-white/"] {
+  border-color: #e2e8f0 !important;
+}
+
+[data-erp-theme="light"] .erp-main input,
+[data-erp-theme="light"] .erp-main select,
+[data-erp-theme="light"] .erp-main textarea {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
