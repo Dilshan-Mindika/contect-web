@@ -175,21 +175,35 @@ interface ERPContextType {
   addLead: (lead: Omit<CRMLead, 'id' | 'lastUpdated'>) => void;
   updateLeadStage: (id: string, stage: LeadStage) => void;
   addInvoice: (invoice: Omit<Invoice, 'id' | 'invoiceNumber'>) => void;
+  updateInvoice: (id: string, updates: Partial<Invoice>) => void;
+  deleteInvoice: (id: string) => void;
   updateInvoiceStatus: (id: string, status: InvoiceStatus) => void;
   addProject: (project: Omit<Project, 'id' | 'code' | 'tasks'>) => void;
+  updateProject: (id: string, updates: Partial<Project>) => void;
+  deleteProject: (id: string) => void;
   updateTaskStatus: (projectId: string, taskId: string, status: TaskStatus) => void;
   addPurchaseOrder: (po: Omit<PurchaseOrder, 'id' | 'poNumber' | 'date'>) => void;
   updatePOStatus: (id: string, status: POStatus) => void;
   adjustStock: (id: string, quantityDelta: number) => void;
+  addInventoryItem: (item: Omit<InventoryItem, 'id'>) => void;
+  updateInventoryItem: (id: string, updates: Partial<InventoryItem>) => void;
+  deleteInventoryItem: (id: string) => void;
   updateLeaveStatus: (id: string, status: LeaveStatus) => void;
   addEmployee: (employee: Omit<Employee, 'id' | 'empId'>) => void;
   addQuotation: (quotation: Omit<ConstructionQuotation, 'id' | 'quoteNumber' | 'createdDate'>) => void;
   updateQuotationStatus: (id: string, status: QuotationStatus) => void;
   addSiteDailyLog: (log: Omit<SiteDailyLog, 'id'>) => void;
+  updateSiteLog: (id: string, updates: Partial<SiteDailyLog>) => void;
+  deleteSiteLog: (id: string) => void;
   addMachinery: (asset: Omit<MachineryFleet, 'id'>) => void;
+  updateMachinery: (id: string, updates: Partial<MachineryFleet>) => void;
+  deleteMachinery: (id: string) => void;
   updateMachineryStatus: (id: string, status: MachineryStatus) => void;
   addWebsiteProject: (project: Omit<WebsiteShowcaseProject, 'id'>) => void;
   deleteWebsiteProject: (id: string) => void;
+  addInquiry: (inq: Omit<WebsiteInquiry, 'id' | 'date'>) => void;
+  updateInquiry: (id: string, updates: Partial<WebsiteInquiry>) => void;
+  deleteInquiry: (id: string) => void;
   updateInquiryStatus: (id: string, status: WebsiteInquiry['status']) => void;
   sendQuotationEmailAction: (quotationId: string) => Promise<{ success: boolean; simulated?: boolean; message?: string }>;
   logAuditEvent: (action: string, module: AuditModule, details: string, severity?: AuditSeverity, companyId?: CompanyId) => void;
@@ -818,6 +832,155 @@ export function ERPProvider({ children }: { children: React.ReactNode }) {
     logAuditEvent('INQUIRY_STATUS_UPDATED', 'WEBSITE', `Client inquiry ${id} updated to ${status}`);
   };
 
+  const updateProject = (id: string, updates: Partial<Project>) => {
+    setProjects((prev) => prev.map((p) => (p.id === id ? { ...p, ...updates } : p)));
+    fetch('/api/erp/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'UPDATE_PROJECT', payload: { id, ...updates } }),
+    }).catch(() => {});
+    logAuditEvent('PROJECT_UPDATED', 'PROJECTS', `Updated project ${id}`);
+  };
+
+  const deleteProject = (id: string) => {
+    setProjects((prev) => prev.filter((p) => p.id !== id));
+    fetch('/api/erp/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'DELETE_PROJECT', payload: { id } }),
+    }).catch(() => {});
+    logAuditEvent('PROJECT_DELETED', 'PROJECTS', `Deleted project ${id}`);
+  };
+
+  const updateInvoice = (id: string, updates: Partial<Invoice>) => {
+    setInvoices((prev) => prev.map((inv) => (inv.id === id ? { ...inv, ...updates } : inv)));
+    fetch('/api/erp/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'UPDATE_INVOICE', payload: { id, ...updates } }),
+    }).catch(() => {});
+    logAuditEvent('INVOICE_UPDATED', 'FINANCE', `Updated invoice ${id}`);
+  };
+
+  const deleteInvoice = (id: string) => {
+    setInvoices((prev) => prev.filter((inv) => inv.id !== id));
+    fetch('/api/erp/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'DELETE_INVOICE', payload: { id } }),
+    }).catch(() => {});
+    logAuditEvent('INVOICE_DELETED', 'FINANCE', `Deleted invoice ${id}`);
+  };
+
+  const addInventoryItem = (itemData: Omit<InventoryItem, 'id'>) => {
+    const newItem: InventoryItem = {
+      ...itemData,
+      id: `mat-${Date.now().toString().slice(-4)}`,
+    };
+    setInventory((prev) => [newItem, ...prev]);
+    fetch('/api/erp/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'ADD_INVENTORY', payload: newItem }),
+    }).catch(() => {});
+    logAuditEvent('INVENTORY_ADDED', 'INVENTORY', `Added material ${newItem.name}`);
+  };
+
+  const updateInventoryItem = (id: string, updates: Partial<InventoryItem>) => {
+    setInventory((prev) => prev.map((it) => (it.id === id ? { ...it, ...updates } : it)));
+    fetch('/api/erp/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'UPDATE_INVENTORY', payload: { id, ...updates } }),
+    }).catch(() => {});
+    logAuditEvent('INVENTORY_UPDATED', 'INVENTORY', `Updated material ${id}`);
+  };
+
+  const deleteInventoryItem = (id: string) => {
+    setInventory((prev) => prev.filter((it) => it.id !== id));
+    fetch('/api/erp/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'DELETE_INVENTORY', payload: { id } }),
+    }).catch(() => {});
+    logAuditEvent('INVENTORY_DELETED', 'INVENTORY', `Deleted material ${id}`);
+  };
+
+  const updateMachinery = (id: string, updates: Partial<MachineryFleet>) => {
+    setMachinery((prev) => prev.map((m) => (m.id === id ? { ...m, ...updates } : m)));
+    fetch('/api/erp/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'UPDATE_MACHINERY', payload: { id, ...updates } }),
+    }).catch(() => {});
+    logAuditEvent('MACHINERY_UPDATED', 'MACHINERY', `Updated asset ${id}`);
+  };
+
+  const deleteMachinery = (id: string) => {
+    setMachinery((prev) => prev.filter((m) => m.id !== id));
+    fetch('/api/erp/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'DELETE_MACHINERY', payload: { id } }),
+    }).catch(() => {});
+    logAuditEvent('MACHINERY_DELETED', 'MACHINERY', `Deleted asset ${id}`);
+  };
+
+  const updateSiteLog = (id: string, updates: Partial<SiteDailyLog>) => {
+    setSiteLogs((prev) => prev.map((l) => (l.id === id ? { ...l, ...updates } : l)));
+    fetch('/api/erp/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'UPDATE_SITE_LOG', payload: { id, ...updates } }),
+    }).catch(() => {});
+    logAuditEvent('SITE_LOG_UPDATED', 'SITE_LOGS', `Updated site log ${id}`);
+  };
+
+  const deleteSiteLog = (id: string) => {
+    setSiteLogs((prev) => prev.filter((l) => l.id !== id));
+    fetch('/api/erp/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'DELETE_SITE_LOG', payload: { id } }),
+    }).catch(() => {});
+    logAuditEvent('SITE_LOG_DELETED', 'SITE_LOGS', `Deleted site log ${id}`);
+  };
+
+  const addInquiry = (inqData: Omit<WebsiteInquiry, 'id' | 'date'>) => {
+    const newInq: WebsiteInquiry = {
+      ...inqData,
+      id: `inq-${Date.now().toString().slice(-4)}`,
+      date: new Date().toISOString().split('T')[0],
+    };
+    setWebsiteInquiries((prev) => [newInq, ...prev]);
+    fetch('/api/erp/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'ADD_INQUIRY', payload: newInq }),
+    }).catch(() => {});
+    logAuditEvent('INQUIRY_CREATED', 'CRM', `Created inquiry for ${newInq.clientName}`);
+  };
+
+  const updateInquiry = (id: string, updates: Partial<WebsiteInquiry>) => {
+    setWebsiteInquiries((prev) => prev.map((q) => (q.id === id ? { ...q, ...updates } : q)));
+    fetch('/api/erp/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'UPDATE_INQUIRY', payload: { id, ...updates } }),
+    }).catch(() => {});
+    logAuditEvent('INQUIRY_UPDATED', 'CRM', `Updated inquiry ${id}`);
+  };
+
+  const deleteInquiry = (id: string) => {
+    setWebsiteInquiries((prev) => prev.filter((q) => q.id !== id));
+    fetch('/api/erp/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'DELETE_INQUIRY', payload: { id } }),
+    }).catch(() => {});
+    logAuditEvent('INQUIRY_DELETED', 'CRM', `Deleted inquiry ${id}`);
+  };
+
   const sendQuotationEmailAction = async (quotationId: string) => {
     const q = quotations.find((quote) => quote.id === quotationId);
     if (!q) return { success: false, message: 'Quotation not found' };
@@ -913,21 +1076,35 @@ export function ERPProvider({ children }: { children: React.ReactNode }) {
         addLead,
         updateLeadStage,
         addInvoice,
+        updateInvoice,
+        deleteInvoice,
         updateInvoiceStatus,
         addProject,
+        updateProject,
+        deleteProject,
         updateTaskStatus,
         addPurchaseOrder,
         updatePOStatus,
         adjustStock,
+        addInventoryItem,
+        updateInventoryItem,
+        deleteInventoryItem,
         updateLeaveStatus,
         addEmployee,
         addQuotation,
         updateQuotationStatus,
         addSiteDailyLog,
+        updateSiteLog,
+        deleteSiteLog,
         addMachinery,
+        updateMachinery,
+        deleteMachinery,
         updateMachineryStatus,
         addWebsiteProject,
         deleteWebsiteProject,
+        addInquiry,
+        updateInquiry,
+        deleteInquiry,
         updateInquiryStatus,
         sendQuotationEmailAction,
         logAuditEvent,

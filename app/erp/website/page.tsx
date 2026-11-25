@@ -8,6 +8,7 @@ import {
   savePublicProjects,
 } from '@/lib/publicData';
 import ModuleAnalytics from '@/components/erp/ModuleAnalytics';
+import DataViewToolbar, { ViewMode } from '@/components/erp/DataViewToolbar';
 import {
   Globe,
   Plus,
@@ -24,6 +25,7 @@ import {
   CheckCircle2,
   Building2,
   Sun,
+  Eye,
 } from 'lucide-react';
 
 export default function WebsiteProjectsManagerPage() {
@@ -34,6 +36,10 @@ export default function WebsiteProjectsManagerPage() {
   const [projectSearch, setProjectSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [statusFilter, setStatusFilter] = useState('All');
+  const [sortBy, setSortBy] = useState('title');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
+  const [viewMode, setViewMode] = useState<ViewMode>('GRID');
+  const [viewingProject, setViewingProject] = useState<PublicProject | null>(null);
 
   const [showModal, setShowModal] = useState(false);
   const [editingProject, setEditingProject] = useState<PublicProject | null>(null);
@@ -228,15 +234,23 @@ export default function WebsiteProjectsManagerPage() {
     URL.revokeObjectURL(url);
   };
 
-  const filtered = publicProjects.filter((p) => {
-    const matchesSearch =
-      p.title.toLowerCase().includes(projectSearch.toLowerCase()) ||
-      p.location.toLowerCase().includes(projectSearch.toLowerCase()) ||
-      p.category.toLowerCase().includes(projectSearch.toLowerCase());
-    const matchesCat = categoryFilter === 'All' || p.category === categoryFilter;
-    const matchesStatus = statusFilter === 'All' || (p.status || 'COMPLETED') === statusFilter;
-    return matchesSearch && matchesCat && matchesStatus;
-  });
+  const filtered = publicProjects
+    .filter((p) => {
+      const matchesSearch =
+        p.title.toLowerCase().includes(projectSearch.toLowerCase()) ||
+        p.location.toLowerCase().includes(projectSearch.toLowerCase()) ||
+        p.category.toLowerCase().includes(projectSearch.toLowerCase());
+      const matchesCat = categoryFilter === 'All' || p.category === categoryFilter;
+      const matchesStatus = statusFilter === 'All' || (p.status || 'COMPLETED') === statusFilter;
+      return matchesSearch && matchesCat && matchesStatus;
+    })
+    .sort((a, b) => {
+      const mul = sortDir === 'asc' ? 1 : -1;
+      if (sortBy === 'year') return a.year.localeCompare(b.year) * mul;
+      if (sortBy === 'category') return a.category.localeCompare(b.category) * mul;
+      if (sortBy === 'status') return (a.status || 'COMPLETED').localeCompare(b.status || 'COMPLETED') * mul;
+      return a.title.localeCompare(b.title) * mul;
+    });
 
   // Analytics & Chart Data
   const categories = Array.from(new Set(publicProjects.map((p) => p.category)));
@@ -336,61 +350,71 @@ export default function WebsiteProjectsManagerPage() {
         }))}
       />
 
-      {/* Search & Filter Toolbar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 p-4 rounded-2xl bg-[#080e1c]/80 border border-white/10">
-        <div className="flex flex-wrap items-center gap-2 flex-1">
-          <div className="relative min-w-[220px] flex-1 max-w-xs">
-            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
-            <input
-              type="text"
-              value={projectSearch}
-              onChange={(e) => setProjectSearch(e.target.value)}
-              placeholder="Search projects by title, location..."
-              className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#FFB800]"
-            />
-          </div>
+      {/* DataViewToolbar with Search, Sort & Grid/Detailed/Tile/Compact */}
+      <DataViewToolbar
+        search={projectSearch}
+        onSearchChange={setProjectSearch}
+        searchPlaceholder="Search projects by title, location..."
+        sortOptions={[
+          { value: 'title', label: 'Project Title' },
+          { value: 'year', label: 'Year' },
+          { value: 'category', label: 'Category' },
+          { value: 'status', label: 'Status' },
+        ]}
+        sortBy={sortBy}
+        onSortByChange={setSortBy}
+        sortDir={sortDir}
+        onSortDirToggle={() => setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))}
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+        totalCount={publicProjects.length}
+        filteredCount={filtered.length}
+      />
 
-          <div className="flex items-center gap-1 text-[11px]">
-            {['All', 'Hillside', 'Residential', 'Commercial'].map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setCategoryFilter(cat)}
-                className={`px-2.5 py-1 rounded-lg font-semibold cursor-pointer ${
-                  categoryFilter === cat ? 'bg-[#FFB800] text-black font-bold' : 'bg-white/5 text-zinc-400 hover:text-white'
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-
-          <div className="flex items-center gap-1 text-[11px]">
-            {[
-              { id: 'All', label: 'All Status' },
-              { id: 'COMPLETED', label: 'Completed' },
-              { id: 'UNDER_CONSTRUCTION', label: 'Onsite' },
-              { id: 'DESIGN_PHASE', label: 'Design' },
-            ].map((st) => (
-              <button
-                key={st.id}
-                onClick={() => setStatusFilter(st.id)}
-                className={`px-2.5 py-1 rounded-lg font-semibold cursor-pointer ${
-                  statusFilter === st.id ? 'bg-blue-600 text-white font-bold' : 'bg-white/5 text-zinc-400 hover:text-white'
-                }`}
-              >
-                {st.label}
-              </button>
-            ))}
-          </div>
+      {/* Projects Grid / Tile / Detailed / Compact */}
+      {viewMode === 'DETAILED' ? (
+        <div className="rounded-2xl bg-[#080e1c]/90 border border-white/10 overflow-x-auto">
+          <table className="w-full text-left text-xs">
+            <thead className="border-b border-white/10 text-[10px] uppercase text-zinc-400">
+              <tr>
+                <th className="p-3.5">Title</th>
+                <th className="p-3.5">Category</th>
+                <th className="p-3.5">Location</th>
+                <th className="p-3.5">Area</th>
+                <th className="p-3.5">Valuation</th>
+                <th className="p-3.5">Status</th>
+                <th className="p-3.5 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/5">
+              {filtered.map((p) => (
+                <tr key={p.id} className="hover:bg-white/[0.03]">
+                  <td className="p-3.5 font-bold text-white">{p.title}</td>
+                  <td className="p-3.5 text-blue-300">{p.category}</td>
+                  <td className="p-3.5 text-zinc-400">{p.location}</td>
+                  <td className="p-3.5 text-zinc-300">{p.area}</td>
+                  <td className="p-3.5 text-[#FFB800] font-semibold">{p.contractValue || '—'}</td>
+                  <td className="p-3.5 text-emerald-300 font-semibold">{p.status || 'COMPLETED'}</td>
+                  <td className="p-3.5 text-right">
+                    <div className="inline-flex items-center gap-1">
+                      <button onClick={() => setViewingProject(p)} className="p-1.5 rounded-lg bg-white/5 hover:bg-white/15 text-emerald-400 cursor-pointer" title="View"><Eye className="w-3.5 h-3.5" /></button>
+                      <button onClick={() => handleOpenEdit(p)} className="p-1.5 rounded-lg bg-white/5 hover:bg-white/15 text-blue-400 cursor-pointer" title="Edit"><Edit3 className="w-3.5 h-3.5" /></button>
+                      <button onClick={() => handleDelete(p.id)} className="p-1.5 rounded-lg bg-white/5 hover:bg-red-500/20 text-red-400 cursor-pointer" title="Delete"><Trash2 className="w-3.5 h-3.5" /></button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-
-        <span className="text-xs text-zinc-400 font-medium">
-          {loading ? 'Loading from MySQL...' : `Showing ${filtered.length} of ${publicProjects.length} projects`}
-        </span>
-      </div>
-
-      {/* Projects Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+      ) : (
+      <div className={
+        viewMode === 'TILE'
+          ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3'
+          : viewMode === 'COMPACT'
+          ? 'space-y-2'
+          : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5'
+      }>
         {filtered.map((p) => {
           const statusColor =
             p.status === 'UNDER_CONSTRUCTION'
@@ -471,10 +495,17 @@ export default function WebsiteProjectsManagerPage() {
               </div>
 
               <div className="p-3 border-t border-white/10 flex items-center justify-between bg-white/[0.02]">
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => setViewingProject(p)}
+                    className="px-2 py-1 rounded-md bg-white/5 hover:bg-white/15 text-emerald-400 text-xs font-semibold flex items-center gap-1 cursor-pointer"
+                  >
+                    <Eye className="w-3 h-3" />
+                    <span>View</span>
+                  </button>
                   <button
                     onClick={() => handleOpenEdit(p)}
-                    className="px-2.5 py-1 rounded-md bg-white/5 hover:bg-white/15 text-zinc-200 text-xs font-semibold flex items-center gap-1 cursor-pointer"
+                    className="px-2 py-1 rounded-md bg-white/5 hover:bg-white/15 text-zinc-200 text-xs font-semibold flex items-center gap-1 cursor-pointer"
                   >
                     <Edit3 className="w-3 h-3 text-blue-400" />
                     <span>Edit</span>
@@ -484,7 +515,6 @@ export default function WebsiteProjectsManagerPage() {
                     className="px-2 py-1 rounded-md bg-white/5 hover:bg-white/15 text-zinc-400 hover:text-white text-xs flex items-center gap-1 cursor-pointer"
                   >
                     <Copy className="w-3 h-3" />
-                    <span>Clone</span>
                   </button>
                 </div>
                 <button
@@ -492,13 +522,35 @@ export default function WebsiteProjectsManagerPage() {
                   className="px-2 py-1 rounded-md bg-white/5 hover:bg-red-500/20 text-zinc-400 hover:text-red-400 text-xs flex items-center gap-1 cursor-pointer"
                 >
                   <Trash2 className="w-3 h-3" />
-                  <span>Remove</span>
                 </button>
               </div>
             </div>
           );
         })}
       </div>
+      )}
+
+      {/* VIEW PROJECT DETAIL MODAL */}
+      {viewingProject && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+          <div className="w-full max-w-xl bg-[#080f24] border border-blue-500/30 rounded-3xl p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-white/10">
+              <h3 className="text-base font-bold text-white">{viewingProject.title}</h3>
+              <button onClick={() => setViewingProject(null)} className="p-1 text-zinc-400 hover:text-white cursor-pointer"><X className="w-5 h-5" /></button>
+            </div>
+            <div className="grid grid-cols-2 gap-3 text-xs">
+              <div className="p-3 rounded-xl bg-white/5"><span className="text-zinc-400 block text-[10px]">Location</span><strong className="text-white">{viewingProject.location}</strong></div>
+              <div className="p-3 rounded-xl bg-white/5"><span className="text-zinc-400 block text-[10px]">Valuation</span><strong className="text-[#FFB800]">{viewingProject.contractValue || 'N/A'}</strong></div>
+              <div className="p-3 rounded-xl bg-white/5"><span className="text-zinc-400 block text-[10px]">Area / Year</span><strong className="text-white">{viewingProject.area} • {viewingProject.year}</strong></div>
+              <div className="p-3 rounded-xl bg-white/5"><span className="text-zinc-400 block text-[10px]">Solar</span><strong className="text-emerald-300">{viewingProject.solarCapacity}</strong></div>
+            </div>
+            <p className="text-xs text-zinc-300 leading-relaxed">{viewingProject.description}</p>
+            <div className="flex justify-end gap-2 pt-2">
+              <button onClick={() => { setViewingProject(null); handleOpenEdit(viewingProject); }} className="px-4 py-2 rounded-xl bg-[#0038B8] text-white text-xs font-bold cursor-pointer">Edit Project</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Add / Edit Modal */}
       {showModal && (

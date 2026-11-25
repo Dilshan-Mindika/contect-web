@@ -5,6 +5,7 @@ import { useERP } from '@/lib/erp/AuthContext';
 import { TaskStatus, ProjectPhase } from '@/lib/erp/types';
 import { formatLKR, formatLKRFull } from '@/lib/erp/currency';
 import ModuleAnalytics from '@/components/erp/ModuleAnalytics';
+import DataViewToolbar, { ViewMode } from '@/components/erp/DataViewToolbar';
 import {
   HardHat,
   Plus,
@@ -21,6 +22,9 @@ import {
   AlertTriangle,
   Scale,
   Award,
+  Eye,
+  Edit3,
+  Trash2,
 } from 'lucide-react';
 
 const KANBAN_COLS: { key: TaskStatus; label: string; color: string }[] = [
@@ -31,11 +35,30 @@ const KANBAN_COLS: { key: TaskStatus; label: string; color: string }[] = [
 ];
 
 export default function ProjectsPage() {
-  const { projects, updateTaskStatus, addProject, user, activeCompany, companies } = useERP();
+  const { projects, updateTaskStatus, addProject, updateProject, deleteProject, user, activeCompany, companies } = useERP();
   
-  const filteredProjects = projects.filter(
-    (p) => activeCompany === 'CONSOLIDATED' || !p.companyId || p.companyId === activeCompany
-  );
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState('name');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
+  const [viewMode, setViewMode] = useState<ViewMode>('GRID');
+  const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
+
+  const filteredProjects = projects
+    .filter(
+      (p) =>
+        (activeCompany === 'CONSOLIDATED' || !p.companyId || p.companyId === activeCompany) &&
+        (p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          p.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          p.client.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          p.location.toLowerCase().includes(searchQuery.toLowerCase()))
+    )
+    .sort((a, b) => {
+      const mul = sortDir === 'asc' ? 1 : -1;
+      if (sortBy === 'budget') return (a.budget - b.budget) * mul;
+      if (sortBy === 'progress') return (a.progress - b.progress) * mul;
+      if (sortBy === 'phase') return a.phase.localeCompare(b.phase) * mul;
+      return a.name.localeCompare(b.name) * mul;
+    });
 
   const [selectedProjectId, setSelectedProjectId] = useState(filteredProjects[0]?.id || projects[0]?.id || '');
   const [showNewModal, setShowNewModal] = useState(false);
@@ -64,9 +87,41 @@ export default function ProjectsPage() {
 
   const activeProject = filteredProjects.find((p) => p.id === selectedProjectId) || filteredProjects[0] || projects[0];
 
+  const handleOpenEditProject = (p: typeof projects[0]) => {
+    setEditingProjectId(p.id);
+    setName(p.name);
+    setClient(p.client);
+    setLocation(p.location);
+    setBudget(p.budget);
+    setPhase(p.phase);
+    setCategory(p.category === 'GOVERNMENT' ? 'GOVERNMENT' : 'PRIVATE');
+    setCidaClassification(p.cidaClassification || 'CIDA Grade CS2');
+    setSiteEngineerInput(p.siteEngineer);
+    setProjectManager(p.projectManager || 'Eng. Marcus Chen');
+    setTargetCompletion(p.targetCompletion);
+    setShowNewModal(true);
+  };
+
   const handleCreateProject = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !client) return;
+    if (editingProjectId) {
+      updateProject(editingProjectId, {
+        name,
+        client,
+        location,
+        budget: Number(budget),
+        phase,
+        category,
+        cidaClassification,
+        siteEngineer: siteEngineerInput,
+        projectManager,
+        targetCompletion,
+      });
+      setEditingProjectId(null);
+      setShowNewModal(false);
+      return;
+    }
     (addProject as (p: Record<string, unknown>) => void)({
       name,
       client,
@@ -175,15 +230,78 @@ export default function ProjectsPage() {
         }))}
       />
 
-      {/* Projects Grid Selector */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* DataViewToolbar */}
+      <DataViewToolbar
+        search={searchQuery}
+        onSearchChange={setSearchQuery}
+        searchPlaceholder="Search sites by name, code, client..."
+        sortOptions={[
+          { value: 'name', label: 'Project Name' },
+          { value: 'budget', label: 'Contract Budget' },
+          { value: 'progress', label: 'Completion %' },
+          { value: 'phase', label: 'Phase' },
+        ]}
+        sortBy={sortBy}
+        onSortByChange={setSortBy}
+        sortDir={sortDir}
+        onSortDirToggle={() => setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))}
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+        totalCount={projects.length}
+        filteredCount={filteredProjects.length}
+      />
+
+      {/* Projects View Modes */}
+      {viewMode === 'DETAILED' ? (
+        <div className="rounded-2xl bg-[#080e1c]/90 border border-white/10 overflow-x-auto">
+          <table className="w-full text-left text-xs">
+            <thead className="border-b border-white/10 text-[10px] uppercase text-zinc-400">
+              <tr>
+                <th className="p-3.5">Code</th>
+                <th className="p-3.5">Project Name</th>
+                <th className="p-3.5">Client</th>
+                <th className="p-3.5">Phase</th>
+                <th className="p-3.5">Budget</th>
+                <th className="p-3.5">Progress</th>
+                <th className="p-3.5 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/5">
+              {filteredProjects.map((p) => (
+                <tr key={p.id} className="hover:bg-white/[0.03]">
+                  <td className="p-3.5 font-mono text-blue-300">{p.code}</td>
+                  <td className="p-3.5 font-bold text-white">{p.name}</td>
+                  <td className="p-3.5 text-zinc-300">{p.client}</td>
+                  <td className="p-3.5 text-zinc-400">{p.phase}</td>
+                  <td className="p-3.5 text-[#FFB800] font-semibold">{formatLKR(p.budget, true)}</td>
+                  <td className="p-3.5 font-mono text-emerald-400">{p.progress}%</td>
+                  <td className="p-3.5 text-right">
+                    <div className="inline-flex items-center gap-1">
+                      <button onClick={() => setSelectedProjectId(p.id)} className="p-1.5 rounded-lg bg-white/5 hover:bg-white/15 text-emerald-400 cursor-pointer" title="View in Cockpit"><Eye className="w-3.5 h-3.5" /></button>
+                      <button onClick={() => handleOpenEditProject(p)} className="p-1.5 rounded-lg bg-white/5 hover:bg-white/15 text-blue-400 cursor-pointer" title="Edit"><Edit3 className="w-3.5 h-3.5" /></button>
+                      <button onClick={() => { if (confirm(`Delete project ${p.name}?`)) deleteProject(p.id); }} className="p-1.5 rounded-lg bg-white/5 hover:bg-red-500/20 text-red-400 cursor-pointer" title="Delete"><Trash2 className="w-3.5 h-3.5" /></button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+      <div className={
+        viewMode === 'TILE'
+          ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3'
+          : viewMode === 'COMPACT'
+          ? 'space-y-2'
+          : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'
+      }>
         {filteredProjects.map((p) => {
           const isSelected = p.id === activeProject?.id;
           return (
-            <button
+            <div
               key={p.id}
               onClick={() => setSelectedProjectId(p.id)}
-              className={`p-4 rounded-2xl text-left transition-all border ${
+              className={`p-4 rounded-2xl text-left transition-all border cursor-pointer ${
                 isSelected
                   ? 'bg-[#091536] border-[#FFB800]/60 shadow-xl shadow-blue-950/50'
                   : 'bg-[#080e1c]/80 border-white/10 hover:border-white/20'
@@ -213,10 +331,19 @@ export default function ProjectsPage() {
                 <span>Phase: {p.phase}</span>
                 <span className="text-white font-bold">{formatLKR(p.budget, true)}</span>
               </div>
-            </button>
+
+              <div className="flex items-center justify-between gap-1 pt-2.5 mt-2.5 border-t border-white/10">
+                <div className="flex items-center gap-1">
+                  <button type="button" onClick={(e) => { e.stopPropagation(); setSelectedProjectId(p.id); }} className="px-2 py-1 rounded bg-white/5 hover:bg-white/15 text-emerald-400 text-[10px] font-semibold flex items-center gap-1 cursor-pointer"><Eye className="w-3 h-3" /> View</button>
+                  <button type="button" onClick={(e) => { e.stopPropagation(); handleOpenEditProject(p); }} className="px-2 py-1 rounded bg-white/5 hover:bg-white/15 text-blue-400 text-[10px] font-semibold flex items-center gap-1 cursor-pointer"><Edit3 className="w-3 h-3" /> Edit</button>
+                </div>
+                <button type="button" onClick={(e) => { e.stopPropagation(); if (confirm(`Delete project ${p.name}?`)) deleteProject(p.id); }} className="px-2 py-1 rounded bg-white/5 hover:bg-red-500/20 text-red-400 text-[10px] font-semibold flex items-center gap-1 cursor-pointer"><Trash2 className="w-3 h-3" /></button>
+              </div>
+            </div>
           );
         })}
       </div>
+      )}
 
       {/* Selected Project In-Depth Dashboard */}
       {activeProject && (

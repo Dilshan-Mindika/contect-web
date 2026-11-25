@@ -449,6 +449,199 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true });
     }
 
+    if (action === 'UPDATE_PROJECT' && payload?.id) {
+      await query(
+        `UPDATE projects SET name=?, client=?, location=?, budget=?, spent=?, progress=?, phase=?,
+         category=?, cida_classification=?, project_manager=?, site_engineer=?, notes=? WHERE id=?`,
+        [
+          payload.name,
+          payload.client,
+          payload.location || '',
+          Number(payload.budget || 0),
+          Number(payload.spent || 0),
+          Number(payload.progress || 0),
+          payload.phase || 'DESIGN',
+          payload.category || 'PRIVATE',
+          payload.cidaClassification || '',
+          payload.projectManager || '',
+          payload.siteEngineer || '',
+          payload.notes || '',
+          payload.id,
+        ]
+      );
+      await logDbAudit(user, 'PROJECT_UPDATED', 'PROJECTS', `Updated project ${payload.name} (${payload.id})`);
+      return NextResponse.json({ success: true });
+    }
+
+    if (action === 'DELETE_PROJECT' && payload?.id) {
+      await query('DELETE FROM projects WHERE id = ?', [payload.id]);
+      await logDbAudit(user, 'PROJECT_DELETED', 'PROJECTS', `Deleted project ${payload.id}`);
+      return NextResponse.json({ success: true });
+    }
+
+    if (action === 'UPDATE_INVOICE' && payload?.id) {
+      await query(
+        'UPDATE invoices SET client_name=?, project_name=?, total=?, subtotal=?, tax=?, status=?, due_date=? WHERE id=?',
+        [
+          payload.clientName,
+          payload.projectName,
+          Number(payload.total || 0),
+          Number(payload.subtotal || 0),
+          Number(payload.tax || 0),
+          payload.status || 'PENDING',
+          payload.dueDate || new Date().toISOString().slice(0, 10),
+          payload.id,
+        ]
+      );
+      await logDbAudit(user, 'INVOICE_UPDATED', 'FINANCE', `Updated invoice ${payload.id}`);
+      return NextResponse.json({ success: true });
+    }
+
+    if (action === 'DELETE_INVOICE' && payload?.id) {
+      await query('DELETE FROM invoices WHERE id = ?', [payload.id]);
+      await logDbAudit(user, 'INVOICE_DELETED', 'FINANCE', `Deleted invoice ${payload.id}`);
+      return NextResponse.json({ success: true });
+    }
+
+    if (action === 'ADD_INVENTORY' && payload?.name) {
+      const id = payload.id || `mat-${Date.now()}`;
+      const sku = payload.sku || `SKU-${Math.floor(1000 + Math.random() * 9000)}`;
+      await query(
+        `INSERT INTO inventory_materials (id, company_id, sku, name, category, quantity, unit, min_threshold, unit_cost, warehouse_location, status, supplier_name)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          id,
+          payload.companyId || 'COMP_A',
+          sku,
+          payload.name,
+          payload.category || 'Structural',
+          Number(payload.quantity || 0),
+          payload.unit || 'Units',
+          Number(payload.minThreshold || 10),
+          Number(payload.unitCost || 0),
+          payload.warehouseLocation || 'Kandy Central Yard',
+          payload.status || 'OPTIMAL',
+          payload.supplierName || '',
+        ]
+      );
+      await logDbAudit(user, 'INVENTORY_ADDED', 'INVENTORY', `Added material ${payload.name} (${sku})`);
+      return NextResponse.json({ success: true, id, sku });
+    }
+
+    if (action === 'UPDATE_INVENTORY' && payload?.id) {
+      await query(
+        'UPDATE inventory_materials SET name=?, category=?, quantity=?, unit=?, min_threshold=?, unit_cost=?, warehouse_location=?, status=? WHERE id=?',
+        [
+          payload.name,
+          payload.category || 'Structural',
+          Number(payload.quantity || 0),
+          payload.unit || 'Units',
+          Number(payload.minThreshold || 10),
+          Number(payload.unitCost || 0),
+          payload.warehouseLocation || 'Kandy Central Yard',
+          payload.status || 'OPTIMAL',
+          payload.id,
+        ]
+      );
+      await logDbAudit(user, 'INVENTORY_UPDATED', 'INVENTORY', `Updated material ${payload.name} (${payload.id})`);
+      return NextResponse.json({ success: true });
+    }
+
+    if (action === 'DELETE_INVENTORY' && payload?.id) {
+      await query('DELETE FROM inventory_materials WHERE id = ?', [payload.id]);
+      await logDbAudit(user, 'INVENTORY_DELETED', 'INVENTORY', `Deleted material ${payload.id}`);
+      return NextResponse.json({ success: true });
+    }
+
+    if (action === 'UPDATE_MACHINERY' && payload?.id) {
+      await query(
+        'UPDATE machinery_fleet SET equipment_name=?, assigned_site_name=?, operator_name=?, daily_hire_rate_lkr=?, operating_hours=?, status=? WHERE id=?',
+        [
+          payload.name,
+          payload.assignedSite || '',
+          payload.operatorName || '',
+          Number(payload.dailyHireRateLkr || 95000),
+          Number(payload.operatingHours || 0),
+          payload.status || 'OPERATIONAL',
+          payload.id,
+        ]
+      );
+      await logDbAudit(user, 'MACHINERY_UPDATED', 'MACHINERY', `Updated machinery ${payload.name}`);
+      return NextResponse.json({ success: true });
+    }
+
+    if (action === 'DELETE_MACHINERY' && payload?.id) {
+      await query('DELETE FROM machinery_fleet WHERE id = ?', [payload.id]);
+      await logDbAudit(user, 'MACHINERY_DELETED', 'MACHINERY', `Deleted machinery ${payload.id}`);
+      return NextResponse.json({ success: true });
+    }
+
+    if (action === 'UPDATE_SITE_LOG' && payload?.id) {
+      await query(
+        'UPDATE site_daily_logs SET weather_summary=?, workforce_count=?, concrete_poured_m3=?, slump_test_mm=?, osha_compliance_status=?, supervisor_notes=? WHERE id=?',
+        [
+          payload.weatherSummary || '',
+          Number(payload.workforceCount || 0),
+          Number(payload.concretePouredM3 || 0),
+          Number(payload.slumpTestMm || 0),
+          payload.oshaStatus || 'COMPLIANT',
+          payload.supervisorNotes || '',
+          payload.id,
+        ]
+      );
+      await logDbAudit(user, 'SITE_LOG_UPDATED', 'SITE_LOGS', `Updated site log ${payload.id}`);
+      return NextResponse.json({ success: true });
+    }
+
+    if (action === 'DELETE_SITE_LOG' && payload?.id) {
+      await query('DELETE FROM site_daily_logs WHERE id = ?', [payload.id]);
+      await logDbAudit(user, 'SITE_LOG_DELETED', 'SITE_LOGS', `Deleted site log ${payload.id}`);
+      return NextResponse.json({ success: true });
+    }
+
+    if (action === 'ADD_INQUIRY' && payload?.clientName) {
+      const id = payload.id || `inq-${Date.now()}`;
+      await query(
+        'INSERT INTO website_inquiries (id, client_name, email, phone, project_type, budget_range, message, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+        [
+          id,
+          payload.clientName,
+          payload.email || '',
+          payload.phone || '',
+          payload.projectType || 'Residential',
+          payload.budgetRange || 'Flexible',
+          payload.message || '',
+          payload.status || 'NEW',
+        ]
+      );
+      await logDbAudit(user, 'INQUIRY_CREATED', 'CRM', `Created inquiry for ${payload.clientName}`);
+      return NextResponse.json({ success: true, id });
+    }
+
+    if (action === 'UPDATE_INQUIRY' && payload?.id) {
+      await query(
+        'UPDATE website_inquiries SET client_name=?, email=?, phone=?, project_type=?, budget_range=?, message=?, status=? WHERE id=?',
+        [
+          payload.clientName,
+          payload.email || '',
+          payload.phone || '',
+          payload.projectType || 'Residential',
+          payload.budgetRange || 'Flexible',
+          payload.message || '',
+          payload.status || 'NEW',
+          payload.id,
+        ]
+      );
+      await logDbAudit(user, 'INQUIRY_UPDATED', 'CRM', `Updated inquiry ${payload.id}`);
+      return NextResponse.json({ success: true });
+    }
+
+    if (action === 'DELETE_INQUIRY' && payload?.id) {
+      await query('DELETE FROM website_inquiries WHERE id = ?', [payload.id]);
+      await logDbAudit(user, 'INQUIRY_DELETED', 'CRM', `Deleted inquiry ${payload.id}`);
+      return NextResponse.json({ success: true });
+    }
+
     return NextResponse.json({ error: 'Unsupported action' }, { status: 400 });
   } catch (error) {
     console.error('[ERP DATA POST ERROR]', error);
