@@ -8,20 +8,24 @@ const poolConfig: mysql.PoolOptions = {
   password: process.env.MYSQL_PASSWORD || '',
   database: process.env.MYSQL_DATABASE || 'contec_erp',
   waitForConnections: true,
-  connectionLimit: parseInt(process.env.MYSQL_CONNECTION_LIMIT || '10', 10),
+  connectionLimit: parseInt(process.env.MYSQL_CONNECTION_LIMIT || '5', 10),
+  maxIdle: 3,
+  idleTimeout: 60000,
+  enableKeepAlive: true,
+  keepAliveInitialDelay: 10000,
   queueLimit: 0,
   connectTimeout: 4000,
 };
 
-let pool: mysql.Pool | null = null;
+const globalForDb = globalThis as unknown as { __contecPool?: mysql.Pool };
 let isConnected = false;
 let lastCheckTime = 0;
 
 export function getDbPool(): mysql.Pool {
-  if (!pool) {
-    pool = mysql.createPool(poolConfig);
+  if (!globalForDb.__contecPool) {
+    globalForDb.__contecPool = mysql.createPool(poolConfig);
   }
-  return pool;
+  return globalForDb.__contecPool;
 }
 
 /**

@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:lowmem": "NODE_OPTIONS='--max-old-space-size=1024' next build",
     "start": "next start",
+    "start:lowmem": "NODE_OPTIONS='--max-old-space-size=512' next start",
     "lint": "eslint",
     "db:seed": "node database/seed.js"
   },
