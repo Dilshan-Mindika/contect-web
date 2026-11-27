@@ -12,6 +12,7 @@ export default function ProjectsPage() {
   const [projectsList, setProjectsList] = useState<PublicProject[]>(DEFAULT_PROJECTS);
   const [activeCategory, setActiveCategory] = useState("All");
   const [selectedProject, setSelectedProject] = useState<PublicProject | null>(null);
+  const [selectedImageIdx, setSelectedImageIdx] = useState(0);
 
   useEffect(() => {
     setProjectsList(getPublicProjects());
@@ -161,7 +162,7 @@ export default function ProjectsPage() {
               {/* Modal Image Header */}
               <div className="relative w-full h-72 sm:h-96 shrink-0">
                 <Image
-                  src={selectedProject.image}
+                  src={(selectedProject.images?.length ? selectedProject.images : [selectedProject.image])[selectedImageIdx] || selectedProject.image}
                   alt={selectedProject.title}
                   fill
                   unoptimized
@@ -170,7 +171,7 @@ export default function ProjectsPage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-[#080e1c] via-transparent to-black/50" />
                 
                 <button
-                  onClick={() => setSelectedProject(null)}
+                  onClick={() => { setSelectedProject(null); setSelectedImageIdx(0); }}
                   className="absolute top-4 right-4 w-9 h-9 rounded-full bg-black/60 border border-white/20 text-white flex items-center justify-center hover:bg-[#FFB800] hover:text-black transition-all cursor-pointer"
                 >
                   ✕
@@ -186,6 +187,23 @@ export default function ProjectsPage() {
                   <p className="text-sm text-zinc-300">{selectedProject.location}</p>
                 </div>
               </div>
+
+              {(selectedProject.images && selectedProject.images.length > 1) && (
+                <div className="px-6 pt-4 flex items-center gap-2 overflow-x-auto">
+                  {selectedProject.images.map((img, i) => (
+                    <button
+                      key={`${img}-${i}`}
+                      type="button"
+                      onClick={() => setSelectedImageIdx(i)}
+                      className={`relative w-20 h-14 rounded-xl overflow-hidden border-2 shrink-0 cursor-pointer transition-all ${
+                        selectedImageIdx === i ? 'border-[#FFB800] scale-105' : 'border-white/15 opacity-70 hover:opacity-100'
+                      }`}
+                    >
+                      <Image src={img} alt={`${selectedProject.title} ${i + 1}`} fill unoptimized className="object-cover" />
+                    </button>
+                  ))}
+                </div>
+              )}
 
               {/* Modal Content Body */}
               <div className="p-6 sm:p-8 space-y-6">

@@ -299,9 +299,15 @@ export default function CRMPage() {
           { key: 'estimatedValue', label: 'Value (LKR)', type: 'number', isCurrency: true },
           { key: 'stage', label: 'Stage', type: 'select', options: ['NEW', 'QUALIFIED', 'PROPOSAL', 'NEGOTIATION', 'WON'], isBadge: true },
           { key: 'probability', label: 'Win %', type: 'number' },
-          { key: 'contactEmail', label: 'Email', showInTable: false },
-          { key: 'phone', label: 'Phone', showInTable: false },
-          { key: 'notes', label: 'Notes', type: 'textarea', showInTable: false },
+          { key: 'contactEmail', label: 'Email', showInTable: false, optional: true },
+          { key: 'phone', label: 'Phone', showInTable: false, optional: true },
+          { key: 'cidaCategory', label: 'CIDA Grade Required', type: 'select', options: ['CS2', 'CS1', 'C1', 'C2', 'C3', 'EM1'], showInTable: false, optional: true },
+          { key: 'tenderDeadline', label: 'Tender Submission Deadline', type: 'date', showInTable: false, optional: true },
+          { key: 'bidBondLkr', label: 'Bid Bond Required (LKR)', type: 'number', isCurrency: true, showInTable: false, optional: true },
+          { key: 'tenderSource', label: 'Lead / Tender Source', type: 'select', options: ['PRIVATE_RFP', 'GOV_GAZETTE', 'ARCHITECT_REFERRAL', 'WEBSITE_INQUIRY'], showInTable: false, optional: true },
+          { key: 'siteLocation', label: 'Site Location', showInTable: false, optional: true },
+          { key: 'notes', label: 'Engineering & Competitor Notes', type: 'textarea', showInTable: false, optional: true },
+          { key: 'images', label: 'Site Visit & Concept Photos', type: 'images', showInTable: false, optional: true },
         ]}
         onCreate={(d) => addLead({ ...(d as Parameters<typeof addLead>[0]), stage: (d.stage as LeadStage) || 'NEW', probability: Number(d.probability || 30), assignedTo: user?.name || 'Director' })}
       />

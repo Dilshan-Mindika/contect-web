@@ -531,8 +531,14 @@ export default function CompanyAdministrationPage() {
           { key: 'registrationNumber', label: 'Reg. Number', required: true },
           { key: 'cidaGrade', label: 'CIDA Grade', isBadge: true },
           { key: 'tin', label: 'TIN' },
-          { key: 'phone', label: 'Hotline', showInTable: false },
-          { key: 'address', label: 'Address', showInTable: false },
+          { key: 'phone', label: 'Hotline', showInTable: false, optional: true },
+          { key: 'email', label: 'Official Email', showInTable: false, optional: true },
+          { key: 'address', label: 'Registered Address', showInTable: false, optional: true },
+          { key: 'vatNumber', label: 'VAT Registration #', showInTable: false, optional: true },
+          { key: 'cidaRegNo', label: 'CIDA Seal / Reg #', showInTable: false, optional: true },
+          { key: 'brExpiryDate', label: 'BR Certificate Expiry', type: 'date', showInTable: false, optional: true },
+          { key: 'epfEmployerNo', label: 'EPF/ETF Employer Code', showInTable: false, optional: true },
+          { key: 'images', label: 'Company Logo, BR & CIDA Certificates', type: 'images', showInTable: false, optional: true },
         ]}
       />
     </div>

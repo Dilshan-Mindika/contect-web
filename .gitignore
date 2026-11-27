@@ -48,6 +48,7 @@ next-env.d.ts
 *.rar
 *.log
 /deploy-bundle/
+/uploads/
 public/frames/*.png
 
 

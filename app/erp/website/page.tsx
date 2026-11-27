@@ -9,6 +9,7 @@ import {
 } from '@/lib/publicData';
 import ModuleAnalytics from '@/components/erp/ModuleAnalytics';
 import DataViewToolbar, { ViewMode } from '@/components/erp/DataViewToolbar';
+import MultiImageField from '@/components/erp/MultiImageField';
 import {
   Globe,
   Plus,
@@ -52,6 +53,7 @@ export default function WebsiteProjectsManagerPage() {
     solarCapacity: '30 kW Rooftop Solar',
     energyRating: 'Eco-Friendly Living',
     image: '/images/project-alpine.jpg',
+    images: ['/images/project-alpine.jpg'],
     tagline: '',
     description: '',
     highlights: ['Reinforced concrete foundation', 'Hillside slope protection', 'Turnkey luxury finishes'],
@@ -119,6 +121,7 @@ export default function WebsiteProjectsManagerPage() {
       solarCapacity: '30 kW Solar Array',
       energyRating: 'Eco-Friendly Living',
       image: '/images/project-alpine.jpg',
+      images: ['/images/project-alpine.jpg'],
       tagline: 'Modern hillside home designed with scenic views.',
       description: 'Engineered with reinforced rock-anchored foundations, panoramic glass windows, and natural ventilation.',
       highlights: ['Reinforced foundation on slope', 'Integrated solar power system', 'Turnkey luxury finishes'],
@@ -137,6 +140,7 @@ export default function WebsiteProjectsManagerPage() {
     setEditingProject(p);
     setProjectForm({
       ...p,
+      images: p.images && p.images.length > 0 ? p.images : p.image ? [p.image] : [],
       highlights: p.highlights?.length ? p.highlights : ['Reinforced concrete foundation'],
     });
     setShowModal(true);
@@ -146,6 +150,9 @@ export default function WebsiteProjectsManagerPage() {
     e.preventDefault();
     if (!projectForm.title) return;
     const cleanHighlights = (projectForm.highlights || []).filter((h) => h.trim().length > 0);
+    const gallery = projectForm.images && projectForm.images.length > 0
+      ? projectForm.images
+      : [projectForm.image || '/images/project-alpine.jpg'];
     const item: PublicProject = {
       id: editingProject ? editingProject.id : `proj-${Date.now()}`,
       title: projectForm.title,
@@ -155,7 +162,8 @@ export default function WebsiteProjectsManagerPage() {
       area: projectForm.area || '4,500 sq ft',
       solarCapacity: projectForm.solarCapacity || '25 kW Solar',
       energyRating: projectForm.energyRating || 'Eco-Friendly Living',
-      image: projectForm.image || '/images/project-alpine.jpg',
+      image: gallery[0],
+      images: gallery,
       tagline: projectForm.tagline || 'Custom project engineered by CONTEC Design & Build.',
       description: projectForm.description || 'Engineered with certified structural foundations.',
       highlights: cleanHighlights.length ? cleanHighlights : ['Reinforced concrete foundation'],
@@ -166,6 +174,12 @@ export default function WebsiteProjectsManagerPage() {
       leadArchitect: projectForm.leadArchitect || 'Chartered Structural Engineering Team',
       foundationType: projectForm.foundationType || 'Rock-Anchored Reinforced Concrete Grade 35',
       clientPrivacy: projectForm.clientPrivacy || 'PUBLIC',
+      clientName: projectForm.clientName || '',
+      concreteGrade: projectForm.concreteGrade || '',
+      targetSector: projectForm.targetSector || '',
+      durationMonths: projectForm.durationMonths || '',
+      approvalsObtained: projectForm.approvalsObtained || '',
+      smartSystems: projectForm.smartSystems || '',
     };
 
     const next = editingProject
@@ -545,6 +559,15 @@ export default function WebsiteProjectsManagerPage() {
               <div className="p-3 rounded-xl bg-white/5"><span className="text-zinc-400 block text-[10px]">Solar</span><strong className="text-emerald-300">{viewingProject.solarCapacity}</strong></div>
             </div>
             <p className="text-xs text-zinc-300 leading-relaxed">{viewingProject.description}</p>
+            {(viewingProject.images?.length ? viewingProject.images : [viewingProject.image]).length > 0 && (
+              <div className="grid grid-cols-3 gap-2">
+                {(viewingProject.images?.length ? viewingProject.images : [viewingProject.image]).map((img, i) => (
+                  <div key={`${img}-${i}`} className="relative h-20 rounded-xl overflow-hidden border border-white/10">
+                    <Image src={img} alt={`${viewingProject.title} ${i + 1}`} fill className="object-cover" unoptimized />
+                  </div>
+                ))}
+              </div>
+            )}
             <div className="flex justify-end gap-2 pt-2">
               <button onClick={() => { setViewingProject(null); handleOpenEdit(viewingProject); }} className="px-4 py-2 rounded-xl bg-[#0038B8] text-white text-xs font-bold cursor-pointer">Edit Project</button>
             </div>
@@ -686,34 +709,111 @@ export default function WebsiteProjectsManagerPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-start">
-                <div className="sm:col-span-2 space-y-3">
-                  <div>
-                    <label className="block font-semibold text-zinc-300 mb-1">Image URL *</label>
-                    <input
-                      type="text"
-                      required
-                      value={projectForm.image || ''}
-                      onChange={(e) => setProjectForm({ ...projectForm, image: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/15 text-white focus:outline-none focus:border-[#FFB800]"
-                    />
-                  </div>
-                  <div>
-                    <label className="block font-semibold text-zinc-300 mb-1">Tagline</label>
-                    <input
-                      type="text"
-                      value={projectForm.tagline || ''}
-                      onChange={(e) => setProjectForm({ ...projectForm, tagline: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/15 text-white focus:outline-none focus:border-[#FFB800]"
-                    />
-                  </div>
+              <MultiImageField
+                label="Project Photo Gallery (Upload Multiple Images or Add URLs)"
+                images={projectForm.images && projectForm.images.length > 0 ? projectForm.images : projectForm.image ? [projectForm.image] : []}
+                onChange={(imgs) =>
+                  setProjectForm({
+                    ...projectForm,
+                    images: imgs,
+                    image: imgs[0] || '/images/project-alpine.jpg',
+                  })
+                }
+              />
+
+              <div>
+                <label className="block font-semibold text-zinc-300 mb-1">Tagline</label>
+                <input
+                  type="text"
+                  value={projectForm.tagline || ''}
+                  onChange={(e) => setProjectForm({ ...projectForm, tagline: e.target.value })}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/15 text-white focus:outline-none focus:border-[#FFB800]"
+                />
+              </div>
+
+              <div className="p-3.5 rounded-2xl bg-white/[0.02] border border-white/10 space-y-3">
+                <div className="text-[11px] font-bold text-blue-300 uppercase tracking-wider">
+                  Optional Structural, Client &amp; Compliance Metadata
                 </div>
-                <div>
-                  <label className="block font-semibold text-zinc-400 mb-1">Live Preview</label>
-                  <div className="relative h-28 w-full rounded-xl bg-zinc-900 border border-white/15 overflow-hidden">
-                    {projectForm.image && (
-                      <Image src={projectForm.image} alt="Preview" fill className="object-cover" unoptimized />
-                    )}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="block font-semibold text-zinc-300 mb-1">Client / Developer (Optional)</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Private Villa Owner"
+                      value={projectForm.clientName || ''}
+                      onChange={(e) => setProjectForm({ ...projectForm, clientName: e.target.value })}
+                      className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-semibold text-zinc-300 mb-1">Client Privacy</label>
+                    <select
+                      value={projectForm.clientPrivacy || 'PUBLIC'}
+                      onChange={(e) => setProjectForm({ ...projectForm, clientPrivacy: e.target.value as 'PUBLIC' | 'CONFIDENTIAL' })}
+                      className="w-full px-3 py-2 rounded-xl bg-[#080f24] border border-white/15 text-white"
+                    >
+                      <option value="PUBLIC">Public Display</option>
+                      <option value="CONFIDENTIAL">Confidential (NDA)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block font-semibold text-zinc-300 mb-1">Duration (Months)</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. 14 Months"
+                      value={projectForm.durationMonths || ''}
+                      onChange={(e) => setProjectForm({ ...projectForm, durationMonths: e.target.value })}
+                      className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-semibold text-zinc-300 mb-1">Foundation System</label>
+                    <input
+                      type="text"
+                      value={projectForm.foundationType || ''}
+                      onChange={(e) => setProjectForm({ ...projectForm, foundationType: e.target.value })}
+                      className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-semibold text-zinc-300 mb-1">Concrete &amp; Steel Grade</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. G35 / BS 4449 B500B"
+                      value={projectForm.concreteGrade || ''}
+                      onChange={(e) => setProjectForm({ ...projectForm, concreteGrade: e.target.value })}
+                      className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-semibold text-zinc-300 mb-1">Lead Architect / Engineer</label>
+                    <input
+                      type="text"
+                      value={projectForm.leadArchitect || ''}
+                      onChange={(e) => setProjectForm({ ...projectForm, leadArchitect: e.target.value })}
+                      className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-semibold text-zinc-300 mb-1">Approvals Obtained</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. UDA, NBRO, KMC, COC"
+                      value={projectForm.approvalsObtained || ''}
+                      onChange={(e) => setProjectForm({ ...projectForm, approvalsObtained: e.target.value })}
+                      className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white"
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="block font-semibold text-zinc-300 mb-1">Smart MEP &amp; Automation Systems</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Rainwater Harvesting, KNX Smart Lighting, EV Charger"
+                      value={projectForm.smartSystems || ''}
+                      onChange={(e) => setProjectForm({ ...projectForm, smartSystems: e.target.value })}
+                      className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white"
+                    />
                   </div>
                 </div>
               </div>

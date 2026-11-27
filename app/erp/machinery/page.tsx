@@ -273,8 +273,17 @@ export default function MachineryPage() {
               { key: 'assignedSite', label: 'Assigned Site' },
               { key: 'operatorName', label: 'Operator' },
               { key: 'operatingHours', label: 'Hours', type: 'number' },
-              { key: 'dailyHireRateLkr', label: 'Daily Rate (LKR)', type: 'number', isCurrency: true, showInTable: false },
+              { key: 'dailyHireRateLkr', label: 'Daily Rate (LKR)', type: 'number', isCurrency: true, showInTable: false, optional: true },
+              { key: 'makeModel', label: 'Make & Model (e.g. CAT 320D)', showInTable: false, optional: true },
+              { key: 'serialNo', label: 'Chassis / Serial Number', showInTable: false, optional: true },
+              { key: 'registrationNo', label: 'Registration / Plate #', showInTable: false, optional: true },
+              { key: 'ownershipType', label: 'Ownership', type: 'select', options: ['OWNED', 'HIRED', 'LEASED'], showInTable: false, optional: true },
+              { key: 'fuelCapacityLiters', label: 'Fuel Tank (Liters)', type: 'number', showInTable: false, optional: true },
+              { key: 'fuelBurnPerHr', label: 'Avg Burn (L/hr)', type: 'number', showInTable: false, optional: true },
+              { key: 'nextServiceHours', label: 'Next Service Due (Hrs)', type: 'number', showInTable: false, optional: true },
+              { key: 'insuranceExpiry', label: 'Insurance & Revenue License Expiry', type: 'date', showInTable: false, optional: true },
               { key: 'status', label: 'Status', type: 'select', options: ['OPERATIONAL', 'MAINTENANCE', 'STANDBY', 'REPAIR'], isBadge: true },
+              { key: 'images', label: 'Fleet & Logbook Photos', type: 'images', showInTable: false, optional: true },
             ]}
             onCreate={(d) => addMachinery(d as Parameters<typeof addMachinery>[0])}
             onUpdate={(id, d) => updateMachinery(id, d)}

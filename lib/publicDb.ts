@@ -25,6 +25,8 @@ export async function ensurePublicContentTables(): Promise<void> {
       solar_capacity VARCHAR(120) DEFAULT '',
       energy_rating VARCHAR(120) DEFAULT '',
       image VARCHAR(500) NOT NULL,
+      images JSON,
+      extra_meta JSON,
       tagline VARCHAR(300) DEFAULT '',
       description TEXT NOT NULL,
       highlights JSON,
@@ -47,6 +49,8 @@ export async function ensurePublicContentTables(): Promise<void> {
       title VARCHAR(200) NOT NULL,
       description TEXT NOT NULL,
       image VARCHAR(500) NOT NULL,
+      images JSON,
+      extra_meta JSON,
       features JSON,
       starting_price VARCHAR(120) DEFAULT '',
       timeline VARCHAR(120) DEFAULT '',
@@ -58,6 +62,21 @@ export async function ensurePublicContentTables(): Promise<void> {
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
   `);
+
+  // Safe auto-migrations for multi-image galleries & optional metadata
+  const alters = [
+    'ALTER TABLE public_projects ADD COLUMN images JSON',
+    'ALTER TABLE public_projects ADD COLUMN extra_meta JSON',
+    'ALTER TABLE public_services ADD COLUMN images JSON',
+    'ALTER TABLE public_services ADD COLUMN extra_meta JSON',
+  ];
+  for (const sql of alters) {
+    try {
+      await query(sql);
+    } catch {
+      // Column already exists
+    }
+  }
 
   // Seed public_projects if empty
   const projCountRows = await query<{ cnt: number }[]>('SELECT COUNT(*) AS cnt FROM public_projects');
@@ -91,6 +110,19 @@ function parseJsonArray(val: unknown, fallback: string[]): string[] {
   return fallback;
 }
 
+function parseJsonObject(val: unknown): Record<string, string> {
+  if (val && typeof val === 'object' && !Array.isArray(val)) return val as Record<string, string>;
+  if (typeof val === 'string') {
+    try {
+      const parsed = JSON.parse(val);
+      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) return parsed;
+    } catch {
+      return {};
+    }
+  }
+  return {};
+}
+
 export async function fetchPublicProjectsFromDb(): Promise<PublicProject[]> {
   await ensurePublicContentTables();
   const rows = await query<Record<string, unknown>[]>(
@@ -98,40 +130,63 @@ export async function fetchPublicProjectsFromDb(): Promise<PublicProject[]> {
   );
   if (!rows) return DEFAULT_PROJECTS;
 
-  return rows.map((r) => ({
-    id: String(r.id),
-    title: String(r.title),
-    category: String(r.category),
-    location: String(r.location),
-    year: String(r.year),
-    area: String(r.area),
-    solarCapacity: String(r.solar_capacity || ''),
-    energyRating: String(r.energy_rating || ''),
-    image: String(r.image),
-    tagline: String(r.tagline || ''),
-    description: String(r.description || ''),
-    highlights: parseJsonArray(r.highlights, []),
-    status: (r.status as PublicProject['status']) || 'COMPLETED',
-    featured: Boolean(r.featured),
-    contractValue: String(r.contract_value || ''),
-    structuralWarranty: String(r.structural_warranty || ''),
-    leadArchitect: String(r.lead_architect || ''),
-    foundationType: String(r.foundation_type || ''),
-    clientPrivacy: (r.client_privacy as PublicProject['clientPrivacy']) || 'PUBLIC',
-  }));
+  return rows.map((r) => {
+    const cover = String(r.image);
+    const gallery = parseJsonArray(r.images, []);
+    const meta = parseJsonObject(r.extra_meta);
+    return {
+      id: String(r.id),
+      title: String(r.title),
+      category: String(r.category),
+      location: String(r.location),
+      year: String(r.year),
+      area: String(r.area),
+      solarCapacity: String(r.solar_capacity || ''),
+      energyRating: String(r.energy_rating || ''),
+      image: cover,
+      images: gallery.length > 0 ? gallery : [cover],
+      tagline: String(r.tagline || ''),
+      description: String(r.description || ''),
+      highlights: parseJsonArray(r.highlights, []),
+      status: (r.status as PublicProject['status']) || 'COMPLETED',
+      featured: Boolean(r.featured),
+      contractValue: String(r.contract_value || ''),
+      structuralWarranty: String(r.structural_warranty || ''),
+      leadArchitect: String(r.lead_architect || ''),
+      foundationType: String(r.foundation_type || ''),
+      clientPrivacy: (r.client_privacy as PublicProject['clientPrivacy']) || 'PUBLIC',
+      clientName: meta.clientName || '',
+      concreteGrade: meta.concreteGrade || '',
+      targetSector: meta.targetSector || '',
+      durationMonths: meta.durationMonths || '',
+      approvalsObtained: meta.approvalsObtained || '',
+      smartSystems: meta.smartSystems || '',
+    };
+  });
 }
 
 export async function upsertPublicProjectInDb(p: PublicProject): Promise<boolean> {
+  const gallery = p.images && p.images.length > 0 ? p.images : [p.image];
+  const cover = gallery[0] || p.image;
+  const meta = {
+    clientName: p.clientName || '',
+    concreteGrade: p.concreteGrade || '',
+    targetSector: p.targetSector || '',
+    durationMonths: p.durationMonths || '',
+    approvalsObtained: p.approvalsObtained || '',
+    smartSystems: p.smartSystems || '',
+  };
   const res = await query(
     `INSERT INTO public_projects (
       id, title, category, location, year, area, solar_capacity, energy_rating,
-      image, tagline, description, highlights, status, featured,
+      image, images, extra_meta, tagline, description, highlights, status, featured,
       contract_value, structural_warranty, lead_architect, foundation_type, client_privacy
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ON DUPLICATE KEY UPDATE
       title=VALUES(title), category=VALUES(category), location=VALUES(location),
       year=VALUES(year), area=VALUES(area), solar_capacity=VALUES(solar_capacity),
-      energy_rating=VALUES(energy_rating), image=VALUES(image), tagline=VALUES(tagline),
+      energy_rating=VALUES(energy_rating), image=VALUES(image), images=VALUES(images),
+      extra_meta=VALUES(extra_meta), tagline=VALUES(tagline),
       description=VALUES(description), highlights=VALUES(highlights), status=VALUES(status),
       featured=VALUES(featured), contract_value=VALUES(contract_value),
       structural_warranty=VALUES(structural_warranty), lead_architect=VALUES(lead_architect),
@@ -145,7 +200,9 @@ export async function upsertPublicProjectInDb(p: PublicProject): Promise<boolean
       p.area,
       p.solarCapacity || '',
       p.energyRating || '',
-      p.image,
+      cover,
+      JSON.stringify(gallery),
+      JSON.stringify(meta),
       p.tagline || '',
       p.description || '',
       JSON.stringify(p.highlights || []),
@@ -173,30 +230,49 @@ export async function fetchPublicServicesFromDb(): Promise<PublicService[]> {
   );
   if (!rows) return DEFAULT_SERVICES;
 
-  return rows.map((r) => ({
-    id: String(r.id),
-    badge: String(r.badge),
-    title: String(r.title),
-    desc: String(r.description || ''),
-    image: String(r.image),
-    features: parseJsonArray(r.features, []),
-    startingPrice: String(r.starting_price || ''),
-    timeline: String(r.timeline || ''),
-    cidaStandard: String(r.cida_standard || ''),
-    warranty: String(r.warranty || ''),
-    featured: Boolean(r.featured),
-  }));
+  return rows.map((r) => {
+    const cover = String(r.image);
+    const gallery = parseJsonArray(r.images, []);
+    const meta = parseJsonObject(r.extra_meta);
+    return {
+      id: String(r.id),
+      badge: String(r.badge),
+      title: String(r.title),
+      desc: String(r.description || ''),
+      image: cover,
+      images: gallery.length > 0 ? gallery : [cover],
+      features: parseJsonArray(r.features, []),
+      startingPrice: String(r.starting_price || ''),
+      timeline: String(r.timeline || ''),
+      cidaStandard: String(r.cida_standard || ''),
+      warranty: String(r.warranty || ''),
+      featured: Boolean(r.featured),
+      targetSector: meta.targetSector || '',
+      approvalsIncluded: meta.approvalsIncluded || '',
+      boqBasis: meta.boqBasis || '',
+      deliverables: meta.deliverables || '',
+    };
+  });
 }
 
 export async function upsertPublicServiceInDb(s: PublicService, order = 0): Promise<boolean> {
+  const gallery = s.images && s.images.length > 0 ? s.images : [s.image];
+  const cover = gallery[0] || s.image;
+  const meta = {
+    targetSector: s.targetSector || '',
+    approvalsIncluded: s.approvalsIncluded || '',
+    boqBasis: s.boqBasis || '',
+    deliverables: s.deliverables || '',
+  };
   const res = await query(
     `INSERT INTO public_services (
-      id, badge, title, description, image, features,
+      id, badge, title, description, image, images, extra_meta, features,
       starting_price, timeline, cida_standard, warranty, featured, display_order
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ON DUPLICATE KEY UPDATE
       badge=VALUES(badge), title=VALUES(title), description=VALUES(description),
-      image=VALUES(image), features=VALUES(features), starting_price=VALUES(starting_price),
+      image=VALUES(image), images=VALUES(images), extra_meta=VALUES(extra_meta),
+      features=VALUES(features), starting_price=VALUES(starting_price),
       timeline=VALUES(timeline), cida_standard=VALUES(cida_standard),
       warranty=VALUES(warranty), featured=VALUES(featured), display_order=VALUES(display_order)`,
     [
@@ -204,7 +280,9 @@ export async function upsertPublicServiceInDb(s: PublicService, order = 0): Prom
       s.badge,
       s.title,
       s.desc,
-      s.image,
+      cover,
+      JSON.stringify(gallery),
+      JSON.stringify(meta),
       JSON.stringify(s.features || []),
       s.startingPrice || '',
       s.timeline || '',

@@ -264,9 +264,17 @@ export default function InventoryPage() {
               { key: 'quantity', label: 'Quantity', type: 'number', required: true },
               { key: 'unit', label: 'Unit', required: true },
               { key: 'unitCost', label: 'Unit Cost (LKR)', type: 'number', isCurrency: true },
-              { key: 'minThreshold', label: 'Min Threshold', type: 'number', showInTable: false },
-              { key: 'warehouseLocation', label: 'Store Location', showInTable: false },
+              { key: 'minThreshold', label: 'Min Threshold', type: 'number', showInTable: false, optional: true },
+              { key: 'warehouseLocation', label: 'Store / Yard Location', showInTable: false, optional: true },
+              { key: 'qualityStandard', label: 'Quality Standard (SLS/BS/ASTM)', showInTable: false, optional: true },
+              { key: 'millTestCertificateNo', label: 'Mill Test Cert (MTC) #', showInTable: false, optional: true },
+              { key: 'batchNumber', label: 'Batch / Heat Number', showInTable: false, optional: true },
+              { key: 'primarySupplier', label: 'Approved Supplier', showInTable: false, optional: true },
+              { key: 'binRackCode', label: 'Bin / Rack Code', showInTable: false, optional: true },
+              { key: 'reorderLeadDays', label: 'Lead Time (Days)', type: 'number', showInTable: false, optional: true },
+              { key: 'expiryDate', label: 'Shelf-Life / Expiry Date', type: 'date', showInTable: false, optional: true },
               { key: 'status', label: 'Status', type: 'select', options: ['OPTIMAL', 'LOW_STOCK', 'CRITICAL'], isBadge: true },
+              { key: 'images', label: 'Material & MTC Certificate Photos', type: 'images', showInTable: false, optional: true },
             ]}
             onCreate={(d) => addInventoryItem(d as Parameters<typeof addInventoryItem>[0])}
             onUpdate={(id, d) => updateInventoryItem(id, d)}

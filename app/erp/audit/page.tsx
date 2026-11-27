@@ -645,7 +645,11 @@ export default function AuditAndVaultPage() {
               { key: 'module', label: 'Module', required: true },
               { key: 'severity', label: 'Severity', type: 'select', options: ['INFO', 'WARNING', 'CRITICAL'], isBadge: true },
               { key: 'timestamp', label: 'Timestamp' },
-              { key: 'details', label: 'Details', type: 'textarea', showInTable: false },
+              { key: 'companyId', label: 'Company Scope', type: 'select', options: ['CONSOLIDATED', 'COMP_A', 'COMP_B'], showInTable: false, optional: true },
+              { key: 'ipAddress', label: 'Source IP / Device', showInTable: false, optional: true },
+              { key: 'complianceStandard', label: 'Compliance Ref (ISO/CIDA/LKAS)', showInTable: false, optional: true },
+              { key: 'details', label: 'Details', type: 'textarea', showInTable: false, optional: true },
+              { key: 'images', label: 'Audit Evidence Screenshots', type: 'images', showInTable: false, optional: true },
             ]}
           />
         </div>

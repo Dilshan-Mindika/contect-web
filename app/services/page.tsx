@@ -30,6 +30,7 @@ const FAQS = [
 export default function ServicesPage() {
   const [servicesList, setServicesList] = useState<PublicService[]>(DEFAULT_SERVICES);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [activeImageByService, setActiveImageByService] = useState<Record<string, number>>({});
 
   useEffect(() => {
     setServicesList(getPublicServices());
@@ -106,20 +107,38 @@ export default function ServicesPage() {
                 }`}
               >
                 {/* Image Showcase */}
-                <div className="w-full lg:w-1/2 relative h-[320px] sm:h-[420px] rounded-2xl overflow-hidden border border-white/15 shadow-xl group">
-                  <Image
-                    src={service.image}
-                    alt={service.title}
-                    fill
-                    unoptimized
-                    className="object-cover group-hover:scale-105 transition-transform duration-700"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                  <div className="absolute bottom-4 left-4">
-                    <span className="px-3 py-1 rounded-full text-[10px] font-mono font-bold bg-[#FFB800] text-black uppercase">
-                      {service.badge}
-                    </span>
+                <div className="w-full lg:w-1/2 space-y-3">
+                  <div className="relative h-[320px] sm:h-[420px] rounded-2xl overflow-hidden border border-white/15 shadow-xl group">
+                    <Image
+                      src={(service.images?.length ? service.images : [service.image])[activeImageByService[service.id] || 0] || service.image}
+                      alt={service.title}
+                      fill
+                      unoptimized
+                      className="object-cover group-hover:scale-105 transition-transform duration-700"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                    <div className="absolute bottom-4 left-4">
+                      <span className="px-3 py-1 rounded-full text-[10px] font-mono font-bold bg-[#FFB800] text-black uppercase">
+                        {service.badge}
+                      </span>
+                    </div>
                   </div>
+                  {(service.images && service.images.length > 1) && (
+                    <div className="flex items-center gap-2 overflow-x-auto pb-1">
+                      {service.images.map((img, i) => (
+                        <button
+                          key={`${img}-${i}`}
+                          type="button"
+                          onClick={() => setActiveImageByService((prev) => ({ ...prev, [service.id]: i }))}
+                          className={`relative w-20 h-14 rounded-xl overflow-hidden border-2 shrink-0 cursor-pointer transition-all ${
+                            (activeImageByService[service.id] || 0) === i ? 'border-[#FFB800] scale-105' : 'border-white/15 opacity-70 hover:opacity-100'
+                          }`}
+                        >
+                          <Image src={img} alt={`${service.title} ${i + 1}`} fill unoptimized className="object-cover" />
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {/* Content */}

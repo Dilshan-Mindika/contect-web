@@ -457,8 +457,16 @@ export default function QuotationsPage() {
           { key: 'grandTotal', label: 'Grand Total (LKR)', type: 'number', isCurrency: true },
           { key: 'status', label: 'Status', type: 'select', options: ['DRAFT', 'ISSUED', 'ACCEPTED', 'REVISED', 'DECLINED'], isBadge: true },
           { key: 'validUntil', label: 'Valid Until', type: 'date' },
-          { key: 'clientEmail', label: 'Client Email', showInTable: false },
-          { key: 'termsAndConditions', label: 'Terms', type: 'textarea', showInTable: false },
+          { key: 'clientEmail', label: 'Client Email', showInTable: false, optional: true },
+          { key: 'clientPhone', label: 'Client Phone', showInTable: false, optional: true },
+          { key: 'cidaSbdForm', label: 'CIDA SBD Standard', type: 'select', options: ['CIDA SBD-01', 'CIDA SBD-02', 'CIDA SBD-03', 'CIDA SBD-04', 'FIDIC Red Book'], showInTable: false, optional: true },
+          { key: 'mobilizationAdvancePct', label: 'Mobilization Advance (%)', type: 'number', showInTable: false, optional: true },
+          { key: 'retentionPct', label: 'Retention (%)', type: 'number', showInTable: false, optional: true },
+          { key: 'bidBondRef', label: 'Bid Bond / Guarantee Ref', showInTable: false, optional: true },
+          { key: 'completionMonths', label: 'Est. Duration (Months)', type: 'number', showInTable: false, optional: true },
+          { key: 'vatAndSsclApplicable', label: 'Include 18% VAT & 2.5% SSCL', type: 'checkbox', showInTable: false, optional: true },
+          { key: 'termsAndConditions', label: 'Terms & Escalation Clauses', type: 'textarea', showInTable: false, optional: true },
+          { key: 'images', label: 'Site Survey & BOQ Reference Drawings', type: 'images', showInTable: false, optional: true },
         ]}
         renderRowActions={(item) => {
           const q = item as unknown as (typeof quotations)[number];

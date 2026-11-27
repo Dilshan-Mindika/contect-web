@@ -223,6 +223,15 @@ export default function HRPage() {
               { key: 'department', label: 'Department', isBadge: true },
               { key: 'email', label: 'Email' },
               { key: 'salary', label: 'Monthly Salary (LKR)', type: 'number', isCurrency: true },
+              { key: 'nicNumber', label: 'NIC Number', showInTable: false, optional: true },
+              { key: 'phone', label: 'Mobile Phone', showInTable: false, optional: true },
+              { key: 'epfNumber', label: 'EPF Member Number', showInTable: false, optional: true },
+              { key: 'tradeCertification', label: 'CIDA / IESL / Chartered Reg #', showInTable: false, optional: true },
+              { key: 'joinDate', label: 'Date Joined', type: 'date', showInTable: false, optional: true },
+              { key: 'fixedAllowancesLkr', label: 'Fixed Allowances (LKR)', type: 'number', isCurrency: true, showInTable: false, optional: true },
+              { key: 'employmentType', label: 'Employment Type', type: 'select', options: ['PERMANENT', 'CONTRACT', 'CONSULTANT'], showInTable: false, optional: true },
+              { key: 'bankDetails', label: 'Salary Bank & Account #', showInTable: false, optional: true },
+              { key: 'images', label: 'Staff Photo, NIC & Engineering Certs', type: 'images', showInTable: false, optional: true },
             ]}
             renderRowActions={(item) => (
               <button

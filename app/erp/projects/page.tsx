@@ -6,6 +6,7 @@ import { TaskStatus, ProjectPhase } from '@/lib/erp/types';
 import { formatLKR, formatLKRFull } from '@/lib/erp/currency';
 import ModuleAnalytics from '@/components/erp/ModuleAnalytics';
 import DataViewToolbar, { ViewMode } from '@/components/erp/DataViewToolbar';
+import MultiImageField from '@/components/erp/MultiImageField';
 import {
   HardHat,
   Plus,
@@ -84,6 +85,7 @@ export default function ProjectsPage() {
   const [gpsCoordinates, setGpsCoordinates] = useState('');
   const [targetCompletion, setTargetCompletion] = useState('2028-06-30');
   const [notes, setNotes] = useState('');
+  const [images, setImages] = useState<string[]>([]);
 
   const activeProject = filteredProjects.find((p) => p.id === selectedProjectId) || filteredProjects[0] || projects[0];
 
@@ -867,6 +869,12 @@ export default function ProjectsPage() {
                     className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white"
                   />
                 </div>
+
+                <MultiImageField
+                  label="Site Progress, Blueprints & Approval Photos (Optional)"
+                  images={images}
+                  onChange={setImages}
+                />
               </div>
 
               <div className="pt-3 border-t border-white/10 flex items-center justify-end gap-2">

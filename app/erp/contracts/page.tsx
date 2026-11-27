@@ -594,7 +594,15 @@ export default function GovernmentContractsPage() {
             { key: 'projectName', label: 'Project Name', required: true },
             { key: 'contractNumber', label: 'Contract #', required: true },
             { key: 'grandTotalCertifiedPayableLkr', label: 'Certified Due (LKR)', type: 'number', isCurrency: true },
+            { key: 'employerName', label: 'Employer / Authority', showInTable: false, optional: true },
+            { key: 'engineersRep', label: "Engineer's Representative", showInTable: false, optional: true },
+            { key: 'cidaForm', label: 'CIDA / FIDIC Form', type: 'select', options: ['CIDA SBD-02', 'CIDA SBD-01', 'CIDA SBD-04', 'FIDIC Red Book', 'FIDIC Design-Build'], showInTable: false, optional: true },
+            { key: 'performanceBondRef', label: 'Performance Bond / Bank Guarantee #', showInTable: false, optional: true },
+            { key: 'advanceGuaranteeRef', label: 'Advance Payment Guarantee #', showInTable: false, optional: true },
+            { key: 'eotDaysGranted', label: 'EOT Granted (Days)', type: 'number', showInTable: false, optional: true },
+            { key: 'defectLiabilityMonths', label: 'Defect Liability Period (Months)', type: 'number', showInTable: false, optional: true },
             { key: 'status', label: 'Status', type: 'select', options: ['DRAFT', 'CERTIFIED_BY_CONSULTANT', 'PAID'], isBadge: true },
+            { key: 'images', label: 'Signed IPC & Bond Document Photos', type: 'images', showInTable: false, optional: true },
           ]}
         />
       )}

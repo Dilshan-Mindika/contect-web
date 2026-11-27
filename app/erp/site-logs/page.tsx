@@ -410,9 +410,17 @@ export default function SiteLogsPage() {
           { key: 'weatherSummary', label: 'Weather' },
           { key: 'workforceCount', label: 'Workforce', type: 'number' },
           { key: 'concretePouredM3', label: 'Concrete (m³)', type: 'number' },
-          { key: 'slumpTestMm', label: 'Slump (mm)', type: 'number', showInTable: false },
+          { key: 'slumpTestMm', label: 'Slump (mm)', type: 'number', showInTable: false, optional: true },
+          { key: 'concreteGrade', label: 'Concrete Grade', type: 'select', options: ['G20', 'G25', 'G30', 'G35', 'G40', 'G45'], showInTable: false, optional: true },
+          { key: 'ambientTempC', label: 'Ambient Temp (°C)', type: 'number', showInTable: false, optional: true },
+          { key: 'weatherDelayHrs', label: 'Weather Delay (Hrs)', type: 'number', showInTable: false, optional: true },
+          { key: 'shiftType', label: 'Shift Type', type: 'select', options: ['DAY_SHIFT', 'NIGHT_SHIFT', 'EXTENDED_POUR'], showInTable: false, optional: true },
+          { key: 'toolboxTalkTopic', label: 'Morning HSE Toolbox Talk', showInTable: false, optional: true },
+          { key: 'equipmentOnSite', label: 'Active Plant & Machinery', showInTable: false, optional: true },
+          { key: 'consultantVisitorNotes', label: 'Consultant / RE Inspection Notes', showInTable: false, optional: true },
           { key: 'oshaStatus', label: 'OSHA Status', type: 'select', options: ['COMPLIANT', 'OBSERVATION', 'BREACH'], isBadge: true },
-          { key: 'supervisorNotes', label: 'Supervisor Notes', type: 'textarea', showInTable: false },
+          { key: 'supervisorNotes', label: 'Supervisor Notes', type: 'textarea', showInTable: false, optional: true },
+          { key: 'images', label: 'Daily Progress & Cube Test Photos', type: 'images', showInTable: false, optional: true },
         ]}
         onCreate={(d) => addSiteDailyLog({ ...(d as Parameters<typeof addSiteDailyLog>[0]), projectId: projects[0]?.id || 'prj-01', ambientTempC: 30, skilledWorkersCount: 20, unskilledWorkersCount: 10, toolboxTalkTopic: 'Daily Safety', safetyIncidents: 0, supervisorName: user?.name || 'Site Engineer', cubeTests: [] })}
         onUpdate={(id, d) => updateSiteLog(id, d)}

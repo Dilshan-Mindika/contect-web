@@ -184,10 +184,15 @@ export default function HealthSafetyPage() {
               { key: 'inspectorName', label: 'Inspector', required: true },
               { key: 'inspectionDate', label: 'Date', type: 'date' },
               { key: 'scorePct', label: 'Score (%)', type: 'number' },
-              { key: 'scaffoldingStatus', label: 'Scaffolding', showInTable: false },
-              { key: 'ppeCompliancePct', label: 'PPE %', type: 'number', showInTable: false },
+              { key: 'scaffoldingStatus', label: 'Scaffolding Green-Tag Status', type: 'select', options: ['GREEN_TAG_VERIFIED', 'INSPECTION_DUE', 'RED_TAG_LOCKED'], showInTable: false, optional: true },
+              { key: 'electricalEarthingStatus', label: 'Electrical Earthing & RCD', showInTable: false, optional: true },
+              { key: 'excavationShoringStatus', label: 'Excavation & Shoring Stability', showInTable: false, optional: true },
+              { key: 'ppeCompliancePct', label: 'PPE Compliance (%)', type: 'number', showInTable: false, optional: true },
+              { key: 'permitToWorkRef', label: 'Permit-to-Work (PTW) Ref #', showInTable: false, optional: true },
+              { key: 'correctiveDueDate', label: 'Corrective Action Deadline', type: 'date', showInTable: false, optional: true },
               { key: 'status', label: 'Status', type: 'select', options: ['PASS', 'CONDITIONAL', 'FAIL'], isBadge: true },
-              { key: 'findings', label: 'Findings', type: 'textarea', showInTable: false },
+              { key: 'findings', label: 'Findings & Action Plan', type: 'textarea', showInTable: false, optional: true },
+              { key: 'images', label: 'HSE Audit & Green-Tag Photos', type: 'images', showInTable: false, optional: true },
             ]}
           />
         </div>

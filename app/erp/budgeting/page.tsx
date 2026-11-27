@@ -265,6 +265,11 @@ export default function ProjectBudgetingCostControlPage() {
           { key: 'costCode', label: 'Cost Code', isBadge: true },
           { key: 'baselineBudgetLkr', label: 'Baseline (LKR)', type: 'number', isCurrency: true },
           { key: 'actualSpentLkr', label: 'Actual Spent (LKR)', type: 'number', isCurrency: true },
+          { key: 'committedPoLkr', label: 'Committed POs (LKR)', type: 'number', isCurrency: true, showInTable: false, optional: true },
+          { key: 'forecastToCompleteLkr', label: 'Forecast to Complete (ETC)', type: 'number', isCurrency: true, showInTable: false, optional: true },
+          { key: 'costEngineer', label: 'Responsible Cost Engineer / QS', showInTable: false, optional: true },
+          { key: 'varianceReason', label: 'Variance & Escalation Justification', type: 'textarea', showInTable: false, optional: true },
+          { key: 'images', label: 'BOQ & Cost Variance Supporting Scans', type: 'images', showInTable: false, optional: true },
         ]}
       />
     </div>

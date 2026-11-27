@@ -363,7 +363,16 @@ export default function FinancePage() {
               { key: 'projectName', label: 'Project', required: true },
               { key: 'total', label: 'Total (LKR)', type: 'number', isCurrency: true, required: true },
               { key: 'dueDate', label: 'Due Date', type: 'date' },
+              { key: 'ipcNumber', label: 'IPC / RA Bill Ref #', showInTable: false, optional: true },
+              { key: 'contractRef', label: 'CIDA / FIDIC Contract #', showInTable: false, optional: true },
+              { key: 'retentionDeducted', label: '5% Retention Withheld (LKR)', type: 'number', isCurrency: true, showInTable: false, optional: true },
+              { key: 'mobilizationRecoveryLkr', label: 'Mobilization Advance Recovery (LKR)', type: 'number', isCurrency: true, showInTable: false, optional: true },
+              { key: 'ssclTax', label: '2.5% SSCL Levy (LKR)', type: 'number', isCurrency: true, showInTable: false, optional: true },
+              { key: 'tax', label: '18% VAT (LKR)', type: 'number', isCurrency: true, showInTable: false, optional: true },
+              { key: 'paymentMethod', label: 'Settlement Method', type: 'select', options: ['Bank Transfer / RTGS', 'Company Cheque', 'Letter of Credit', 'Treasury Voucher'], showInTable: false, optional: true },
+              { key: 'bankReference', label: 'Bank Remittance / Cheque Ref #', showInTable: false, optional: true },
               { key: 'status', label: 'Status', type: 'select', options: ['PENDING', 'PAID', 'OVERDUE'], isBadge: true },
+              { key: 'images', label: 'IPC Scans & Payment Advice Photos', type: 'images', showInTable: false, optional: true },
             ]}
             onCreate={(d) => addInvoice({ clientName: String(d.clientName), projectName: String(d.projectName), issueDate: new Date().toISOString().split('T')[0], dueDate: String(d.dueDate || new Date().toISOString().split('T')[0]), items: [], subtotal: Number(d.total || 0), tax: 0, total: Number(d.total || 0), status: (d.status as InvoiceStatus) || 'PENDING' })}
             onUpdate={(id, d) => updateInvoice(id, d)}

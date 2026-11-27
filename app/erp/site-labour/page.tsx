@@ -351,8 +351,15 @@ export default function SiteLabourManagementPage() {
               { key: 'trade', label: 'Trade / Skill', isBadge: true, required: true },
               { key: 'assignedProjectCode', label: 'Assigned Site' },
               { key: 'dailyWageRateLkr', label: 'Daily Wage (LKR)', type: 'number', isCurrency: true },
-              { key: 'otHourlyRateLkr', label: 'OT Rate (LKR/hr)', type: 'number', isCurrency: true, showInTable: false },
+              { key: 'otHourlyRateLkr', label: 'OT Rate (LKR/hr)', type: 'number', isCurrency: true, showInTable: false, optional: true },
               { key: 'phone', label: 'Contact Phone' },
+              { key: 'nicNumber', label: 'NIC / Passport Number', showInTable: false, optional: true },
+              { key: 'skillLevel', label: 'Skill Tier', type: 'select', options: ['Master Craftsman', 'Skilled', 'Semi-Skilled', 'General Helper'], showInTable: false, optional: true },
+              { key: 'ppeIssued', label: 'PPE Kit Issued (Helmet/Boots/Vest)', showInTable: false, optional: true },
+              { key: 'safetyInductionDate', label: 'HSE Induction Date', type: 'date', showInTable: false, optional: true },
+              { key: 'emergencyContact', label: 'Emergency Contact & Blood Group', showInTable: false, optional: true },
+              { key: 'bankDetails', label: 'Bank Account / Mobile Wallet', showInTable: false, optional: true },
+              { key: 'images', label: 'Worker ID, NIC & Trade Cert Photos', type: 'images', showInTable: false, optional: true },
             ]}
           />
         </div>

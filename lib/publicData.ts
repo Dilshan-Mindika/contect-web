@@ -8,10 +8,11 @@ export interface PublicProject {
   solarCapacity: string;
   energyRating: string;
   image: string;
+  images?: string[];
   tagline: string;
   description: string;
   highlights: string[];
-  // Advanced & Optional Fields
+  // Advanced & Optional Construction Fields
   status?: 'COMPLETED' | 'UNDER_CONSTRUCTION' | 'DESIGN_PHASE';
   featured?: boolean;
   contractValue?: string;
@@ -19,6 +20,12 @@ export interface PublicProject {
   leadArchitect?: string;
   foundationType?: string;
   clientPrivacy?: 'CONFIDENTIAL' | 'PUBLIC';
+  clientName?: string;
+  concreteGrade?: string;
+  targetSector?: string;
+  durationMonths?: string;
+  approvalsObtained?: string;
+  smartSystems?: string;
 }
 
 export interface PublicService {
@@ -27,13 +34,18 @@ export interface PublicService {
   title: string;
   desc: string;
   image: string;
+  images?: string[];
   features: string[];
-  // Advanced & Optional Fields
+  // Advanced & Optional Construction Fields
   startingPrice?: string;
   timeline?: string;
   cidaStandard?: string;
   warranty?: string;
   featured?: boolean;
+  targetSector?: string;
+  approvalsIncluded?: string;
+  boqBasis?: string;
+  deliverables?: string;
 }
 
 export const DEFAULT_PROJECTS: PublicProject[] = [

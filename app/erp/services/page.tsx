@@ -9,6 +9,7 @@ import {
 } from '@/lib/publicData';
 import ModuleAnalytics from '@/components/erp/ModuleAnalytics';
 import DataViewToolbar, { ViewMode } from '@/components/erp/DataViewToolbar';
+import MultiImageField from '@/components/erp/MultiImageField';
 import {
   Layers,
   Plus,
@@ -42,6 +43,7 @@ export default function WebsiteServicesManagerPage() {
     title: '',
     desc: '',
     image: '/images/hero-main.jpg',
+    images: ['/images/hero-main.jpg'],
     features: ['Professional consultation', 'Council approvals', 'Guaranteed fixed BOQ'],
     startingPrice: 'From LKR 4,500/sqft',
     timeline: '3 - 8 Months',
@@ -99,6 +101,7 @@ export default function WebsiteServicesManagerPage() {
       title: '',
       desc: '',
       image: '/images/hero-main.jpg',
+      images: ['/images/hero-main.jpg'],
       features: ['Professional consultation', 'Council approvals', 'Guaranteed fixed BOQ', '1-year free maintenance'],
       startingPrice: 'From LKR 4,500/sqft',
       timeline: '3 - 8 Months',
@@ -113,6 +116,7 @@ export default function WebsiteServicesManagerPage() {
     setEditingService(s);
     setServiceForm({
       ...s,
+      images: s.images && s.images.length > 0 ? s.images : s.image ? [s.image] : [],
       features: s.features?.length ? s.features : ['Chartered architectural design'],
     });
     setShowModal(true);
@@ -126,18 +130,26 @@ export default function WebsiteServicesManagerPage() {
       ? publicServices.findIndex((s) => s.id === editingService.id)
       : publicServices.length;
 
+    const gallery = serviceForm.images && serviceForm.images.length > 0
+      ? serviceForm.images
+      : [serviceForm.image || '/images/hero-main.jpg'];
     const item: PublicService = {
       id: editingService ? editingService.id : `serv-${Date.now()}`,
       badge: serviceForm.badge || `STAGE 0${publicServices.length + 1}`,
       title: serviceForm.title,
       desc: serviceForm.desc || 'Turnkey service delivered by CONTEC Design & Build.',
-      image: serviceForm.image || '/images/hero-main.jpg',
+      image: gallery[0],
+      images: gallery,
       features: cleanFeatures.length ? cleanFeatures : ['Certified engineering'],
       startingPrice: serviceForm.startingPrice || '',
       timeline: serviceForm.timeline || '',
       cidaStandard: serviceForm.cidaStandard || 'CIDA CS-2 / SLS 107',
       warranty: serviceForm.warranty || '20-Year Structural Guarantee',
       featured: serviceForm.featured ?? true,
+      targetSector: serviceForm.targetSector || '',
+      approvalsIncluded: serviceForm.approvalsIncluded || '',
+      boqBasis: serviceForm.boqBasis || '',
+      deliverables: serviceForm.deliverables || '',
     };
 
     const next = editingService
@@ -431,6 +443,15 @@ export default function WebsiteServicesManagerPage() {
               <button onClick={() => setViewingService(null)} className="p-1 text-zinc-400 hover:text-white cursor-pointer"><X className="w-5 h-5" /></button>
             </div>
             <p className="text-xs text-zinc-300 leading-relaxed">{viewingService.desc}</p>
+            {(viewingService.images?.length ? viewingService.images : [viewingService.image]).length > 0 && (
+              <div className="grid grid-cols-3 gap-2">
+                {(viewingService.images?.length ? viewingService.images : [viewingService.image]).map((img, i) => (
+                  <div key={`${img}-${i}`} className="relative h-20 rounded-xl overflow-hidden border border-white/10">
+                    <Image src={img} alt={`${viewingService.title} ${i + 1}`} fill className="object-cover" unoptimized />
+                  </div>
+                ))}
+              </div>
+            )}
             <div className="space-y-1.5">
               {viewingService.features.map((f, i) => (
                 <div key={i} className="text-xs text-zinc-200 flex items-center gap-2">
@@ -540,21 +561,63 @@ export default function WebsiteServicesManagerPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
-                <div className="sm:col-span-2">
-                  <label className="block font-semibold text-zinc-300 mb-1">Image URL *</label>
-                  <input
-                    type="text"
-                    required
-                    value={serviceForm.image || ''}
-                    onChange={(e) => setServiceForm({ ...serviceForm, image: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/15 text-white focus:outline-none focus:border-emerald-400"
-                  />
+              <MultiImageField
+                label="Service Photo Gallery (Upload Multiple Images or Add URLs)"
+                images={serviceForm.images && serviceForm.images.length > 0 ? serviceForm.images : serviceForm.image ? [serviceForm.image] : []}
+                onChange={(imgs) =>
+                  setServiceForm({
+                    ...serviceForm,
+                    images: imgs,
+                    image: imgs[0] || '/images/hero-main.jpg',
+                  })
+                }
+              />
+
+              <div className="p-3.5 rounded-2xl bg-white/[0.02] border border-white/10 space-y-3">
+                <div className="text-[11px] font-bold text-emerald-300 uppercase tracking-wider">
+                  Optional Construction Scope &amp; Regulatory Metadata
                 </div>
-                <div className="relative h-20 w-full rounded-xl bg-zinc-900 border border-white/15 overflow-hidden">
-                  {serviceForm.image && (
-                    <Image src={serviceForm.image} alt="Preview" fill className="object-cover" unoptimized />
-                  )}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block font-semibold text-zinc-300 mb-1">Target Sector (Optional)</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Luxury Residential, Commercial, Civil"
+                      value={serviceForm.targetSector || ''}
+                      onChange={(e) => setServiceForm({ ...serviceForm, targetSector: e.target.value })}
+                      className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-semibold text-zinc-300 mb-1">BOQ Pricing Basis (Optional)</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. CESMM4 / SLS 573 Fixed-Price BOQ"
+                      value={serviceForm.boqBasis || ''}
+                      onChange={(e) => setServiceForm({ ...serviceForm, boqBasis: e.target.value })}
+                      className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-semibold text-zinc-300 mb-1">Council / Statutory Approvals (Optional)</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. UDA, Municipal Council, CEA, NBRO"
+                      value={serviceForm.approvalsIncluded || ''}
+                      onChange={(e) => setServiceForm({ ...serviceForm, approvalsIncluded: e.target.value })}
+                      className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-semibold text-zinc-300 mb-1">Key Technical Deliverables (Optional)</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. BIM 3D, Structural Drawings, As-Built"
+                      value={serviceForm.deliverables || ''}
+                      onChange={(e) => setServiceForm({ ...serviceForm, deliverables: e.target.value })}
+                      className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white"
+                    />
+                  </div>
                 </div>
               </div>
 

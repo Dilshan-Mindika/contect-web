@@ -235,7 +235,15 @@ export default function ProcurementPage() {
               { key: 'projectCode', label: 'Project Code', required: true },
               { key: 'totalAmount', label: 'Total (LKR)', type: 'number', isCurrency: true },
               { key: 'date', label: 'Order Date', type: 'date' },
+              { key: 'prReference', label: 'Site PR Reference', showInTable: false, optional: true },
+              { key: 'deliverySite', label: 'Delivery Site / Store', showInTable: false, optional: true },
+              { key: 'expectedDeliveryDate', label: 'Expected Delivery Date', type: 'date', showInTable: false, optional: true },
+              { key: 'paymentTerms', label: 'Payment Terms', type: 'select', options: ['30 Days Credit', 'COD / On Delivery', '30% Advance + Balance', 'Letter of Credit'], showInTable: false, optional: true },
+              { key: 'approvedBy', label: 'Authorized By', showInTable: false, optional: true },
+              { key: 'vatIncluded', label: '18% VAT & 2.5% SSCL Included', type: 'checkbox', showInTable: false, optional: true },
+              { key: 'remarks', label: 'Procurement & Delivery Notes', type: 'textarea', showInTable: false, optional: true },
               { key: 'status', label: 'Status', type: 'select', options: ['DRAFT', 'ORDERED', 'DELIVERED', 'FULFILLED', 'CANCELLED'], isBadge: true },
+              { key: 'images', label: 'Supplier Quote & Delivery Note Photos', type: 'images', showInTable: false, optional: true },
             ]}
             renderRowActions={(item) => {
               const id = String(item.id || '');
