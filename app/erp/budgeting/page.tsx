@@ -249,7 +249,7 @@ export default function ProjectBudgetingCostControlPage() {
       </div>
 
       <UniversalRecordManager
-        title="Budget Baselines Manager (Create, View, Edit, Delete & View Modes)"
+        title="Project Budgets"
         defaultViewMode="DETAILED"
         items={budgetBaselines as unknown as Record<string, unknown>[]}
         createLabel="New Budget Line"

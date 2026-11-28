@@ -580,7 +580,7 @@ export default function GovernmentContractsPage() {
 
       {activeTab === 'IPC_REGISTRY' && (
         <UniversalRecordManager
-          title="CIDA IPC Certificates Directory (Create, View, Edit, Delete & View Modes)"
+          title="Payment Certificates"
           defaultViewMode="DETAILED"
           items={cidaIpcs as unknown as Record<string, unknown>[]}
           createLabel="New IPC Certificate"

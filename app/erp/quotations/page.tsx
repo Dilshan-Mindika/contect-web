@@ -480,7 +480,7 @@ export default function QuotationsPage() {
       )}
 
       <UniversalRecordManager
-        title="Quotations & Fixed BOQ Registry (Create, View, Edit, Delete & View Modes)"
+        title="Quotations"
         defaultViewMode="DETAILED"
         items={quotations as unknown as Record<string, unknown>[]}
         createLabel="New Quotation"

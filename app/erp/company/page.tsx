@@ -517,7 +517,7 @@ export default function CompanyAdministrationPage() {
       )}
 
       <UniversalRecordManager
-        title="Operating Divisions & Legal Entities (Create, View, Edit, Delete & View Modes)"
+        title="Company Divisions"
         items={companies as unknown as Record<string, unknown>[]}
         createLabel="Add Division"
         searchPlaceholder="Search divisions by name, CIDA grade, TIN..."

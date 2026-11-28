@@ -54,7 +54,7 @@ export default function ModuleAnalytics({
   title,
   stats,
   chartTitle = 'Performance & Distribution Graph',
-  chartSubtitle = 'Live telemetry from database records',
+  chartSubtitle = 'Updated from your live records',
   primarySeriesLabel = 'Primary',
   secondarySeriesLabel = 'Target / Cost',
   chartData = [],
@@ -120,7 +120,7 @@ export default function ModuleAnalytics({
                   }`}
                 >
                   <LayoutGrid className="w-3 h-3" />
-                  <span>Minimal</span>
+                  <span>Simple</span>
                 </button>
                 <button
                   type="button"
@@ -132,7 +132,7 @@ export default function ModuleAnalytics({
                   }`}
                 >
                   <SlidersHorizontal className="w-3 h-3" />
-                  <span>Advanced</span>
+                  <span>Charts &amp; Details</span>
                 </button>
               </div>
             )}

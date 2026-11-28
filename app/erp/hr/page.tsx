@@ -223,7 +223,7 @@ export default function HRPage() {
           </div>
 
           <UniversalRecordManager
-            title="Team & Staff Directory (Create, View, Edit, Delete & View Modes)"
+            title="Staff Directory"
             defaultViewMode="DETAILED"
             items={(selectedDept === 'ALL' ? employees : employees.filter((e) => e.department === selectedDept)) as unknown as Record<string, unknown>[]}
             createLabel="Add Staff Member"

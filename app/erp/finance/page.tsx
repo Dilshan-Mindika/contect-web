@@ -213,7 +213,7 @@ export default function FinancePage() {
 
       {/* Stat Boxes, Graph View & CSV/Print Reports */}
       <ModuleAnalytics
-        title="Financial Telemetry & Reports"
+        title="Financial Overview"
         stats={[
           {
             label: 'Total Certified Invoiced',
@@ -350,7 +350,7 @@ export default function FinancePage() {
           </div>
 
           <UniversalRecordManager
-            title="Invoices & IPC Registry (Create, View, Edit, Delete & View Modes)"
+            title="Invoices"
             defaultViewMode="DETAILED"
             items={filteredInvoices as unknown as Record<string, unknown>[]}
             createLabel="New Invoice"
@@ -480,7 +480,7 @@ export default function FinancePage() {
       {financeTab === 'CASHBOOK' && (
         <div className="space-y-4">
           <UniversalRecordManager
-            title="Cash & Bank Books Ledger (Create, View, Edit, Delete & View Modes)"
+            title="Cash & Bank Book"
             defaultViewMode="DETAILED"
             items={filteredCashBook as unknown as Record<string, unknown>[]}
             createLabel="Record Cashbook Entry"

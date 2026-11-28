@@ -29,11 +29,19 @@ import {
   Trash2,
 } from 'lucide-react';
 
+const formatReadableLabel = (val?: string) => {
+  if (!val) return '';
+  return val
+    .split('_')
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(' ');
+};
+
 const KANBAN_COLS: { key: TaskStatus; label: string; color: string }[] = [
-  { key: 'BACKLOG', label: 'Engineering Backlog', color: 'border-zinc-500/40 text-zinc-300' },
-  { key: 'IN_PROGRESS', label: 'Field Execution', color: 'border-blue-500/40 text-blue-300' },
-  { key: 'REVIEW', label: 'BIM & QA Inspection', color: 'border-amber-500/40 text-amber-300' },
-  { key: 'COMPLETED', label: 'Commissioned', color: 'border-emerald-500/40 text-emerald-300' },
+  { key: 'BACKLOG', label: 'Planned Tasks', color: 'border-zinc-500/40 text-zinc-300' },
+  { key: 'IN_PROGRESS', label: 'In Progress', color: 'border-blue-500/40 text-blue-300' },
+  { key: 'REVIEW', label: 'Quality Check', color: 'border-amber-500/40 text-amber-300' },
+  { key: 'COMPLETED', label: 'Completed', color: 'border-emerald-500/40 text-emerald-300' },
 ];
 
 export default function ProjectsPage() {
@@ -173,22 +181,22 @@ export default function ProjectsPage() {
             Construction Sites & Projects
           </h1>
           <p className="text-xs sm:text-sm text-zinc-400 mt-0.5">
-            Monitor contract execution, approved variations, EVM cost telemetry, and milestones for {activeCompany === 'CONSOLIDATED' ? 'All Companies' : currentComp?.tradeName}.
+            Track project progress, budgets, schedules, and site teams for {activeCompany === 'CONSOLIDATED' ? 'All Companies' : currentComp?.tradeName}.
           </p>
         </div>
 
         <button
           onClick={() => setShowNewModal(true)}
-          className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#0038B8] to-[#1D4ED8] hover:from-[#1D4ED8] hover:to-[#2563EB] text-white text-xs font-bold shadow-lg shadow-blue-900/40 border border-blue-400/40 flex items-center gap-2 self-start sm:self-auto transition-all"
+          className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#0038B8] to-[#1D4ED8] hover:from-[#1D4ED8] hover:to-[#2563EB] text-white text-xs font-bold shadow-lg shadow-blue-900/40 border border-blue-400/40 flex items-center gap-2 self-start sm:self-auto transition-all cursor-pointer"
         >
           <Plus className="w-4 h-4 text-[#FFB800]" />
-          <span>Register New Mega-Project</span>
+          <span>New Project</span>
         </button>
       </div>
 
       {/* Stat Boxes, Graph View & CSV/Print Reports */}
       <ModuleAnalytics
-        title="Construction Portfolio Telemetry"
+        title="Projects Overview"
         stats={[
           {
             label: 'Total Projects',
@@ -330,9 +338,9 @@ export default function ProjectsPage() {
                 />
               </div>
 
-              <div className="flex items-center justify-between text-[10px] text-zinc-400 mt-2 font-mono">
-                <span>Phase: {p.phase}</span>
-                <span className="text-white font-bold">{formatLKR(p.budget, true)}</span>
+              <div className="flex items-center justify-between text-[11px] text-zinc-400 mt-2">
+                <span>{formatReadableLabel(p.phase)}</span>
+                <span className="text-white font-semibold">{formatLKR(p.budget, true)}</span>
               </div>
 
               <div className="flex items-center justify-between gap-1 pt-2.5 mt-2.5 border-t border-white/10">
@@ -354,21 +362,17 @@ export default function ProjectsPage() {
           {/* Top Project Banner */}
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-white/10">
             <div>
-              <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex items-center gap-2.5 flex-wrap">
                 <h2 className="text-xl font-bold text-white">{activeProject.name}</h2>
-                <span className="text-xs font-mono px-2 py-0.5 rounded bg-[#FFB800]/20 text-[#FFB800] border border-[#FFB800]/30 font-bold">
-                  Phase: {activeProject.phase}
-                </span>
-                {activeProject.cidaClassification && (
-                  <span className="text-xs font-mono px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30">
-                    {activeProject.cidaClassification}
-                  </span>
-                )}
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">
-                  {activeProject.category || 'GOVERNMENT'}
+                <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#FFB800]/15 text-[#FFB800] border border-[#FFB800]/30 font-semibold">
+                  {formatReadableLabel(activeProject.phase)}
                 </span>
               </div>
               <div className="flex items-center gap-4 text-xs text-zinc-400 mt-2 flex-wrap">
+                <span className="text-zinc-300 font-medium">
+                  {formatReadableLabel(activeProject.category || 'GOVERNMENT')}
+                  {activeProject.cidaClassification ? ` • ${activeProject.cidaClassification}` : ''}
+                </span>
                 <span className="flex items-center gap-1">
                   <MapPin className="w-3.5 h-3.5 text-blue-400" />
                   {activeProject.location}
@@ -379,31 +383,31 @@ export default function ProjectsPage() {
                 </span>
                 <span className="flex items-center gap-1">
                   <Calendar className="w-3.5 h-3.5 text-purple-400" />
-                  Target Handover: {activeProject.targetCompletion}
+                  Handover: {activeProject.targetCompletion}
                 </span>
               </div>
             </div>
 
-            {/* EVM & Financial Execution in LKR */}
+            {/* Budget & Schedule Health in LKR */}
             <div className="flex items-center gap-6 text-right">
               <div>
-                <span className="text-xs text-zinc-400">Budget Executed</span>
-                <div className="text-lg font-extrabold text-white font-mono">
+                <span className="text-xs text-zinc-400">Budget Used</span>
+                <div className="text-lg font-extrabold text-white">
                   {formatLKR(activeProject.spent, true)} / {formatLKR(activeProject.budget, true)}
                 </div>
-                <div className="text-[11px] text-emerald-400 font-mono">
-                  {Math.round((activeProject.spent / activeProject.budget) * 100)}% Financial Burn
+                <div className="text-[11px] text-emerald-400 font-medium">
+                  {Math.round((activeProject.spent / activeProject.budget) * 100)}% Spent
                 </div>
               </div>
 
               {activeProject.cpi && (
                 <div className="border-l border-white/10 pl-4 hidden sm:block">
-                  <span className="text-xs text-zinc-400">EVM Metrics</span>
-                  <div className="text-xs font-mono font-bold text-blue-300">
-                    CPI: {activeProject.cpi.toFixed(2)} • SPI: {(activeProject.spi || 1.0).toFixed(2)}
+                  <span className="text-xs text-zinc-400">Budget &amp; Schedule</span>
+                  <div className="text-xs font-bold text-blue-300">
+                    {activeProject.cpi >= 1 ? 'On Budget' : 'Over Budget'} • {(activeProject.spi || 1.0) >= 1 ? 'On Time' : 'Behind'}
                   </div>
-                  <div className="text-[10px] text-zinc-400 font-mono">
-                    LAD: {formatLKR(activeProject.ladAmountPerDayLkr || 250000)}/day
+                  <div className="text-[10px] text-zinc-400">
+                    Delay penalty: {formatLKR(activeProject.ladAmountPerDayLkr || 250000)}/day
                   </div>
                 </div>
               )}
@@ -411,12 +415,12 @@ export default function ProjectsPage() {
           </div>
 
           {/* Project View Tabs */}
-          <div className="flex items-center gap-2 border-b border-white/10 pb-2">
+          <div className="flex items-center gap-2 border-b border-white/10 pb-2 overflow-x-auto">
             {[
-              { key: 'KANBAN', label: 'Field Execution Kanban', icon: Layers },
-              { key: 'COCKPIT_360', label: 'Project 360° Cost & Contract Cockpit', icon: Activity },
-              { key: 'TEAM', label: 'Project Team & Key Roles', icon: User },
-              { key: 'HANDOVER', label: 'Handover & Practical Completion Checklist', icon: CheckCircle2 },
+              { key: 'KANBAN', label: 'Task Board', icon: Layers },
+              { key: 'COCKPIT_360', label: 'Cost & Contract', icon: Activity },
+              { key: 'TEAM', label: 'Project Team', icon: User },
+              { key: 'HANDOVER', label: 'Handover Checklist', icon: CheckCircle2 },
             ].map((tab) => {
               const Icon = tab.icon;
               const isActive = projectDetailTab === tab.key;
@@ -644,7 +648,7 @@ export default function ProjectsPage() {
             <div className="flex items-center justify-between border-b border-white/10 pb-3">
               <h3 className="text-lg font-bold text-white flex items-center gap-2">
                 <HardHat className="w-4 h-4 text-[#FFB800]" />
-                <span>Register New Mega-Project</span>
+                <span>New Project</span>
               </h3>
               <button onClick={() => setShowNewModal(false)} className="text-zinc-400 hover:text-white">✕</button>
             </div>

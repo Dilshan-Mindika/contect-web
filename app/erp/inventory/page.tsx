@@ -248,7 +248,7 @@ export default function InventoryPage() {
       {activeTab === 'STOCK' && (
         <div className="space-y-4">
           <UniversalRecordManager
-            title="Materials Inventory Registry (Create, View, Edit, Delete & View Modes)"
+            title="Materials Stock"
             defaultViewMode="DETAILED"
             items={filteredInventory as unknown as Record<string, unknown>[]}
             createLabel="Add Material"

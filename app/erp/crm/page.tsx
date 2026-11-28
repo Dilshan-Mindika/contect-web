@@ -282,7 +282,7 @@ export default function CRMPage() {
       )}
 
       <UniversalRecordManager
-        title="CRM Tender Directory (Create, View, Edit, Delete & View Modes)"
+        title="Leads & Tenders"
         items={leads as unknown as Record<string, unknown>[]}
         createLabel="New Tender Lead"
         searchPlaceholder="Search CRM tenders..."

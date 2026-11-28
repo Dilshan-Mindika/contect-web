@@ -171,7 +171,7 @@ export default function HealthSafetyPage() {
       {activeTab === 'INSPECTIONS' && (
         <div className="space-y-4">
           <UniversalRecordManager
-            title="HSE Inspections Directory (Create, View, Edit, Delete & View Modes)"
+            title="Safety Inspections"
             items={safetyInspections as unknown as Record<string, unknown>[]}
             createLabel="New HSE Inspection"
             searchPlaceholder="Search inspections by site, inspector..."

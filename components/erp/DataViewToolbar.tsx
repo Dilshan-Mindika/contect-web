@@ -40,10 +40,10 @@ interface DataViewToolbarProps {
 }
 
 const VIEW_MODES: { id: ViewMode; label: string; icon: React.ReactNode }[] = [
-  { id: 'GRID', label: 'Grid', icon: <LayoutGrid className="w-3.5 h-3.5" /> },
-  { id: 'DETAILED', label: 'Detailed', icon: <List className="w-3.5 h-3.5" /> },
-  { id: 'TILE', label: 'Tile', icon: <Grid3X3 className="w-3.5 h-3.5" /> },
-  { id: 'COMPACT', label: 'Compact', icon: <AlignJustify className="w-3.5 h-3.5" /> },
+  { id: 'GRID', label: 'Cards', icon: <LayoutGrid className="w-3.5 h-3.5" /> },
+  { id: 'DETAILED', label: 'Table', icon: <List className="w-3.5 h-3.5" /> },
+  { id: 'TILE', label: 'Tiles', icon: <Grid3X3 className="w-3.5 h-3.5" /> },
+  { id: 'COMPACT', label: 'List', icon: <AlignJustify className="w-3.5 h-3.5" /> },
 ];
 
 export default function DataViewToolbar({

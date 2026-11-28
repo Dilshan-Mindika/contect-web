@@ -187,12 +187,22 @@ export default function UniversalRecordManager<T extends Record<string, unknown>
       return String(av ?? '').localeCompare(String(bv ?? '')) * mul;
     });
 
+  const formatReadableEnum = (raw: string) => {
+    if (!/^[A-Z0-9_]+$/.test(raw)) return raw;
+    return raw
+      .split('_')
+      .map((part) => (part.length <= 2 ? part : part.charAt(0) + part.slice(1).toLowerCase()))
+      .join(' ');
+  };
+
   const formatVal = (f: FieldSchema, val: unknown) => {
     if (val === null || val === undefined || val === '') return '—';
     if (f.type === 'checkbox') return val ? 'Yes' : 'No';
     if (f.type === 'images' && Array.isArray(val)) return `${val.length} photo(s)`;
     if (f.isCurrency && typeof val === 'number') return formatLKR(val, true);
-    return String(val);
+    const str = String(val);
+    if (f.isBadge || f.type === 'select') return formatReadableEnum(str);
+    return str;
   };
 
   const renderFieldInput = (f: FieldSchema) => (

@@ -187,7 +187,7 @@ export default function SiteLogsPage() {
             <div className="flex items-center justify-between border-b border-white/10 pb-3">
               <h3 className="text-lg font-bold text-white flex items-center gap-2">
                 <HardHat className="w-4 h-4 text-[#FFB800]" />
-                <span>File Daily Construction Site Telemetry</span>
+                <span>Add Daily Site Report</span>
               </h3>
               <button onClick={() => setShowLogModal(false)} className="text-zinc-400 hover:text-white">
                 ✕
@@ -385,7 +385,7 @@ export default function SiteLogsPage() {
       )}
 
       <UniversalRecordManager
-        title="Daily Site Logs Directory (Create, View, Edit, Delete & View Modes)"
+        title="Daily Site Reports"
         defaultViewMode="DETAILED"
         items={siteLogs as unknown as Record<string, unknown>[]}
         createLabel="New Site Log"

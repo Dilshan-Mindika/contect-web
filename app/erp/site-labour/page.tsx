@@ -337,7 +337,7 @@ export default function SiteLabourManagementPage() {
       {activeTab === 'WORKERS' && (
         <div className="space-y-4">
           <UniversalRecordManager
-            title="Site Labour Registry (Create, View, Edit, Delete & View Modes)"
+            title="Site Workers"
             defaultViewMode="DETAILED"
             items={filteredWorkers as unknown as Record<string, unknown>[]}
             createLabel="Register Worker"

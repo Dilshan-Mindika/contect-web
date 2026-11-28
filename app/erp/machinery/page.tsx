@@ -176,7 +176,7 @@ export default function MachineryPage() {
             {totalFleetHours.toLocaleString()} Hours
           </div>
           <span className="text-[11px] text-zinc-400 mt-1 block">
-            Telemetry GPS Synced
+            GPS Active
           </span>
         </div>
 
@@ -250,7 +250,7 @@ export default function MachineryPage() {
           </div>
 
           <UniversalRecordManager
-            title="Machinery Fleet Directory (Create, View, Edit, Delete & View Modes)"
+            title="Machinery & Vehicles"
             items={(selectedCategory === 'ALL' ? filteredMachinery : filteredMachinery.filter((m) => m.category === selectedCategory)) as unknown as Record<string, unknown>[]}
             createLabel="New Fleet Asset"
             searchPlaceholder="Search machinery by name, asset ID, site..."

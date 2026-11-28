@@ -220,7 +220,7 @@ export default function ProcurementPage() {
       {activeTab === 'PO' && (
         <div className="space-y-4">
           <UniversalRecordManager
-            title="Purchase Orders Directory (Create, View, Edit, Delete & View Modes)"
+            title="Purchase Orders"
             defaultViewMode="DETAILED"
             items={filteredPOs as unknown as Record<string, unknown>[]}
             createLabel="New Purchase Order"

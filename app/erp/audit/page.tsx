@@ -355,7 +355,7 @@ export default function AuditAndVaultPage() {
           }`}
         >
           <Terminal className="w-4 h-4" />
-          <span>03. System Logs &amp; Server Telemetry</span>
+          <span>System Activity &amp; Health</span>
         </button>
       </div>
 
@@ -607,7 +607,7 @@ export default function AuditAndVaultPage() {
           </div>
 
           <UniversalRecordManager
-            title="Security Audit Trail (View, Search, Sort & View Modes)"
+            title="Activity History"
             defaultViewMode="DETAILED"
             items={filteredLogs as unknown as Record<string, unknown>[]}
             createLabel="Log Manual Audit"
@@ -672,7 +672,7 @@ export default function AuditAndVaultPage() {
 
           {sysInfo?.database?.tableCounts && (
             <div className="p-5 rounded-2xl bg-[#080e1c]/90 border border-white/10 space-y-3">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-300 font-mono">Live Table Row Telemetry</h3>
+              <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-300 font-mono">System Records Summary</h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
                 {Object.entries(sysInfo.database.tableCounts).map(([tbl, cnt]) => (
                   <div key={tbl} className="p-3 rounded-xl bg-white/5 border border-white/5 flex items-center justify-between text-xs font-mono">

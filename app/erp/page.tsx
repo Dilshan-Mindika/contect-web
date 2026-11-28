@@ -39,20 +39,20 @@ export default function ERPDashboardPage() {
     activeCompany,
   } = useERP();
 
-  const [dashboardMode, setDashboardMode] = useState<'MINIMAL' | 'ADVANCED'>('ADVANCED');
+  const [dashboardMode, setDashboardMode] = useState<'MINIMAL' | 'ADVANCED'>('MINIMAL');
   const [timeframe, setTimeframe] = useState<'DAILY' | 'WEEKLY' | 'MONTHLY' | 'ANNUAL'>('MONTHLY');
-  const [dbStatus, setDbStatus] = useState<{ connected: boolean; database?: string }>({ connected: true });
 
   useEffect(() => {
-    fetch('/api/erp/db/status')
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (data?.mysql) {
-          setDbStatus({ connected: Boolean(data.mysql.active), database: data.mysql.database });
-        }
-      })
-      .catch(() => {});
+    const savedMode = localStorage.getItem('contec_dashboard_mode');
+    if (savedMode === 'MINIMAL' || savedMode === 'ADVANCED') {
+      setDashboardMode(savedMode);
+    }
   }, []);
+
+  const handleDashboardModeChange = (mode: 'MINIMAL' | 'ADVANCED') => {
+    setDashboardMode(mode);
+    localStorage.setItem('contec_dashboard_mode', mode);
+  };
 
   // Filter by activeCompany if not CONSOLIDATED
   const scopedProjects =
@@ -159,11 +159,11 @@ export default function ERPDashboardPage() {
             </h1>
           </div>
           <p className="text-xs sm:text-sm text-zinc-400 mt-1">
-            Department: <span className="text-[#FFB800] font-semibold">{user?.department || 'Executive Board'}</span> • Executive overview across projects, finance, and client inquiries.
+            <span className="text-[#FFB800] font-semibold">{user?.department || 'Executive Board'}</span> • Here&apos;s what&apos;s happening across your sites, finances, and team.
           </p>
         </div>
 
-        {/* Timeframe + Minimal / Advanced Dashboard Toggle */}
+        {/* Timeframe + Simple / Detailed Analytics Toggle */}
         <div className="flex flex-wrap items-center gap-2 self-start lg:self-auto">
           <div className="flex items-center gap-1 p-1 rounded-xl bg-white/5 border border-white/10">
             {(['DAILY', 'WEEKLY', 'MONTHLY', 'ANNUAL'] as const).map((tf) => (
@@ -185,7 +185,7 @@ export default function ERPDashboardPage() {
           <div className="flex items-center gap-1 p-1 rounded-xl bg-white/5 border border-white/10">
             <button
               type="button"
-              onClick={() => setDashboardMode('MINIMAL')}
+              onClick={() => handleDashboardModeChange('MINIMAL')}
               className={`px-3.5 py-2 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
                 dashboardMode === 'MINIMAL'
                   ? 'bg-[#0038B8] text-white shadow-md'
@@ -193,11 +193,11 @@ export default function ERPDashboardPage() {
               }`}
             >
               <LayoutGrid className="w-3.5 h-3.5" />
-              <span>Minimal Dashboard</span>
+              <span>Simple View</span>
             </button>
             <button
               type="button"
-              onClick={() => setDashboardMode('ADVANCED')}
+              onClick={() => handleDashboardModeChange('ADVANCED')}
               className={`px-3.5 py-2 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
                 dashboardMode === 'ADVANCED'
                   ? 'bg-[#0038B8] text-white shadow-md'
@@ -205,18 +205,53 @@ export default function ERPDashboardPage() {
               }`}
             >
               <SlidersHorizontal className="w-3.5 h-3.5" />
-              <span>Advanced Dashboard</span>
+              <span>Detailed Analytics</span>
             </button>
           </div>
         </div>
+      </div>
+
+      {/* Quick Actions Strip for First-Look Ease of Use */}
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="text-[11px] font-semibold text-zinc-400 mr-1">Quick Actions:</span>
+        <Link
+          href="/erp/quotations"
+          className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-[#0038B8]/25 border border-white/10 hover:border-blue-400/40 text-xs font-semibold text-zinc-200 hover:text-white transition-all"
+        >
+          + Create Quotation
+        </Link>
+        <Link
+          href="/erp/finance"
+          className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-emerald-500/20 border border-white/10 hover:border-emerald-400/40 text-xs font-semibold text-zinc-200 hover:text-white transition-all"
+        >
+          + New Invoice / Cash Entry
+        </Link>
+        <Link
+          href="/erp/projects"
+          className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-[#FFB800]/20 border border-white/10 hover:border-[#FFB800]/40 text-xs font-semibold text-zinc-200 hover:text-white transition-all"
+        >
+          + Manage Projects
+        </Link>
+        <Link
+          href="/erp/site-logs"
+          className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-purple-500/20 border border-white/10 hover:border-purple-400/40 text-xs font-semibold text-zinc-200 hover:text-white transition-all"
+        >
+          + Daily Site Report
+        </Link>
+        <Link
+          href="/erp/hr"
+          className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-amber-500/20 border border-white/10 hover:border-amber-400/40 text-xs font-semibold text-zinc-200 hover:text-white transition-all"
+        >
+          + Attendance &amp; Payroll
+        </Link>
       </div>
 
       {/* Stat Boxes, Graph View & Executive Reports */}
       <ModuleAnalytics
         title={
           dashboardMode === 'MINIMAL'
-            ? `${timeframe} Key Metrics Summary`
-            : `${timeframe} Executive Analytics & Graph View`
+            ? `${timeframe.charAt(0) + timeframe.slice(1).toLowerCase()} Summary`
+            : `${timeframe.charAt(0) + timeframe.slice(1).toLowerCase()} Detailed Overview & Charts`
         }
         defaultMode={dashboardMode}
         showModeToggle={false}
