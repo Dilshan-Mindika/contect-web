@@ -507,8 +507,8 @@ export default function DocumentStudioModal({ doc, onClose, onSendEmail, onConve
               <div className="flex flex-col sm:flex-row justify-between items-start gap-4 pb-5 border-b-4" style={{ borderColor: cfg.accentColor }}>
                 <div>
                   {cfg.showLogo && (
-                    <div className="relative h-10 w-44 mb-2 bg-zinc-950 rounded-lg px-2 py-1">
-                      <Image src="/branding/logo nav.png" alt="CONTEC" fill className="object-contain p-1" unoptimized />
+                    <div className="relative h-12 w-52 mb-2">
+                      <Image src="/branding/contec-print-logo.png" alt="CONTEC Design & Build" fill className="object-contain object-left" unoptimized />
                     </div>
                   )}
                   <div className="text-sm font-bold text-zinc-900">{cfg.companyName}</div>

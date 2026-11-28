@@ -119,13 +119,22 @@ export default function QuotationPDFModal({ quotation, onClose, onSendEmail }: P
           {/* Header & Brand Letterhead */}
           <div className="flex flex-col sm:flex-row justify-between items-start gap-6 border-b-2 border-[#FFB800] pb-6">
             <div>
-              <div className="relative h-10 w-44 mb-2">
+              <div className="relative h-11 w-48 mb-2 print:hidden">
                 <Image
                   src="/branding/logo nav.png"
                   alt="CONTEC Design & Build"
                   fill
                   className="object-contain object-left"
                   priority
+                />
+              </div>
+              <div className="relative h-12 w-52 mb-2 hidden print:block">
+                <Image
+                  src="/branding/contec-print-logo.png"
+                  alt="CONTEC Design & Build"
+                  fill
+                  className="object-contain object-left"
+                  unoptimized
                 />
               </div>
               <p className="text-xs text-zinc-400 print:text-zinc-600 font-medium">

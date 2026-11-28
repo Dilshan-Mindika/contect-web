@@ -255,6 +255,8 @@ export interface Employee {
   etfEmployerLkr?: number; // 3%
   annualPackageLkr?: number; // Annual in LKR
   epfNo?: string;
+  employmentType?: 'PERMANENT' | 'CONTRACT' | 'TEMP_HOURLY' | 'CONSULTANT';
+  hourlyRateLkr?: number;
   joinDate: string;
   status: EmployeeStatus;
   attendanceRate: number;
