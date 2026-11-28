@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createJwtToken, COOKIE_NAME } from '@/lib/erp/auth';
 import { authenticateUserFromDb } from '@/lib/erp/usersDb';
 import { query } from '@/lib/db';
+import { checkRateLimit } from '@/lib/erp/rateLimit';
 
 export async function POST(req: NextRequest) {
   try {
@@ -12,6 +13,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         { error: 'Email and password are required' },
         { status: 400 }
+      );
+    }
+
+    const clientIp = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'local';
+    const rl = checkRateLimit(`login:${clientIp}:${String(email).toLowerCase().trim()}`, 10, 15 * 60 * 1000);
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { error: `Too many login attempts. Please wait ${rl.retryAfterSeconds}s and try again.` },
+        { status: 429, headers: { 'Retry-After': String(rl.retryAfterSeconds) } }
       );
     }
 

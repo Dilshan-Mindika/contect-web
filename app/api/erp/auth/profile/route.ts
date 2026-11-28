@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyJwtToken, createJwtToken, COOKIE_NAME, ENTERPRISE_USERS } from '@/lib/erp/auth';
 import { query } from '@/lib/db';
 import { ensureUsersTable } from '@/lib/erp/usersDb';
+import { hashPassword, verifyPassword } from '@/lib/erp/password';
 
 async function getAuthUser(req: NextRequest) {
   let token = req.cookies.get(COOKIE_NAME)?.value;
@@ -82,11 +83,11 @@ export async function PATCH(req: NextRequest) {
         rows && rows.length > 0
           ? String(rows[0].password_hash)
           : ENTERPRISE_USERS[user.email.toLowerCase()]?.passwordHash;
-      if (existingPass && String(body.currentPassword || '') !== existingPass) {
+      if (existingPass && !verifyPassword(String(body.currentPassword || ''), existingPass)) {
         return NextResponse.json({ error: 'Current password is incorrect.' }, { status: 400 });
       }
       updates.push('password_hash = ?');
-      params.push(newPass);
+      params.push(hashPassword(newPass));
     }
 
     if (rows && rows.length > 0) {

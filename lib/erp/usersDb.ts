@@ -1,6 +1,7 @@
 import { query } from '@/lib/db';
 import { ENTERPRISE_USERS, ROLE_PERMISSIONS } from '@/lib/erp/auth';
 import { Permission, UserRole, ActiveCompany } from '@/lib/erp/types';
+import { hashPassword, verifyPassword, isHashedPassword } from '@/lib/erp/password';
 
 export interface ManagedUserRecord {
   id: string;
@@ -53,7 +54,7 @@ export async function ensureUsersTable(): Promise<void> {
           u.id,
           u.name,
           u.email.toLowerCase(),
-          u.passwordHash,
+          hashPassword(u.passwordHash),
           u.role,
           u.title,
           u.department,
@@ -136,13 +137,21 @@ export async function authenticateUserFromDb(
 
   if (rows && rows.length > 0) {
     const row = rows[0];
-    if (String(row.password_hash) !== password) {
+    const storedHash = String(row.password_hash || '');
+    if (!verifyPassword(password, storedHash)) {
       return { user: null };
     }
     if (String(row.status) === 'SUSPENDED') {
       return { user: null, suspended: true };
     }
-    await query('UPDATE erp_users SET last_login = CURRENT_TIMESTAMP WHERE id = ?', [row.id]);
+    if (!isHashedPassword(storedHash)) {
+      await query('UPDATE erp_users SET password_hash = ?, last_login = CURRENT_TIMESTAMP WHERE id = ?', [
+        hashPassword(password),
+        row.id,
+      ]);
+    } else {
+      await query('UPDATE erp_users SET last_login = CURRENT_TIMESTAMP WHERE id = ?', [row.id]);
+    }
     return { user: mapUserRow(row) };
   }
 

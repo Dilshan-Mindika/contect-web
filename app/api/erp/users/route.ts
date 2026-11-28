@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyJwtToken, COOKIE_NAME, ROLE_PERMISSIONS } from '@/lib/erp/auth';
 import { query } from '@/lib/db';
 import { ensureUsersTable, listUsersFromDb } from '@/lib/erp/usersDb';
+import { hashPassword } from '@/lib/erp/password';
 import { UserRole } from '@/lib/erp/types';
 
 async function getAuthUser(req: NextRequest) {
@@ -61,7 +62,7 @@ export async function POST(req: NextRequest) {
         id,
         String(body.name),
         email,
-        String(body.password),
+        hashPassword(String(body.password)),
         role,
         String(body.title || role.replace(/_/g, ' ')),
         String(body.department || 'Operations'),
@@ -117,7 +118,7 @@ export async function PATCH(req: NextRequest) {
     if (body.mfaEnabled !== undefined) { updates.push('mfa_enabled = ?'); params.push(body.mfaEnabled ? 1 : 0); }
     if (body.password && String(body.password).trim().length >= 6) {
       updates.push('password_hash = ?');
-      params.push(String(body.password));
+      params.push(hashPassword(String(body.password).trim()));
     }
 
     if (updates.length > 0) {

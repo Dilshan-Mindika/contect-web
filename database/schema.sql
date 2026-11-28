@@ -280,3 +280,97 @@ CREATE TABLE IF NOT EXISTS email_outbox (
     sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     response_message VARCHAR(255)
 ) ENGINE=InnoDB;
+
+-- =============================================================================
+-- 2NF Normalized Master & Child Tables
+-- =============================================================================
+
+-- 19. Normalized Clients Directory (Eliminates client repetition across projects/invoices/quotes)
+CREATE TABLE IF NOT EXISTS clients (
+    id VARCHAR(64) PRIMARY KEY,
+    company_id VARCHAR(32) DEFAULT 'COMP_A',
+    name VARCHAR(160) NOT NULL,
+    company_name VARCHAR(160) DEFAULT '',
+    email VARCHAR(160) DEFAULT '',
+    phone VARCHAR(40) DEFAULT '',
+    address TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_clients_name_company (name, company_id)
+) ENGINE=InnoDB;
+
+-- 20. Normalized Departments Lookup
+CREATE TABLE IF NOT EXISTS departments (
+    id VARCHAR(64) PRIMARY KEY,
+    company_id VARCHAR(32) DEFAULT 'COMP_A',
+    name VARCHAR(120) NOT NULL UNIQUE,
+    head_name VARCHAR(120) DEFAULT '',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+-- 21. Employees Master (Permanent & Temp Hourly)
+CREATE TABLE IF NOT EXISTS employees (
+    id VARCHAR(64) PRIMARY KEY,
+    company_id VARCHAR(32) DEFAULT 'COMP_A',
+    emp_id VARCHAR(32) NOT NULL UNIQUE,
+    name VARCHAR(160) NOT NULL,
+    role VARCHAR(120) NOT NULL,
+    department_id VARCHAR(64) NULL,
+    employment_type ENUM('PERMANENT', 'CONTRACT', 'TEMP_HOURLY', 'CONSULTANT') DEFAULT 'PERMANENT',
+    salary_lkr DECIMAL(15, 2) DEFAULT 0.00,
+    hourly_rate_lkr DECIMAL(12, 2) DEFAULT 0.00,
+    email VARCHAR(160) DEFAULT '',
+    phone VARCHAR(40) DEFAULT '',
+    nic VARCHAR(32) DEFAULT '',
+    status ENUM('ACTIVE', 'ON_LEAVE', 'INACTIVE') DEFAULT 'ACTIVE',
+    join_date DATE NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (department_id) REFERENCES departments(id) ON DELETE SET NULL
+) ENGINE=InnoDB;
+
+-- 22. 2NF Employee Attendance (Every attribute depends on full composite PK: employee_id + attendance_date)
+CREATE TABLE IF NOT EXISTS employee_attendance (
+    employee_id VARCHAR(64) NOT NULL,
+    attendance_date DATE NOT NULL,
+    status ENUM('PRESENT', 'ON_SITE', 'HALF_DAY', 'ABSENT') NOT NULL DEFAULT 'PRESENT',
+    hours_worked DECIMAL(5, 2) NOT NULL DEFAULT 8.00,
+    ot_hours DECIMAL(5, 2) NOT NULL DEFAULT 0.00,
+    hourly_payout_lkr DECIMAL(12, 2) NOT NULL DEFAULT 0.00,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (employee_id, attendance_date),
+    FOREIGN KEY (employee_id) REFERENCES employees(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- 23. 2NF Invoice Line Items
+CREATE TABLE IF NOT EXISTS invoice_items (
+    id VARCHAR(64) PRIMARY KEY,
+    invoice_id VARCHAR(64) NOT NULL,
+    line_no INT NOT NULL,
+    description VARCHAR(255) NOT NULL,
+    unit VARCHAR(32) DEFAULT 'Unit',
+    quantity DECIMAL(12, 2) NOT NULL DEFAULT 1.00,
+    unit_rate DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
+    line_total DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
+    FOREIGN KEY (invoice_id) REFERENCES invoices(id) ON DELETE CASCADE,
+    UNIQUE KEY uq_invoice_line (invoice_id, line_no)
+) ENGINE=InnoDB;
+
+-- 24. 2NF Quotation Line Items
+CREATE TABLE IF NOT EXISTS quotation_items (
+    id VARCHAR(64) PRIMARY KEY,
+    quotation_id VARCHAR(64) NOT NULL,
+    line_no INT NOT NULL,
+    description VARCHAR(255) NOT NULL,
+    unit VARCHAR(32) DEFAULT 'Unit',
+    quantity DECIMAL(12, 2) NOT NULL DEFAULT 1.00,
+    unit_rate DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
+    line_total DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
+    FOREIGN KEY (quotation_id) REFERENCES construction_quotations(id) ON DELETE CASCADE,
+    UNIQUE KEY uq_quotation_line (quotation_id, line_no)
+) ENGINE=InnoDB;
+
+-- 25. 2NF Role-to-Permission Junction Table
+CREATE TABLE IF NOT EXISTS erp_role_permissions (
+    role VARCHAR(64) NOT NULL,
+    permission_key VARCHAR(64) NOT NULL,
+    PRIMARY KEY (role, permission_key)
+) ENGINE=InnoDB;

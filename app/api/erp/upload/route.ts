@@ -9,8 +9,27 @@ const ALLOWED_TYPES = new Set([
   'image/png',
   'image/webp',
   'image/gif',
-  'image/svg+xml',
 ]);
+
+function hasValidImageMagicBytes(buf: Buffer, mime: string): boolean {
+  if (buf.length < 12) return false;
+  if (mime === 'image/jpeg' || mime === 'image/jpg') {
+    return buf[0] === 0xff && buf[1] === 0xd8 && buf[2] === 0xff;
+  }
+  if (mime === 'image/png') {
+    return buf[0] === 0x89 && buf[1] === 0x50 && buf[2] === 0x4e && buf[3] === 0x47;
+  }
+  if (mime === 'image/gif') {
+    return buf.subarray(0, 4).toString('ascii') === 'GIF8';
+  }
+  if (mime === 'image/webp') {
+    return (
+      buf.subarray(0, 4).toString('ascii') === 'RIFF' &&
+      buf.subarray(8, 12).toString('ascii') === 'WEBP'
+    );
+  }
+  return false;
+}
 
 const MAX_FILE_BYTES = 10 * 1024 * 1024; // 10MB per image
 
@@ -48,7 +67,7 @@ export async function POST(req: NextRequest) {
     for (const file of files) {
       if (!ALLOWED_TYPES.has(file.type)) {
         return NextResponse.json(
-          { error: `Unsupported file type "${file.type}". Allowed: JPG, PNG, WEBP, GIF, SVG.` },
+          { error: `Unsupported file type "${file.type}". Allowed: JPG, PNG, WEBP, GIF.` },
           { status: 400 }
         );
       }
@@ -59,13 +78,20 @@ export async function POST(req: NextRequest) {
         );
       }
 
+      const buffer = Buffer.from(await file.arrayBuffer());
+      if (!hasValidImageMagicBytes(buffer, file.type)) {
+        return NextResponse.json(
+          { error: `File "${file.name}" failed image signature verification.` },
+          { status: 400 }
+        );
+      }
+
       const ext = path.extname(file.name).toLowerCase() || '.jpg';
       const safeBase = path
         .basename(file.name, ext)
         .replace(/[^a-zA-Z0-9_-]/g, '-')
         .slice(0, 40);
       const uniqueName = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}-${safeBase}${ext}`;
-      const buffer = Buffer.from(await file.arrayBuffer());
 
       await writeFile(path.join(uploadDir, uniqueName), buffer);
       urls.push(`/api/uploads/${uniqueName}`);
