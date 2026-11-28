@@ -1,6 +1,9 @@
 "use client";
 
 import React, { useState } from 'react';
+import { usePathname } from 'next/navigation';
+import { useERP } from '@/lib/erp/AuthContext';
+import { hasModuleAccess, getModuleKeyFromPath } from '@/lib/erp/permissions';
 import DataViewToolbar, { ViewMode, SortOption } from '@/components/erp/DataViewToolbar';
 import MultiImageField from '@/components/erp/MultiImageField';
 import CustomSelect from '@/components/erp/CustomSelect';
@@ -64,6 +67,13 @@ export default function UniversalRecordManager<T extends Record<string, unknown>
   defaultViewMode = 'GRID',
   renderRowActions,
 }: UniversalRecordManagerProps<T>) {
+  const pathname = usePathname();
+  const { user } = useERP();
+  const currentMod = getModuleKeyFromPath(pathname || '/erp');
+  const canCreate = !user || hasModuleAccess(user, currentMod, 'create');
+  const canEdit = !user || hasModuleAccess(user, currentMod, 'edit');
+  const canDelete = !user || hasModuleAccess(user, currentMod, 'delete');
+
   const [localItems, setLocalItems] = useState<T[] | null>(null);
   const activeItems = localItems ?? items;
 
@@ -283,7 +293,7 @@ export default function UniversalRecordManager<T extends Record<string, unknown>
         onViewModeChange={handleViewModeChange}
         totalCount={activeItems.length}
         filteredCount={filtered.length}
-        onCreateClick={handleOpenCreate}
+        onCreateClick={canCreate ? handleOpenCreate : undefined}
         createLabel={createLabel}
       />
 
@@ -310,8 +320,8 @@ export default function UniversalRecordManager<T extends Record<string, unknown>
                     <div className="inline-flex items-center gap-1">
                       {renderRowActions && renderRowActions(item)}
                       <button type="button" onClick={() => handleView(item)} className="p-1.5 rounded-lg bg-white/5 hover:bg-white/15 text-emerald-400 cursor-pointer" title="View"><Eye className="w-3.5 h-3.5" /></button>
-                      <button type="button" onClick={() => handleOpenEdit(item)} className="p-1.5 rounded-lg bg-white/5 hover:bg-white/15 text-blue-400 cursor-pointer" title="Edit"><Edit3 className="w-3.5 h-3.5" /></button>
-                      <button type="button" onClick={() => handleDelete(item)} className="p-1.5 rounded-lg bg-white/5 hover:bg-red-500/20 text-red-400 cursor-pointer" title="Delete"><Trash2 className="w-3.5 h-3.5" /></button>
+                      {canEdit && <button type="button" onClick={() => handleOpenEdit(item)} className="p-1.5 rounded-lg bg-white/5 hover:bg-white/15 text-blue-400 cursor-pointer" title="Edit"><Edit3 className="w-3.5 h-3.5" /></button>}
+                      {canDelete && <button type="button" onClick={() => handleDelete(item)} className="p-1.5 rounded-lg bg-white/5 hover:bg-red-500/20 text-red-400 cursor-pointer" title="Delete"><Trash2 className="w-3.5 h-3.5" /></button>}
                     </div>
                   </td>
                 </tr>
@@ -376,15 +386,19 @@ export default function UniversalRecordManager<T extends Record<string, unknown>
                     <Eye className="w-3 h-3" />
                     <span>View</span>
                   </button>
-                  <button type="button" onClick={() => handleOpenEdit(item)} className="px-2 py-1 rounded-lg bg-white/5 hover:bg-white/15 text-blue-400 text-[11px] font-semibold flex items-center gap-1 cursor-pointer">
-                    <Edit3 className="w-3 h-3" />
-                    <span>Edit</span>
-                  </button>
+                  {canEdit && (
+                    <button type="button" onClick={() => handleOpenEdit(item)} className="px-2 py-1 rounded-lg bg-white/5 hover:bg-white/15 text-blue-400 text-[11px] font-semibold flex items-center gap-1 cursor-pointer">
+                      <Edit3 className="w-3 h-3" />
+                      <span>Edit</span>
+                    </button>
+                  )}
                 </div>
-                <button type="button" onClick={() => handleDelete(item)} className="px-2 py-1 rounded-lg bg-white/5 hover:bg-red-500/20 text-red-400 text-[11px] font-semibold flex items-center gap-1 cursor-pointer">
-                  <Trash2 className="w-3 h-3" />
-                  <span>Delete</span>
-                </button>
+                {canDelete && (
+                  <button type="button" onClick={() => handleDelete(item)} className="px-2 py-1 rounded-lg bg-white/5 hover:bg-red-500/20 text-red-400 text-[11px] font-semibold flex items-center gap-1 cursor-pointer">
+                    <Trash2 className="w-3 h-3" />
+                    <span>Delete</span>
+                  </button>
+                )}
               </div>
             </div>
           ))}

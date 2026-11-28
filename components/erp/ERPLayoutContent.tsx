@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useERP } from '@/lib/erp/AuthContext';
+import { hasModuleAccess, getModuleKeyFromPath } from '@/lib/erp/permissions';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard,
@@ -623,7 +624,15 @@ export default function ERPLayoutContent({ children }: { children: React.ReactNo
                 { title: 'Main Navigation', items: PRIMARY_NAV, accent: true },
                 { title: 'Site Operations', items: SITE_OPERATIONS_NAV, accent: false },
                 { title: 'Finance & Admin', items: MANAGEMENT_NAV, accent: false },
-              ].map((group) => (
+              ]
+                .map((group) => ({
+                  ...group,
+                  items: group.items.filter((item) =>
+                    hasModuleAccess(user, getModuleKeyFromPath(item.href), 'view')
+                  ),
+                }))
+                .filter((group) => group.items.length > 0)
+                .map((group) => (
                 <div key={group.title}>
                   <div
                     className={`text-[10px] uppercase font-bold tracking-wider px-3 mb-2 ${
@@ -690,7 +699,23 @@ export default function ERPLayoutContent({ children }: { children: React.ReactNo
             transition={{ duration: 0.2, ease: 'easeOut' }}
             className="max-w-7xl mx-auto"
           >
-            {children}
+            {user && !hasModuleAccess(user, getModuleKeyFromPath(pathname), 'view') ? (
+              <div className="p-8 rounded-2xl bg-[#080e1c]/90 border border-red-500/30 text-center space-y-3 max-w-lg mx-auto mt-12">
+                <Lock className="w-10 h-10 text-red-400 mx-auto" />
+                <h2 className="text-lg font-bold text-white">Access Restricted</h2>
+                <p className="text-xs text-zinc-400">
+                  You do not have permission to view this module. Contact your System Administrator if you need access.
+                </p>
+                <Link
+                  href="/erp"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#0038B8] text-white text-xs font-bold"
+                >
+                  <span>Back to Dashboard</span>
+                </Link>
+              </div>
+            ) : (
+              children
+            )}
           </motion.div>
         </main>
       </div>

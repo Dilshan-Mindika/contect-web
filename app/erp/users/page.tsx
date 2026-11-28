@@ -3,6 +3,13 @@
 import React, { useEffect, useState } from 'react';
 import { useERP } from '@/lib/erp/AuthContext';
 import { ROLE_PERMISSIONS } from '@/lib/erp/auth';
+import {
+  ERP_MODULES,
+  CRUD_ACTIONS,
+  CrudAction,
+  permKey,
+  expandLegacyPermissions,
+} from '@/lib/erp/permissions';
 import { ActiveCompany, Permission, UserRole } from '@/lib/erp/types';
 import DataViewToolbar, { ViewMode } from '@/components/erp/DataViewToolbar';
 import ModuleAnalytics from '@/components/erp/ModuleAnalytics';
@@ -116,7 +123,9 @@ export default function UsersAccessControlPage() {
     setFormScope('CONSOLIDATED');
     setFormStatus('ACTIVE');
     setFormMfa(false);
-    setFormPermissions([...ROLE_PERMISSIONS.PROJECT_ENGINEER]);
+    setFormPermissions(
+      expandLegacyPermissions(ROLE_PERMISSIONS.PROJECT_ENGINEER, 'PROJECT_ENGINEER') as Permission[]
+    );
     setShowModal(true);
   };
 
@@ -131,19 +140,49 @@ export default function UsersAccessControlPage() {
     setFormScope(u.companyScope || 'CONSOLIDATED');
     setFormStatus(u.status);
     setFormMfa(Boolean(u.mfaEnabled));
-    setFormPermissions([...u.permissions]);
+    setFormPermissions(expandLegacyPermissions(u.permissions, u.role) as Permission[]);
     setShowModal(true);
   };
 
   const handleRoleChange = (role: UserRole) => {
     setFormRole(role);
-    setFormPermissions([...(ROLE_PERMISSIONS[role] || [])]);
+    setFormPermissions(
+      expandLegacyPermissions(ROLE_PERMISSIONS[role] || [], role) as Permission[]
+    );
   };
 
-  const togglePermission = (perm: Permission) => {
-    setFormPermissions((prev) =>
-      prev.includes(perm) ? prev.filter((p) => p !== perm) : [...prev, perm]
-    );
+  const toggleModuleAction = (moduleKey: string, action: CrudAction) => {
+    const key = permKey(moduleKey, action) as Permission;
+    const viewKey = permKey(moduleKey, 'view') as Permission;
+    setFormPermissions((prev) => {
+      const exists = prev.includes(key);
+      if (exists) {
+        if (action === 'view') {
+          // Removing view also removes create/edit/delete for that module
+          return prev.filter((p) => !p.startsWith(`${moduleKey}:`));
+        }
+        return prev.filter((p) => p !== key);
+      } else {
+        const next = new Set(prev);
+        next.add(key);
+        if (action !== 'view') {
+          // Granting create/edit/delete automatically grants view
+          next.add(viewKey);
+        }
+        return Array.from(next) as Permission[];
+      }
+    });
+  };
+
+  const toggleModuleRowAll = (moduleKey: string) => {
+    const allForMod = CRUD_ACTIONS.map((a) => permKey(moduleKey, a) as Permission);
+    setFormPermissions((prev) => {
+      const hasAll = allForMod.every((k) => prev.includes(k));
+      if (hasAll) {
+        return prev.filter((p) => !p.startsWith(`${moduleKey}:`));
+      }
+      return Array.from(new Set([...prev, ...allForMod])) as Permission[];
+    });
   };
 
   const handleSave = async (e: React.FormEvent) => {
@@ -556,43 +595,109 @@ export default function UsersAccessControlPage() {
                 <span className="font-semibold text-zinc-200">Require Hardware / 2FA Session Verification (Optional)</span>
               </label>
 
-              {/* Granular Permission Matrix */}
-              <div className="space-y-2 p-3.5 rounded-2xl bg-white/[0.02] border border-white/10">
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-blue-300 uppercase tracking-wider text-[11px]">
-                    Granular Module Permissions ({formPermissions.length} / {ALL_PERMISSIONS.length})
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setFormPermissions(ALL_PERMISSIONS.map((p) => p.key))}
-                    className="text-[10px] font-bold text-[#FFB800] hover:underline cursor-pointer"
-                  >
-                    Select All
-                  </button>
+              {/* Per-Module View / Create / Edit / Delete Access Matrix */}
+              <div className="space-y-3 p-3.5 rounded-2xl bg-white/[0.02] border border-white/10">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <span className="font-bold text-blue-300 uppercase tracking-wider text-[11px] block">
+                      Navbar &amp; Module Access Matrix ({formPermissions.filter((p) => p.endsWith(':view')).length} / {ERP_MODULES.length} Tabs Visible)
+                    </span>
+                    <span className="text-[10px] text-zinc-400">
+                      Unchecking <strong>View</strong> hides the tab from the user&apos;s sidebar navbar and blocks access.
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setFormPermissions(
+                          ERP_MODULES.map((m) => permKey(m.key, 'view')) as Permission[]
+                        )
+                      }
+                      className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-[10px] font-bold text-emerald-300 cursor-pointer"
+                    >
+                      View Only All
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setFormPermissions(
+                          ERP_MODULES.flatMap((m) =>
+                            CRUD_ACTIONS.map((a) => permKey(m.key, a))
+                          ) as Permission[]
+                        )
+                      }
+                      className="px-2.5 py-1 rounded-lg bg-[#FFB800]/15 hover:bg-[#FFB800]/25 text-[10px] font-bold text-[#FFB800] cursor-pointer"
+                    >
+                      Select All
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setFormPermissions([])}
+                      className="px-2.5 py-1 rounded-lg bg-red-500/15 hover:bg-red-500/25 text-[10px] font-bold text-red-300 cursor-pointer"
+                    >
+                      Clear
+                    </button>
+                  </div>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {ALL_PERMISSIONS.map((perm) => {
-                    const checked = formPermissions.includes(perm.key);
-                    return (
-                      <label
-                        key={perm.key}
-                        className={`flex items-start gap-2.5 p-2.5 rounded-xl border cursor-pointer transition-all ${
-                          checked ? 'bg-blue-600/15 border-blue-500/40' : 'bg-white/[0.02] border-white/10'
-                        }`}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={checked}
-                          onChange={() => togglePermission(perm.key)}
-                          className="mt-0.5 w-3.5 h-3.5 accent-[#0038B8]"
-                        />
-                        <div>
-                          <div className="font-bold text-white">{perm.label}</div>
-                          <div className="text-[10px] text-zinc-400">{perm.desc}</div>
-                        </div>
-                      </label>
-                    );
-                  })}
+
+                <div className="max-h-72 overflow-y-auto rounded-xl border border-white/10 custom-scrollbar">
+                  <table className="w-full text-left text-[11px]">
+                    <thead className="bg-[#0b132b] text-zinc-400 sticky top-0 z-10 border-b border-white/10">
+                      <tr>
+                        <th className="p-2.5">Sidebar Module</th>
+                        <th className="p-2.5 text-center">View</th>
+                        <th className="p-2.5 text-center">Create</th>
+                        <th className="p-2.5 text-center">Edit</th>
+                        <th className="p-2.5 text-center">Delete</th>
+                        <th className="p-2.5 text-right">All</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-white/5">
+                      {ERP_MODULES.map((mod) => {
+                        const rowAllChecked = CRUD_ACTIONS.every((a) =>
+                          formPermissions.includes(permKey(mod.key, a) as Permission)
+                        );
+                        return (
+                          <tr key={mod.key} className="hover:bg-white/[0.03]">
+                            <td className="p-2.5">
+                              <div className="font-semibold text-white">{mod.label}</div>
+                              <div className="text-[9px] text-zinc-500">{mod.group}</div>
+                            </td>
+                            {CRUD_ACTIONS.map((act) => {
+                              const checked = formPermissions.includes(
+                                permKey(mod.key, act) as Permission
+                              );
+                              return (
+                                <td key={act} className="p-2.5 text-center">
+                                  <input
+                                    type="checkbox"
+                                    checked={checked}
+                                    onChange={() => toggleModuleAction(mod.key, act)}
+                                    className="w-3.5 h-3.5 accent-[#0038B8] cursor-pointer"
+                                    aria-label={`${mod.label} ${act}`}
+                                  />
+                                </td>
+                              );
+                            })}
+                            <td className="p-2.5 text-right">
+                              <button
+                                type="button"
+                                onClick={() => toggleModuleRowAll(mod.key)}
+                                className={`px-2 py-0.5 rounded text-[10px] font-bold cursor-pointer ${
+                                  rowAllChecked
+                                    ? 'bg-blue-600 text-white'
+                                    : 'bg-white/5 text-zinc-400 hover:text-white'
+                                }`}
+                              >
+                                {rowAllChecked ? 'Full' : 'All'}
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
                 </div>
               </div>
 

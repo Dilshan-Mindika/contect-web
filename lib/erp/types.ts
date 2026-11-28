@@ -20,7 +20,8 @@ export type Permission =
   | 'manage_employees'
   | 'manage_crm'
   | 'view_audit_logs'
-  | 'admin_settings';
+  | 'admin_settings'
+  | `${string}:${'view' | 'create' | 'edit' | 'delete'}`;
 
 export interface ERPUser {
   id: string;
