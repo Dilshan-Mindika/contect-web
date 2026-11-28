@@ -395,6 +395,7 @@ export default function SiteLogsPage() {
 
       <UniversalRecordManager
         title="Daily Site Logs Directory (MySQL CRUD, Sort & View Modes)"
+        defaultViewMode="DETAILED"
         items={siteLogs as unknown as Record<string, unknown>[]}
         createLabel="New Site Log"
         searchPlaceholder="Search site logs..."

@@ -69,7 +69,7 @@ export default function UsersAccessControlPage() {
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState('name');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
-  const [viewMode, setViewMode] = useState<ViewMode>('GRID');
+  const [viewMode, setViewMode] = useState<ViewMode>('DETAILED');
 
   const [showModal, setShowModal] = useState(false);
   const [editingUser, setEditingUser] = useState<ManagedUser | null>(null);

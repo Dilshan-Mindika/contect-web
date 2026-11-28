@@ -24,7 +24,7 @@ export default function ClientInquiriesPage() {
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'NEW' | 'CONTACTED' | 'CONVERTED_TO_QUOTE' | 'ARCHIVED'>('ALL');
   const [sortBy, setSortBy] = useState('date');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
-  const [viewMode, setViewMode] = useState<ViewMode>('GRID');
+  const [viewMode, setViewMode] = useState<ViewMode>('DETAILED');
 
   const [viewingInquiry, setViewingInquiry] = useState<WebsiteInquiry | null>(null);
   const [showFormModal, setShowFormModal] = useState(false);

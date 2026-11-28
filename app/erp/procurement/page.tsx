@@ -220,6 +220,7 @@ export default function ProcurementPage() {
         <div className="space-y-4">
           <UniversalRecordManager
             title="Purchase Orders Directory (Create, View, Edit, Delete & View Modes)"
+            defaultViewMode="DETAILED"
             items={filteredPOs as unknown as Record<string, unknown>[]}
             createLabel="New Purchase Order"
             searchPlaceholder="Search POs by number, supplier..."

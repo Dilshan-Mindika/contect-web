@@ -350,6 +350,7 @@ export default function FinancePage() {
 
           <UniversalRecordManager
             title="Invoices & IPC Registry (MySQL CRUD, Sort & View Modes)"
+            defaultViewMode="DETAILED"
             items={filteredInvoices as unknown as Record<string, unknown>[]}
             createLabel="New Invoice"
             searchPlaceholder="Search invoices by number, client, project..."

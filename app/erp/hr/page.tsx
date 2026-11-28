@@ -208,6 +208,7 @@ export default function HRPage() {
 
           <UniversalRecordManager
             title="Team & Staff Directory (Create, View, Edit, Delete & View Modes)"
+            defaultViewMode="DETAILED"
             items={(selectedDept === 'ALL' ? employees : employees.filter((e) => e.department === selectedDept)) as unknown as Record<string, unknown>[]}
             createLabel="Add Staff Member"
             searchPlaceholder="Search staff by name, role, NIC, department..."

@@ -657,6 +657,7 @@ export default function AuditAndVaultPage() {
 
           <UniversalRecordManager
             title="Security Audit Trail (View, Search, Sort & View Modes)"
+            defaultViewMode="DETAILED"
             items={filteredLogs as unknown as Record<string, unknown>[]}
             createLabel="Log Manual Audit"
             searchPlaceholder="Search audit logs by actor, action, module..."
@@ -734,6 +735,7 @@ export default function AuditAndVaultPage() {
 
           <UniversalRecordManager
             title="System, Auth & Security Event Stream"
+            defaultViewMode="DETAILED"
             items={auditLogs.filter((l) => l.module === 'AUTH' || l.module === 'SECURITY' || l.module === 'SYSTEM' || l.severity !== 'INFO') as unknown as Record<string, unknown>[]}
             createLabel="Log System Note"
             searchPlaceholder="Filter system/auth/security events..."

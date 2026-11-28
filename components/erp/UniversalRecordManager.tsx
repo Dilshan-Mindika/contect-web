@@ -31,6 +31,7 @@ interface UniversalRecordManagerProps<T extends Record<string, unknown>> {
   onUpdate?: (id: string, data: Record<string, unknown>) => void;
   onDelete?: (id: string) => void;
   onView?: (item: T) => void;
+  defaultViewMode?: ViewMode;
   renderRowActions?: (item: T) => React.ReactNode;
 }
 
@@ -59,15 +60,30 @@ export default function UniversalRecordManager<T extends Record<string, unknown>
   onUpdate,
   onDelete,
   onView,
+  defaultViewMode = 'GRID',
   renderRowActions,
 }: UniversalRecordManagerProps<T>) {
   const [localItems, setLocalItems] = useState<T[] | null>(null);
   const activeItems = localItems ?? items;
 
+  const viewStorageKey = title ? `contec_view_${title.toLowerCase().replace(/[^a-z0-9]+/g, '_').slice(0, 48)}` : '';
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState(sortOptions[0]?.value || fields[0]?.key || 'id');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
-  const [viewMode, setViewMode] = useState<ViewMode>('GRID');
+  const [viewMode, setViewMode] = useState<ViewMode>(() => {
+    if (typeof window !== 'undefined' && viewStorageKey) {
+      const saved = localStorage.getItem(viewStorageKey) as ViewMode | null;
+      if (saved && ['GRID', 'DETAILED', 'TILE', 'COMPACT'].includes(saved)) return saved;
+    }
+    return defaultViewMode;
+  });
+
+  const handleViewModeChange = (mode: ViewMode) => {
+    setViewMode(mode);
+    if (typeof window !== 'undefined' && viewStorageKey) {
+      localStorage.setItem(viewStorageKey, mode);
+    }
+  };
 
   const [viewingItem, setViewingItem] = useState<T | null>(null);
   const [showEmptyOptionalInView, setShowEmptyOptionalInView] = useState(false);
@@ -257,7 +273,7 @@ export default function UniversalRecordManager<T extends Record<string, unknown>
         sortDir={sortDir}
         onSortDirToggle={() => setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))}
         viewMode={viewMode}
-        onViewModeChange={setViewMode}
+        onViewModeChange={handleViewModeChange}
         totalCount={activeItems.length}
         filteredCount={filtered.length}
         onCreateClick={handleOpenCreate}

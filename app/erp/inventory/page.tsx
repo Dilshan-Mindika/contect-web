@@ -248,6 +248,7 @@ export default function InventoryPage() {
         <div className="space-y-4">
           <UniversalRecordManager
             title="Materials Inventory Registry (MySQL CRUD, Sort & View Modes)"
+            defaultViewMode="DETAILED"
             items={filteredInventory as unknown as Record<string, unknown>[]}
             createLabel="Add Material"
             searchPlaceholder="Search SKU, steel, cement, depot..."

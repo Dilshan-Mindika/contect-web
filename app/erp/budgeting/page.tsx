@@ -251,6 +251,7 @@ export default function ProjectBudgetingCostControlPage() {
 
       <UniversalRecordManager
         title="Budget Baselines Manager (Create, View, Edit, Delete & View Modes)"
+        defaultViewMode="DETAILED"
         items={budgetBaselines as unknown as Record<string, unknown>[]}
         createLabel="New Budget Line"
         searchPlaceholder="Search budget baselines..."

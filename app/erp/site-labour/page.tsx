@@ -337,6 +337,7 @@ export default function SiteLabourManagementPage() {
         <div className="space-y-4">
           <UniversalRecordManager
             title="Site Labour Registry (Create, View, Edit, Delete & View Modes)"
+            defaultViewMode="DETAILED"
             items={filteredWorkers as unknown as Record<string, unknown>[]}
             createLabel="Register Worker"
             searchPlaceholder="Search workers by name, trade, site..."
