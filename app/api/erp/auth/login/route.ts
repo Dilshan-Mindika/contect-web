@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ENTERPRISE_USERS, createJwtToken, COOKIE_NAME } from '@/lib/erp/auth';
+import { createJwtToken, COOKIE_NAME } from '@/lib/erp/auth';
+import { authenticateUserFromDb } from '@/lib/erp/usersDb';
+import { query } from '@/lib/db';
 
 export async function POST(req: NextRequest) {
   try {
@@ -13,17 +15,27 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const cleanEmail = email.toLowerCase().trim();
-    const userAccount = ENTERPRISE_USERS[cleanEmail];
+    const { user: userAccount, suspended } = await authenticateUserFromDb(email, password);
 
-    if (!userAccount || userAccount.passwordHash !== password) {
+    if (suspended) {
+      await query(
+        `INSERT INTO audit_logs (id, company_id, actor_name, actor_email, role, action, module, details, severity)
+         VALUES (?, 'CONSOLIDATED', ?, ?, 'UNKNOWN', 'LOGIN_BLOCKED_SUSPENDED', 'AUTH', 'Blocked login attempt on suspended account.', 'CRITICAL')`,
+        [`aud-${Date.now()}`, email, email]
+      );
+      return NextResponse.json(
+        { error: 'This account has been suspended by the System Administrator.' },
+        { status: 403 }
+      );
+    }
+
+    if (!userAccount) {
       return NextResponse.json(
         { error: 'Invalid enterprise credentials or access restricted.' },
         { status: 401 }
       );
     }
 
-    // Build sanitized user
     const sanitizedUser = {
       id: userAccount.id,
       name: userAccount.name,
@@ -35,8 +47,13 @@ export async function POST(req: NextRequest) {
       permissions: userAccount.permissions,
     };
 
-    // Generate cryptographic JWT
     const token = await createJwtToken(sanitizedUser);
+
+    await query(
+      `INSERT INTO audit_logs (id, company_id, actor_name, actor_email, role, action, module, details, severity)
+       VALUES (?, ?, ?, ?, ?, 'ERP_USER_LOGIN', 'AUTH', 'Authenticated JWT session established.', 'INFO')`,
+      [`aud-${Date.now()}`, userAccount.companyScope || 'CONSOLIDATED', userAccount.name, userAccount.email, userAccount.role]
+    );
 
     const response = NextResponse.json({
       success: true,
@@ -45,7 +62,6 @@ export async function POST(req: NextRequest) {
       user: sanitizedUser,
     });
 
-    // Set hardened HttpOnly cookie
     response.cookies.set({
       name: COOKIE_NAME,
       value: token,
@@ -53,7 +69,7 @@ export async function POST(req: NextRequest) {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/',
-      maxAge: 7 * 24 * 60 * 60, // 7 days
+      maxAge: 7 * 24 * 60 * 60,
     });
 
     return response;
@@ -65,4 +81,3 @@ export async function POST(req: NextRequest) {
     );
   }
 }
-

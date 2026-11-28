@@ -68,8 +68,9 @@ const MANAGEMENT_NAV = [
   { label: 'Contracts', href: '/erp/contracts', icon: ShieldCheck },
   { label: 'Site Safety', href: '/erp/safety', icon: ShieldAlert },
   { label: 'Team Directory', href: '/erp/hr', icon: Users },
+  { label: 'Users & Access Control', href: '/erp/users', icon: Key },
   { label: 'Company Profile', href: '/erp/company', icon: Building2 },
-  { label: 'Audit Logs', href: '/erp/audit', icon: Lock },
+  { label: 'System & Audit Logs', href: '/erp/audit', icon: Lock },
 ];
 
 export default function ERPLayoutContent({ children }: { children: React.ReactNode }) {

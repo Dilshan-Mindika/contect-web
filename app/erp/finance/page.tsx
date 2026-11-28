@@ -6,6 +6,7 @@ import { InvoiceStatus, Invoice, JournalLine } from '@/lib/erp/types';
 import { formatLKR, formatLKRFull } from '@/lib/erp/currency';
 import ModuleAnalytics from '@/components/erp/ModuleAnalytics';
 import UniversalRecordManager from '@/components/erp/UniversalRecordManager';
+import DocumentStudioModal from '@/components/erp/DocumentStudioModal';
 import {
   CreditCard,
   Plus,
@@ -46,6 +47,7 @@ export default function FinancePage() {
   const [showCreateInvoiceModal, setShowCreateInvoiceModal] = useState(false);
   const [showCreateJvModal, setShowCreateJvModal] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
+  const [studioInvoice, setStudioInvoice] = useState<Invoice | null>(null);
 
   // New Invoice Form State in LKR
   const [clientName, setClientName] = useState('');
@@ -381,6 +383,13 @@ export default function FinancePage() {
               const inv = item as unknown as (typeof filteredInvoices)[number];
               return (
                 <>
+                  <button
+                    type="button"
+                    onClick={() => setStudioInvoice(inv)}
+                    className="px-2 py-1 rounded-lg bg-[#0038B8]/40 hover:bg-[#0038B8] text-[10px] text-white font-bold border border-blue-500/40 cursor-pointer"
+                  >
+                    Customize &amp; PDF
+                  </button>
                   <button
                     type="button"
                     onClick={() => setSelectedInvoice(inv)}
@@ -856,6 +865,29 @@ export default function FinancePage() {
         </div>
       )}
 
+      {studioInvoice && (
+        <DocumentStudioModal
+          doc={{
+            id: studioInvoice.id,
+            mode: 'INVOICE',
+            docNumber: studioInvoice.invoiceNumber,
+            clientName: studioInvoice.clientName,
+            projectTitle: studioInvoice.projectName,
+            issueDate: studioInvoice.issueDate,
+            dueDate: studioInvoice.dueDate,
+            status: studioInvoice.status,
+            items: (studioInvoice.items || []).map((it, idx) => ({
+              code: `INV-${idx + 1}`,
+              description: it.description,
+              unit: 'Lot',
+              quantity: it.quantity,
+              unitPrice: it.rate,
+            })),
+            fallbackSubtotal: studioInvoice.subtotal || studioInvoice.total,
+          }}
+          onClose={() => setStudioInvoice(null)}
+        />
+      )}
     </div>
   );
 }

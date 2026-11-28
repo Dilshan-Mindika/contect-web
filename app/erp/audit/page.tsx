@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useERP } from '@/lib/erp/AuthContext';
 import UniversalRecordManager from '@/components/erp/UniversalRecordManager';
 import {
@@ -44,7 +44,22 @@ export default function AuditAndVaultPage() {
   } = useERP();
 
   // Active Tab
-  const [activeTab, setActiveTab] = useState<'VAULT' | 'AUDIT'>('VAULT');
+  const [activeTab, setActiveTab] = useState<'VAULT' | 'AUDIT' | 'SYSTEM'>('VAULT');
+  const [sysInfo, setSysInfo] = useState<{
+    runtime?: { nodeVersion: string; platform: string; uptimeSeconds: number; rssMb: number; heapUsedMb: number; heapTotalMb: number; env: string };
+    database?: { connected: boolean; latencyMs: number; tableCounts: Record<string, number>; config?: { host: string; database: string } };
+  } | null>(null);
+
+  useEffect(() => {
+    if (activeTab === 'SYSTEM') {
+      fetch('/api/erp/system-logs')
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => {
+          if (d?.success) setSysInfo(d);
+        })
+        .catch(() => {});
+    }
+  }, [activeTab]);
 
   // Vault State
   const [vaultCategory, setVaultCategory] = useState<'ALL' | DocumentCategory>('ALL');
@@ -333,6 +348,18 @@ export default function AuditAndVaultPage() {
         >
           <ShieldCheck className="w-4 h-4" />
           <span>02. Cryptographic Audit Ledger & Token Inspector ({filteredLogs.length})</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('SYSTEM')}
+          className={`flex items-center gap-2 pb-3 px-1 text-sm font-bold border-b-2 transition-all ${
+            activeTab === 'SYSTEM'
+              ? 'border-emerald-400 text-emerald-400'
+              : 'border-transparent text-zinc-400 hover:text-white'
+          }`}
+        >
+          <Terminal className="w-4 h-4" />
+          <span>03. System Logs &amp; Server Telemetry</span>
         </button>
       </div>
 
@@ -650,6 +677,78 @@ export default function AuditAndVaultPage() {
               { key: 'complianceStandard', label: 'Compliance Ref (ISO/CIDA/LKAS)', showInTable: false, optional: true },
               { key: 'details', label: 'Details', type: 'textarea', showInTable: false, optional: true },
               { key: 'images', label: 'Audit Evidence Screenshots', type: 'images', showInTable: false, optional: true },
+            ]}
+          />
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* TAB 3: SYSTEM LOGS & SERVER TELEMETRY */}
+      {/* ========================================================================= */}
+      {activeTab === 'SYSTEM' && (
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="p-4 rounded-2xl bg-[#080e1c]/90 border border-white/10">
+              <div className="text-[11px] font-mono text-zinc-400">MySQL Pool Health</div>
+              <div className={`text-xl font-extrabold mt-1 ${sysInfo?.database?.connected ? 'text-emerald-400' : 'text-amber-400'}`}>
+                {sysInfo?.database?.connected ? `ONLINE (${sysInfo.database.latencyMs} ms)` : 'Checking / Fallback'}
+              </div>
+              <div className="text-[11px] text-zinc-400 mt-1 font-mono">{sysInfo?.database?.config?.database || 'contec_erp'}</div>
+            </div>
+            <div className="p-4 rounded-2xl bg-[#080e1c]/90 border border-white/10">
+              <div className="text-[11px] font-mono text-zinc-400">Node.js Heap Usage</div>
+              <div className="text-xl font-extrabold text-blue-300 mt-1 font-mono">
+                {sysInfo?.runtime ? `${sysInfo.runtime.heapUsedMb} / ${sysInfo.runtime.heapTotalMb} MB` : '—'}
+              </div>
+              <div className="text-[11px] text-zinc-400 mt-1 font-mono">RSS: {sysInfo?.runtime?.rssMb ?? '—'} MB (Low-Mem Ready)</div>
+            </div>
+            <div className="p-4 rounded-2xl bg-[#080e1c]/90 border border-white/10">
+              <div className="text-[11px] font-mono text-zinc-400">Runtime &amp; Uptime</div>
+              <div className="text-xl font-extrabold text-[#FFB800] mt-1 font-mono">
+                {sysInfo?.runtime?.nodeVersion || 'Node.js'}
+              </div>
+              <div className="text-[11px] text-zinc-400 mt-1 font-mono">Uptime: {sysInfo?.runtime?.uptimeSeconds ?? 0}s ({sysInfo?.runtime?.env || 'prod'})</div>
+            </div>
+            <div className="p-4 rounded-2xl bg-[#080e1c]/90 border border-white/10">
+              <div className="text-[11px] font-mono text-zinc-400">Security &amp; Auth Events</div>
+              <div className="text-xl font-extrabold text-white mt-1 font-mono">
+                {auditLogs.filter((l) => l.module === 'AUTH' || l.module === 'SECURITY' || l.module === 'SYSTEM').length} Events
+              </div>
+              <div className="text-[11px] text-zinc-400 mt-1 font-mono">Auth, RBAC &amp; System changes</div>
+            </div>
+          </div>
+
+          {sysInfo?.database?.tableCounts && (
+            <div className="p-5 rounded-2xl bg-[#080e1c]/90 border border-white/10 space-y-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-300 font-mono">Live MySQL Table Row Telemetry</h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                {Object.entries(sysInfo.database.tableCounts).map(([tbl, cnt]) => (
+                  <div key={tbl} className="p-3 rounded-xl bg-white/5 border border-white/5 flex items-center justify-between text-xs font-mono">
+                    <span className="text-zinc-400">{tbl}</span>
+                    <span className="font-bold text-emerald-400">{cnt}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <UniversalRecordManager
+            title="System, Auth & Security Event Stream"
+            items={auditLogs.filter((l) => l.module === 'AUTH' || l.module === 'SECURITY' || l.module === 'SYSTEM' || l.severity !== 'INFO') as unknown as Record<string, unknown>[]}
+            createLabel="Log System Note"
+            searchPlaceholder="Filter system/auth/security events..."
+            sortOptions={[
+              { value: 'timestamp', label: 'Timestamp' },
+              { value: 'severity', label: 'Severity' },
+              { value: 'module', label: 'Module' },
+            ]}
+            fields={[
+              { key: 'action', label: 'Event', isTitle: true, required: true },
+              { key: 'module', label: 'Subsystem', required: true },
+              { key: 'actorName', label: 'Actor / Service', required: true },
+              { key: 'severity', label: 'Level', type: 'select', options: ['INFO', 'WARNING', 'CRITICAL'], isBadge: true },
+              { key: 'timestamp', label: 'Timestamp' },
+              { key: 'details', label: 'Diagnostic Details', type: 'textarea', showInTable: false, optional: true },
             ]}
           />
         </div>

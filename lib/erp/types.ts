@@ -677,6 +677,7 @@ export interface VaultDocument {
 export type AuditSeverity = 'INFO' | 'WARNING' | 'CRITICAL';
 export type AuditModule =
   | 'AUTH'
+  | 'SYSTEM'
   | 'COMPANY'
   | 'FINANCE'
   | 'PROJECTS'

@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useERP } from '@/lib/erp/AuthContext';
 import { ConstructionQuotation, BOQItem, BOQSection } from '@/lib/erp/types';
 import { formatLKR } from '@/lib/erp/currency';
-import QuotationPDFModal from '@/components/erp/QuotationPDFModal';
+import DocumentStudioModal from '@/components/erp/DocumentStudioModal';
 import UniversalRecordManager from '@/components/erp/UniversalRecordManager';
 import {
   FileText,
@@ -26,7 +26,7 @@ function generateBoqItemId(idx: number): string {
 }
 
 export default function QuotationsPage() {
-  const { quotations, addQuotation, updateQuotationStatus, sendQuotationEmailAction } = useERP();
+  const { quotations, addQuotation, addInvoice, updateQuotationStatus, sendQuotationEmailAction } = useERP();
   const [searchTerm, setSearchTerm] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedQuotation, setSelectedQuotation] = useState<ConstructionQuotation | null>(null);
@@ -209,12 +209,52 @@ export default function QuotationsPage() {
         </div>
       </div>
 
-      {/* MODAL: Full PDF & Email Document Viewer */}
+      {/* MODAL: Customizable Document Studio & PDF */}
       {selectedQuotation && (
-        <QuotationPDFModal
-          quotation={selectedQuotation}
+        <DocumentStudioModal
+          doc={{
+            id: selectedQuotation.id,
+            mode: 'QUOTATION',
+            docNumber: selectedQuotation.quoteNumber,
+            clientName: selectedQuotation.clientName,
+            clientCompany: selectedQuotation.clientCompany,
+            clientEmail: selectedQuotation.clientEmail,
+            projectTitle: selectedQuotation.projectScope,
+            issueDate: selectedQuotation.createdDate?.slice(0, 10) || new Date().toISOString().split('T')[0],
+            dueDate: selectedQuotation.validUntil,
+            status: selectedQuotation.status,
+            items: selectedQuotation.boqItems.map((b) => ({
+              code: b.itemCode,
+              description: b.description,
+              unit: b.unit,
+              quantity: b.quantity,
+              unitPrice: b.unitRate,
+            })),
+            fallbackSubtotal: selectedQuotation.subtotal || selectedQuotation.grandTotal,
+            terms: selectedQuotation.termsAndConditions,
+          }}
           onClose={() => setSelectedQuotation(null)}
           onSendEmail={sendQuotationEmailAction}
+          onConvertToInvoice={(docData, computedTotal) => {
+            addInvoice({
+              clientName: docData.clientCompany || docData.clientName,
+              projectName: docData.projectTitle,
+              issueDate: new Date().toISOString().split('T')[0],
+              dueDate: new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0],
+              items: docData.items.map((it) => ({
+                description: it.description,
+                quantity: it.quantity,
+                rate: it.unitPrice,
+                amount: it.quantity * it.unitPrice,
+              })),
+              subtotal: docData.items.reduce((a, b) => a + b.quantity * b.unitPrice, 0),
+              tax: 0,
+              total: computedTotal,
+              status: 'PENDING',
+            });
+            updateQuotationStatus(selectedQuotation.id, 'ACCEPTED');
+            setSelectedQuotation(null);
+          }}
         />
       )}
 
