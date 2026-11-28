@@ -291,7 +291,7 @@ export default function HealthSafetyPage() {
           <div className="space-y-2.5 text-xs">
             {[
               { topic: 'Scaffolding Safety, Green Tag Inspection & Fall Arrest Protocols', date: '2026-10-28', attendees: 86, trainer: 'S. Ratnayake (HSE)' },
-              { topic: 'Hot Works & Electrical Arc Welding Hazard Mitigation', date: '2026-10-27', attendees: 54, trainer: 'Eng. Marcus Chen' },
+              { topic: 'Hot Works & Electrical Arc Welding Hazard Mitigation', date: '2026-10-27', attendees: 54, trainer: 'Eng. Kasun Jayawardena' },
               { topic: 'Crane Tagline Clearance & Exclusion Zone Enforcement', date: '2026-10-26', attendees: 92, trainer: 'Plant Safety Officer' },
             ].map((t, idx) => (
               <div key={idx} className="flex items-center justify-between p-3 rounded-xl bg-white/[0.02] border border-white/5">

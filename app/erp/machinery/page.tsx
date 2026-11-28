@@ -250,7 +250,7 @@ export default function MachineryPage() {
           </div>
 
           <UniversalRecordManager
-            title="Machinery Fleet Directory (MySQL CRUD, Sort & View Modes)"
+            title="Machinery Fleet Directory (Create, View, Edit, Delete & View Modes)"
             items={(selectedCategory === 'ALL' ? filteredMachinery : filteredMachinery.filter((m) => m.category === selectedCategory)) as unknown as Record<string, unknown>[]}
             createLabel="New Fleet Asset"
             searchPlaceholder="Search machinery by name, asset ID, site..."
@@ -609,7 +609,7 @@ export default function MachineryPage() {
                   type="submit"
                   className="px-4 py-2 rounded-xl bg-[#0038B8] hover:bg-[#1D4ED8] text-white font-bold text-xs cursor-pointer"
                 >
-                  Save to MySQL Fleet
+                  Save Fleet Asset
                 </button>
               </div>
             </form>

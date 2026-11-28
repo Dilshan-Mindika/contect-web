@@ -90,7 +90,7 @@ export async function GET(req: NextRequest) {
             phase: String(p.phase || 'DESIGN'),
             category: (String(p.category || 'PRIVATE') as 'GOVERNMENT' | 'PRIVATE'),
             siteEngineer: String(p.site_engineer),
-            projectManager: String(p.project_manager || 'Eng. Marcus Chen (VP Operations)'),
+            projectManager: String(p.project_manager || 'Eng. Kasun Jayawardena (VP Operations)'),
             cidaClassification: String(p.cida_classification || 'CIDA Grade CS2'),
             startDate: String(p.start_date).slice(0, 10),
             targetCompletion: String(p.target_completion).slice(0, 10),

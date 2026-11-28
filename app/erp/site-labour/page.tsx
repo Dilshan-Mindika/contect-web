@@ -236,7 +236,7 @@ export default function SiteLabourManagementPage() {
                   </div>
                   {!m.isVerified && (
                     <button
-                      onClick={() => verifyMusterRoll(m.id, 'Eng. Maya Lin (Structural Eng)')}
+                      onClick={() => verifyMusterRoll(m.id, 'Eng. Samantha Weerasinghe (Structural Eng)')}
                       className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs"
                     >
                       Verify as Engineer

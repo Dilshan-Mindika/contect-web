@@ -65,7 +65,7 @@ export default function SiteLogsPage() {
       drawingRef,
       visitorNotes,
       supervisorNotes: supervisorNotes || 'Shift concluded with all structural quality inspection checklists and cube samples logged.',
-      supervisorName: user?.name || 'Eng. Marcus Chen',
+      supervisorName: user?.name || 'Eng. Kasun Jayawardena',
       cubeTests: [
         {
           id: `cube-${Date.now()}`,
@@ -385,7 +385,7 @@ export default function SiteLogsPage() {
       )}
 
       <UniversalRecordManager
-        title="Daily Site Logs Directory (MySQL CRUD, Sort & View Modes)"
+        title="Daily Site Logs Directory (Create, View, Edit, Delete & View Modes)"
         defaultViewMode="DETAILED"
         items={siteLogs as unknown as Record<string, unknown>[]}
         createLabel="New Site Log"

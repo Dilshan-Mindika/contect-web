@@ -64,7 +64,7 @@ export default function CRMPage() {
       probability: 30,
       contactEmail: contactEmail || `tenders@${company.toLowerCase().replace(/[^a-z]/g, '')}.lk`,
       phone: phone || '+94 11 234 5678',
-      assignedTo: user?.name || 'Julian Voss (Commercial Director)',
+      assignedTo: user?.name || 'Tharindu Fernando (Commercial Director)',
       notes: notes || 'New engineering tender opportunity recorded in CRM pipeline.',
       cidaCategory,
       tenderDeadline: '2026-11-30',

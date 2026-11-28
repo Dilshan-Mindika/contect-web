@@ -428,7 +428,7 @@ export function ERPProvider({ children }: { children: React.ReactNode }) {
     setJournalEntries((prev) =>
       prev.map((jv) =>
         jv.id === id
-          ? { ...jv, isPosted: true, postedAt: new Date().toISOString(), postedBy: user?.name || 'Arthur Sterling (CFO)' }
+          ? { ...jv, isPosted: true, postedAt: new Date().toISOString(), postedBy: user?.name || 'Ruwan Bandara (CFO)' }
           : jv
       )
     );

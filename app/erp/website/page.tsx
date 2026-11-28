@@ -286,7 +286,7 @@ export default function WebsiteProjectsManagerPage() {
             <span>Website Projects Manager</span>
           </h1>
           <p className="text-xs sm:text-sm text-zinc-400 mt-1">
-            Dedicated MySQL-backed portfolio manager for <span className="text-[#FFB800] font-semibold">/projects</span>.
+            Dedicated portfolio manager for <span className="text-[#FFB800] font-semibold">/projects</span>.
             {saving && <span className="ml-2 text-emerald-400 font-semibold">• Syncing to database...</span>}
           </p>
         </div>
@@ -323,7 +323,7 @@ export default function WebsiteProjectsManagerPage() {
           {
             label: 'Total Showcase Projects',
             value: publicProjects.length,
-            subtitle: 'Live in MySQL public_projects',
+            subtitle: 'Published to /projects',
             accent: 'blue',
             icon: <Globe className="w-4 h-4" />,
           },
@@ -583,7 +583,7 @@ export default function WebsiteProjectsManagerPage() {
             <div className="flex items-center justify-between pb-3 border-b border-white/10">
               <h3 className="text-lg font-bold text-white flex items-center gap-2">
                 <Building2 className="w-5 h-5 text-[#FFB800]" />
-                <span>{editingProject ? 'Edit Public Project (MySQL)' : 'Add New Public Project (MySQL)'}</span>
+                <span>{editingProject ? 'Edit Public Project' : 'Add New Public Project'}</span>
               </h3>
               <button
                 onClick={() => setShowModal(false)}
@@ -882,7 +882,7 @@ export default function WebsiteProjectsManagerPage() {
                   className="px-6 py-2 rounded-xl bg-gradient-to-r from-[#0038B8] to-[#1D4ED8] text-white font-bold flex items-center gap-1.5 cursor-pointer"
                 >
                   <Check className="w-4 h-4 text-[#FFB800]" />
-                  <span>Save to MySQL &amp; Publish</span>
+                  <span>Save &amp; Publish</span>
                 </button>
               </div>
             </form>

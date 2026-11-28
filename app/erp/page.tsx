@@ -155,18 +155,8 @@ export default function ERPDashboardPage() {
         <div>
           <div className="flex flex-wrap items-center gap-2.5">
             <h1 className="text-2xl sm:text-3xl font-extrabold text-white">
-              Welcome back, {user?.name || 'Elena Vance'}
+              Welcome back, {user?.name || 'Dilshan Perera'}
             </h1>
-            <span
-              className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border flex items-center gap-1 ${
-                dbStatus.connected
-                  ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300'
-                  : 'bg-amber-500/15 border-amber-500/30 text-amber-300'
-              }`}
-            >
-              <Database className="w-3 h-3" />
-              <span>{dbStatus.connected ? `MySQL Live (${dbStatus.database || 'contec_erp'})` : 'Offline Cache'}</span>
-            </span>
           </div>
           <p className="text-xs sm:text-sm text-zinc-400 mt-1">
             Department: <span className="text-[#FFB800] font-semibold">{user?.department || 'Executive Board'}</span> • Executive overview across projects, finance, and client inquiries.

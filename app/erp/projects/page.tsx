@@ -74,8 +74,8 @@ export default function ProjectsPage() {
   const [phase, setPhase] = useState<ProjectPhase>('FOUNDATION');
   const [category, setCategory] = useState<'GOVERNMENT' | 'PRIVATE'>('GOVERNMENT');
   const [cidaClassification, setCidaClassification] = useState('Building & Heavy Civil (CIDA Grade CS2)');
-  const [siteEngineerInput, setSiteEngineerInput] = useState('Eng. Maya Lin (Chartered Structural Eng)');
-  const [projectManager, setProjectManager] = useState('Eng. Marcus Chen (VP Operations)');
+  const [siteEngineerInput, setSiteEngineerInput] = useState('Eng. Samantha Weerasinghe (Chartered Structural Eng)');
+  const [projectManager, setProjectManager] = useState('Eng. Kasun Jayawardena (VP Operations)');
   const [consultantArchitect, setConsultantArchitect] = useState('');
   const [soilFoundationType, setSoilFoundationType] = useState('Rock-Anchored / Bored Piles');
   const [permitNumber, setPermitNumber] = useState('');
@@ -100,7 +100,7 @@ export default function ProjectsPage() {
     setCategory(p.category === 'GOVERNMENT' ? 'GOVERNMENT' : 'PRIVATE');
     setCidaClassification(p.cidaClassification || 'CIDA Grade CS2');
     setSiteEngineerInput(p.siteEngineer);
-    setProjectManager(p.projectManager || 'Eng. Marcus Chen');
+    setProjectManager(p.projectManager || 'Eng. Kasun Jayawardena');
     setTargetCompletion(p.targetCompletion);
     setShowNewModal(true);
   };
@@ -134,8 +134,8 @@ export default function ProjectsPage() {
       progress: 5,
       phase,
       category,
-      siteEngineer: siteEngineerInput || user?.name || 'Eng. Maya Lin',
-      projectManager: projectManager || 'Eng. Marcus Chen',
+      siteEngineer: siteEngineerInput || user?.name || 'Eng. Samantha Weerasinghe',
+      projectManager: projectManager || 'Eng. Kasun Jayawardena',
       consultantArchitect,
       soilFoundationType,
       permitNumber,
@@ -596,12 +596,12 @@ export default function ProjectsPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="p-4 rounded-xl bg-black/40 border border-white/5 space-y-2">
                 <span className="text-[10px] font-mono uppercase text-blue-300">Project Director</span>
-                <div className="font-bold text-white text-sm">Elena Vance (CEO)</div>
+                <div className="font-bold text-white text-sm">Dilshan Perera (CEO)</div>
                 <p className="text-xs text-zinc-400">Corporate sponsor & employer liaison</p>
               </div>
               <div className="p-4 rounded-xl bg-black/40 border border-white/5 space-y-2">
                 <span className="text-[10px] font-mono uppercase text-amber-300">Project Manager</span>
-                <div className="font-bold text-white text-sm">Eng. Marcus Chen</div>
+                <div className="font-bold text-white text-sm">Eng. Kasun Jayawardena</div>
                 <p className="text-xs text-zinc-400">Daily site operations & contractor control</p>
               </div>
               <div className="p-4 rounded-xl bg-black/40 border border-white/5 space-y-2">

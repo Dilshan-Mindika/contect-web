@@ -26,7 +26,7 @@ export const INITIAL_LEADS: CRMLead[] = [
     probability: 85,
     contactEmail: 'tenders@portcity-developments.lk',
     phone: '+94 11 289 0011',
-    assignedTo: 'Julian Voss (Commercial Director)',
+    assignedTo: 'Tharindu Fernando (Commercial Director)',
     lastUpdated: '2026-10-28',
     notes: 'Final CIDA Grade CS2 structural compliance review complete. Ready for contract signing upon steel price index locking.',
     cidaCategory: 'Building (CIDA CS2)',
@@ -42,7 +42,7 @@ export const INITIAL_LEADS: CRMLead[] = [
     probability: 70,
     contactEmail: 'projects@centralhills.lk',
     phone: '+94 81 223 4567',
-    assignedTo: 'Maya Lin (Principal Architect)',
+    assignedTo: 'Samantha Weerasinghe (Principal Architect)',
     lastUpdated: '2026-10-27',
     notes: 'Submitted geotechnical soil stabilization and cantilevered mass-timber structural BOQ.',
     cidaCategory: 'Building & Earthworks (CIDA C1)',
@@ -58,7 +58,7 @@ export const INITIAL_LEADS: CRMLead[] = [
     probability: 55,
     contactEmail: 'procurement@uda.gov.lk',
     phone: '+94 11 287 5900',
-    assignedTo: 'Arthur Sterling (CFO)',
+    assignedTo: 'Ruwan Bandara (CFO)',
     lastUpdated: '2026-10-25',
     notes: 'BIM Level 3 structural submittal under review by Government Chief Consulting Engineer.',
     cidaCategory: 'Heavy Civil Infrastructure (CIDA CS2)',
@@ -74,7 +74,7 @@ export const INITIAL_LEADS: CRMLead[] = [
     probability: 100,
     contactEmail: 'logistics.expansion@elephanthouse.lk',
     phone: '+94 11 244 5566',
-    assignedTo: 'Marcus Chen (Operations Head)',
+    assignedTo: 'Kasun Jayawardena (Operations Head)',
     lastUpdated: '2026-10-24',
     notes: 'Contract executed. Advance Payment Guarantee of 20% issued. Piling rig mobilization on-site.',
     cidaCategory: 'Industrial & Structural Steel (CIDA C2)',
@@ -90,7 +90,7 @@ export const INITIAL_LEADS: CRMLead[] = [
     probability: 35,
     contactEmail: 'inquiries@galleheritage.com',
     phone: '+94 91 222 3400',
-    assignedTo: 'Julian Voss (Commercial Director)',
+    assignedTo: 'Tharindu Fernando (Commercial Director)',
     lastUpdated: '2026-10-28',
     notes: 'Inbound tender inquiry via public website consultation portal. Initial site reconnaissance scheduled.',
     cidaCategory: 'Specialized Building (CIDA C3)',
@@ -173,7 +173,7 @@ export const INITIAL_PROJECTS: Project[] = [
     spent: 1463000000, // LKR 1.463 Billion
     progress: 38,
     phase: 'FOUNDATION',
-    siteEngineer: 'Eng. Maya Lin (Chartered Structural Eng)',
+    siteEngineer: 'Eng. Samantha Weerasinghe (Chartered Structural Eng)',
     startDate: '2026-04-10',
     targetCompletion: '2027-12-15',
     cidaClassification: 'Building & Marine (CIDA Grade CS2)',
@@ -183,8 +183,8 @@ export const INITIAL_PROJECTS: Project[] = [
     spi: 0.96,
     ladAmountPerDayLkr: 250000,
     tasks: [
-      { id: 't-1', title: 'Deep bored pile integrity testing (PIT) & sonic logging', status: 'COMPLETED', priority: 'HIGH', assignee: 'Eng. Maya Lin', dueDate: '2026-10-15' },
-      { id: 't-2', title: 'Level B2 concrete slab reinforcement tie-in (T25/T32)', status: 'IN_PROGRESS', priority: 'CRITICAL', assignee: 'Eng. Marcus Chen', dueDate: '2026-11-05' },
+      { id: 't-1', title: 'Deep bored pile integrity testing (PIT) & sonic logging', status: 'COMPLETED', priority: 'HIGH', assignee: 'Eng. Samantha Weerasinghe', dueDate: '2026-10-15' },
+      { id: 't-2', title: 'Level B2 concrete slab reinforcement tie-in (T25/T32)', status: 'IN_PROGRESS', priority: 'CRITICAL', assignee: 'Eng. Kasun Jayawardena', dueDate: '2026-11-05' },
       { id: 't-3', title: 'Liebherr Tower Crane #1 mast collar seismic tie-back', status: 'REVIEW', priority: 'HIGH', assignee: 'Plant Engineering Dept', dueDate: '2026-11-12' },
       { id: 't-4', title: 'Sub-sea elastomeric waterproofing membrane inspection', status: 'BACKLOG', priority: 'MEDIUM', assignee: 'QA/QC Lead', dueDate: '2026-11-20' },
     ],
@@ -199,7 +199,7 @@ export const INITIAL_PROJECTS: Project[] = [
     spent: 1462500000, // LKR 1.4625 Billion
     progress: 65,
     phase: 'STRUCTURAL',
-    siteEngineer: 'Eng. Marcus Chen & Eng. Elena Vance',
+    siteEngineer: 'Eng. Kasun Jayawardena & Eng. Dilshan Perera',
     startDate: '2025-08-01',
     targetCompletion: '2027-03-30',
     cidaClassification: 'Building & Civil (CIDA Grade CS2)',
@@ -209,7 +209,7 @@ export const INITIAL_PROJECTS: Project[] = [
     spi: 1.03,
     ladAmountPerDayLkr: 180000,
     tasks: [
-      { id: 't-5', title: 'Level 4 cantilevered structural concrete frame casting', status: 'IN_PROGRESS', priority: 'CRITICAL', assignee: 'Eng. Marcus Chen', dueDate: '2026-11-08' },
+      { id: 't-5', title: 'Level 4 cantilevered structural concrete frame casting', status: 'IN_PROGRESS', priority: 'CRITICAL', assignee: 'Eng. Kasun Jayawardena', dueDate: '2026-11-08' },
       { id: 't-6', title: 'Double-glazed thermal curtain wall glazing installation', status: 'IN_PROGRESS', priority: 'MEDIUM', assignee: 'Façade Specialist', dueDate: '2026-11-25' },
       { id: 't-7', title: 'Central HVAC variable refrigerant volume (VRV) shaft risers', status: 'BACKLOG', priority: 'HIGH', assignee: 'MEP Services Lead', dueDate: '2026-12-10' },
     ],
@@ -371,7 +371,7 @@ export const INITIAL_PURCHASE_ORDERS: PurchaseOrder[] = [
     totalAmount: 17250000, // LKR 17.25 Million (50 Tons T25 Rebar)
     status: 'APPROVED',
     itemsCount: 50,
-    approvedBy: 'Arthur Sterling (CFO)',
+    approvedBy: 'Ruwan Bandara (CFO)',
   },
   {
     id: 'po-503',
@@ -381,7 +381,7 @@ export const INITIAL_PURCHASE_ORDERS: PurchaseOrder[] = [
     totalAmount: 12750000, // LKR 12.75 Million (300 m³ G40)
     status: 'DISPATCHED',
     itemsCount: 300,
-    approvedBy: 'Elena Vance (Managing Director)',
+    approvedBy: 'Dilshan Perera (Managing Director)',
   },
   {
     id: 'po-504',
@@ -391,7 +391,7 @@ export const INITIAL_PURCHASE_ORDERS: PurchaseOrder[] = [
     totalAmount: 4750000, // LKR 4.75 Million
     status: 'FULFILLED',
     itemsCount: 500,
-    approvedBy: 'Arthur Sterling (CFO)',
+    approvedBy: 'Ruwan Bandara (CFO)',
   },
 ];
 
@@ -399,7 +399,7 @@ export const INITIAL_EMPLOYEES: Employee[] = [
   {
     id: 'emp-01',
     empId: 'CNT-001',
-    name: 'Eng. Elena Vance',
+    name: 'Eng. Dilshan Perera',
     role: 'Managing Director & Chartered Civil Engineer',
     department: 'Executive Board',
     email: 'admin@contec.com',
@@ -415,7 +415,7 @@ export const INITIAL_EMPLOYEES: Employee[] = [
   {
     id: 'emp-02',
     empId: 'CNT-002',
-    name: 'Arthur Sterling',
+    name: 'Ruwan Bandara',
     role: 'Chief Financial Officer & Cost Controller',
     department: 'Corporate Finance',
     email: 'finance@contec.com',
@@ -431,7 +431,7 @@ export const INITIAL_EMPLOYEES: Employee[] = [
   {
     id: 'emp-03',
     empId: 'CNT-003',
-    name: 'Eng. Marcus Chen',
+    name: 'Eng. Kasun Jayawardena',
     role: 'VP of Construction & Heavy Civil Operations',
     department: 'Field Operations',
     email: 'operations@contec.com',
@@ -447,7 +447,7 @@ export const INITIAL_EMPLOYEES: Employee[] = [
   {
     id: 'emp-04',
     empId: 'CNT-004',
-    name: 'Eng. Maya Lin',
+    name: 'Eng. Samantha Weerasinghe',
     role: 'Principal Structural Architect & BIM Director',
     department: 'Structural Engineering',
     email: 'architect@contec.com',
@@ -523,7 +523,7 @@ export const INITIAL_AUDIT_LOGS: AuditLog[] = [
   {
     id: 'log-101',
     timestamp: '2026-10-28 14:48:12 UTC',
-    actorName: 'Arthur Sterling',
+    actorName: 'Ruwan Bandara',
     actorEmail: 'finance@contec.com',
     role: 'FINANCE_DIRECTOR',
     action: 'IPC_VERIFIED',
@@ -535,7 +535,7 @@ export const INITIAL_AUDIT_LOGS: AuditLog[] = [
   {
     id: 'log-102',
     timestamp: '2026-10-28 12:15:04 UTC',
-    actorName: 'Elena Vance',
+    actorName: 'Dilshan Perera',
     actorEmail: 'admin@contec.com',
     role: 'SUPER_ADMIN',
     action: 'POLICY_OVERRIDE',
@@ -547,7 +547,7 @@ export const INITIAL_AUDIT_LOGS: AuditLog[] = [
   {
     id: 'log-103',
     timestamp: '2026-10-28 09:30:21 UTC',
-    actorName: 'Marcus Chen',
+    actorName: 'Kasun Jayawardena',
     actorEmail: 'operations@contec.com',
     role: 'OPERATIONS_HEAD',
     action: 'PO_APPROVAL',
@@ -659,7 +659,7 @@ export const INITIAL_SITE_LOGS: SiteDailyLog[] = [
     oshaStatus: 'COMPLIANT',
     toolboxTalkTopic: 'Safe Working at Heights & Fall Arrest Harness Inspection',
     supervisorNotes: 'Level B2 foundation raft pour completed smoothly. 14 ready-mix trucks discharged from Insee Peliyagoda plant. 6 cube samples taken for 7-day and 28-day testing.',
-    supervisorName: 'Eng. Marcus Chen & Site QA Lead',
+    supervisorName: 'Eng. Kasun Jayawardena & Site QA Lead',
     cubeTests: [
       {
         id: 'cube-01',
@@ -704,7 +704,7 @@ export const INITIAL_SITE_LOGS: SiteDailyLog[] = [
     oshaStatus: 'COMPLIANT',
     toolboxTalkTopic: 'Electrical Safety in Wet Weather & Scaffold Grounding',
     supervisorNotes: 'Tower crane operational after morning rain cleared. Level 4 concrete columns poured with Tokyo Super G35 mix. Rain delay of 1.5 hrs logged.',
-    supervisorName: 'Eng. Maya Lin',
+    supervisorName: 'Eng. Samantha Weerasinghe',
     cubeTests: [
       {
         id: 'cube-03',
@@ -1010,9 +1010,9 @@ export const INITIAL_COMPANIES: CompanyProfile[] = [
     depreciationPolicy: 'STRAIGHT_LINE',
     inventoryValuation: 'FIFO',
     directors: [
-      { id: 'dir-01', name: 'Elena Vance', designation: 'Managing Director & CEO', nic: '198421004812', isSignatory: true, signingLimitLkr: 150000000, email: 'elena.vance@contec.lk', phone: '+94 77 123 4567' },
-      { id: 'dir-02', name: 'Arthur Sterling', designation: 'Chief Financial Officer & Secretary', nic: '197904001920', isSignatory: true, signingLimitLkr: 75000000, email: 'arthur.sterling@contec.lk', phone: '+94 77 234 5678' },
-      { id: 'dir-03', name: 'Marcus Chen', designation: 'Director of Site Operations', nic: '198115009831', isSignatory: true, signingLimitLkr: 25000000, email: 'marcus.chen@contec.lk', phone: '+94 77 345 6789' },
+      { id: 'dir-01', name: 'Dilshan Perera', designation: 'Managing Director & CEO', nic: '198421004812', isSignatory: true, signingLimitLkr: 150000000, email: 'elena.vance@contec.lk', phone: '+94 77 123 4567' },
+      { id: 'dir-02', name: 'Ruwan Bandara', designation: 'Chief Financial Officer & Secretary', nic: '197904001920', isSignatory: true, signingLimitLkr: 75000000, email: 'arthur.sterling@contec.lk', phone: '+94 77 234 5678' },
+      { id: 'dir-03', name: 'Kasun Jayawardena', designation: 'Director of Site Operations', nic: '198115009831', isSignatory: true, signingLimitLkr: 25000000, email: 'marcus.chen@contec.lk', phone: '+94 77 345 6789' },
     ],
     bankAccounts: [
       { id: 'bk-a-01', bankName: 'Commercial Bank of Ceylon', branch: 'Corporate Branch, Colombo 01', accountNumber: '1000-8491-0021', accountType: 'CURRENT', currency: 'LKR', balanceLkr: 184500000, swiftCode: 'COMBCLKX' },
@@ -1054,8 +1054,8 @@ export const INITIAL_COMPANIES: CompanyProfile[] = [
     depreciationPolicy: 'REDUCING_BALANCE',
     inventoryValuation: 'WEIGHTED_AVG',
     directors: [
-      { id: 'dir-b-01', name: 'Marcus Chen', designation: 'Managing Director (Plant)', nic: '198115009831', isSignatory: true, signingLimitLkr: 100000000, email: 'marcus.chen@contecplant.lk', phone: '+94 77 345 6789' },
-      { id: 'dir-b-02', name: 'Elena Vance', designation: 'Director (Group)', nic: '198421004812', isSignatory: true, signingLimitLkr: 150000000, email: 'elena.vance@contec.lk', phone: '+94 77 123 4567' },
+      { id: 'dir-b-01', name: 'Kasun Jayawardena', designation: 'Managing Director (Plant)', nic: '198115009831', isSignatory: true, signingLimitLkr: 100000000, email: 'marcus.chen@contecplant.lk', phone: '+94 77 345 6789' },
+      { id: 'dir-b-02', name: 'Dilshan Perera', designation: 'Director (Group)', nic: '198421004812', isSignatory: true, signingLimitLkr: 150000000, email: 'elena.vance@contec.lk', phone: '+94 77 123 4567' },
       { id: 'dir-b-03', name: 'Samantha Perera', designation: 'General Manager - Fleet & Heavy Logistics', nic: '198829003411', isSignatory: true, signingLimitLkr: 15000000, email: 'samantha.perera@contecplant.lk', phone: '+94 77 456 7890' },
     ],
     bankAccounts: [
@@ -1119,7 +1119,7 @@ export const INITIAL_JOURNALS: JournalEntry[] = [
     totalCreditLkr: 168800000,
     isPosted: true,
     postedAt: '2026-10-25 14:30:00',
-    postedBy: 'Arthur Sterling (CFO)',
+    postedBy: 'Ruwan Bandara (CFO)',
     lines: [
       { accountId: 'gl-a-1110', accountCode: '1110', accountName: 'Trade Receivables (Certified Interim IPC)', debitLkr: 168800000, creditLkr: 0, projectCode: 'CNT-PRJ-241' },
       { accountId: 'gl-a-1120', accountCode: '1120', accountName: 'Retention Monies Receivable (5%)', debitLkr: 8000000, creditLkr: 0, projectCode: 'CNT-PRJ-241' },
@@ -1170,7 +1170,7 @@ export const INITIAL_MUSTER_ROLLS: DailyLabourMusterRoll[] = [
     projectCode: 'CNT-PRJ-241',
     date: '2026-10-28',
     supervisorName: 'S. K. Dharmadasa (Site Foreman)',
-    engineerVerifiedBy: 'Eng. Maya Lin (Structural Eng)',
+    engineerVerifiedBy: 'Eng. Samantha Weerasinghe (Structural Eng)',
     isVerified: true,
     totalWorkersPresent: 48,
     totalWageCostLkr: 182400,
@@ -1217,7 +1217,7 @@ export const INITIAL_PURCHASE_REQS: PurchaseRequisition[] = [
     companyId: 'COMP_A',
     projectId: 'prj-01',
     projectCode: 'CNT-PRJ-241',
-    requestedBy: 'Eng. Maya Lin (Structural Eng)',
+    requestedBy: 'Eng. Samantha Weerasinghe (Structural Eng)',
     requiredDate: '2026-11-05',
     itemName: 'High-Yield Deformed Tor Steel (BS 4449 G500B: 25mm)',
     category: 'Structural Steel',
@@ -1255,7 +1255,7 @@ export const INITIAL_GRNS: GoodsReceivedNote[] = [
     supplierName: 'Ceylon Heavy Steel Ltd',
     receivedDate: '2026-10-24',
     invoiceNumber: 'CHS-INV-2026-904',
-    inspectedBy: 'Eng. Marcus Chen (QA/QC Lead)',
+    inspectedBy: 'Eng. Kasun Jayawardena (QA/QC Lead)',
     qualityPassed: true,
     itemsReceived: [
       { itemSku: 'STEEL-RB-500B', name: 'High-Yield Tor Steel 25mm', orderedQty: 240, receivedQty: 240, damagedQty: 0, unit: 'Metric Tons' },
@@ -1298,7 +1298,7 @@ export const INITIAL_MINS: MaterialIssueNote[] = [
     projectCode: 'CNT-PRJ-241',
     issueDate: '2026-10-26',
     storekeeperName: 'T. M. Nazeer',
-    receiverName: 'Eng. Maya Lin',
+    receiverName: 'Eng. Samantha Weerasinghe',
     totalMaterialCostLkr: 31050000,
     items: [
       { itemSku: 'STEEL-RB-500B', name: 'Tor Steel Rebar 25mm', qtyIssued: 90, unit: 'Metric Tons', unitRateLkr: 345000, amountLkr: 31050000 },
@@ -1490,10 +1490,10 @@ export const INITIAL_SAFETY_INCIDENTS: SafetyIncidentLog[] = [
 
 // Module 12: Central Document Vault
 export const INITIAL_VAULT_DOCUMENTS: VaultDocument[] = [
-  { id: 'doc-01', companyId: 'COMP_A', documentRefNumber: 'DOC-A-CNT-2026-001', title: 'CIDA CS2 Accreditation Certificate & Schedule 2026-2027', category: 'CONTRACT', fileFormat: 'PDF', fileSizeKb: 3420, uploadDate: '2026-01-15', uploadedBy: 'Arthur Sterling', tags: ['CIDA', 'Accreditation', 'CS2', 'Legal'], isConfidential: false },
-  { id: 'doc-02', companyId: 'COMP_A', documentRefNumber: 'DOC-A-PRJ-241-CT', title: 'Port City Marina Contract Agreement & FIDIC Conditions of Contract', category: 'CONTRACT', relatedEntityId: 'prj-01', fileFormat: 'PDF', fileSizeKb: 18450, uploadDate: '2026-04-10', uploadedBy: 'Elena Vance', tags: ['PortCity', 'FIDIC', 'Contract', 'Signed'], isConfidential: true },
-  { id: 'doc-03', companyId: 'COMP_A', documentRefNumber: 'DOC-A-IPC-005-CERT', title: 'Interim Payment Certificate #05 Certified Measurement Sheets & Breakdown', category: 'CIDA_IPC', relatedEntityId: 'inv-1001', fileFormat: 'PDF', fileSizeKb: 5120, uploadDate: '2026-10-15', uploadedBy: 'Eng. Maya Lin', tags: ['IPC', 'Billing', 'PortCity', 'NBRO'], isConfidential: false },
+  { id: 'doc-01', companyId: 'COMP_A', documentRefNumber: 'DOC-A-CNT-2026-001', title: 'CIDA CS2 Accreditation Certificate & Schedule 2026-2027', category: 'CONTRACT', fileFormat: 'PDF', fileSizeKb: 3420, uploadDate: '2026-01-15', uploadedBy: 'Ruwan Bandara', tags: ['CIDA', 'Accreditation', 'CS2', 'Legal'], isConfidential: false },
+  { id: 'doc-02', companyId: 'COMP_A', documentRefNumber: 'DOC-A-PRJ-241-CT', title: 'Port City Marina Contract Agreement & FIDIC Conditions of Contract', category: 'CONTRACT', relatedEntityId: 'prj-01', fileFormat: 'PDF', fileSizeKb: 18450, uploadDate: '2026-04-10', uploadedBy: 'Dilshan Perera', tags: ['PortCity', 'FIDIC', 'Contract', 'Signed'], isConfidential: true },
+  { id: 'doc-03', companyId: 'COMP_A', documentRefNumber: 'DOC-A-IPC-005-CERT', title: 'Interim Payment Certificate #05 Certified Measurement Sheets & Breakdown', category: 'CIDA_IPC', relatedEntityId: 'inv-1001', fileFormat: 'PDF', fileSizeKb: 5120, uploadDate: '2026-10-15', uploadedBy: 'Eng. Samantha Weerasinghe', tags: ['IPC', 'Billing', 'PortCity', 'NBRO'], isConfidential: false },
   { id: 'doc-04', companyId: 'COMP_B', documentRefNumber: 'DOC-B-PLANT-FLEET', title: 'Liebherr 280 EC-H & CAT 349D Telematics & Maintenance Logbook', category: 'PURCHASE_ORDER', fileFormat: 'EXCEL', fileSizeKb: 1420, uploadDate: '2026-10-20', uploadedBy: 'Samantha Perera', tags: ['Plant', 'Liebherr', 'Maintenance'], isConfidential: false },
-  { id: 'doc-05', companyId: 'COMP_A', documentRefNumber: 'DOC-A-EPF-ETF-SEP26', title: 'Central Bank of Sri Lanka EPF & ETF Monthly Contribution Schedule Sep 2026', category: 'PAYROLL_SHEET', fileFormat: 'PDF', fileSizeKb: 890, uploadDate: '2026-10-05', uploadedBy: 'Sophia Al-Mansoor', tags: ['HR', 'EPF', 'ETF', 'Statutory'], isConfidential: true },
+  { id: 'doc-05', companyId: 'COMP_A', documentRefNumber: 'DOC-A-EPF-ETF-SEP26', title: 'Central Bank of Sri Lanka EPF & ETF Monthly Contribution Schedule Sep 2026', category: 'PAYROLL_SHEET', fileFormat: 'PDF', fileSizeKb: 890, uploadDate: '2026-10-05', uploadedBy: 'Nadeesha Senanayake', tags: ['HR', 'EPF', 'ETF', 'Statutory'], isConfidential: true },
 ];
 

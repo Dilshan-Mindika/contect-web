@@ -42,7 +42,7 @@ export default function InventoryPage() {
   // MIN Form State
   const [minProjectCode, setMinProjectCode] = useState(projects[0]?.code || 'CNT-PRJ-241');
   const [minStoreCode, setMinStoreCode] = useState('ST-PORTCITY');
-  const [minReceiver, setMinReceiver] = useState('Eng. Maya Lin');
+  const [minReceiver, setMinReceiver] = useState('Eng. Samantha Weerasinghe');
   const [minSku, setMinSku] = useState(inventory[0]?.sku || 'STEEL-RB-500B');
   const [minQty, setMinQty] = useState(10);
 
@@ -248,7 +248,7 @@ export default function InventoryPage() {
       {activeTab === 'STOCK' && (
         <div className="space-y-4">
           <UniversalRecordManager
-            title="Materials Inventory Registry (MySQL CRUD, Sort & View Modes)"
+            title="Materials Inventory Registry (Create, View, Edit, Delete & View Modes)"
             defaultViewMode="DETAILED"
             items={filteredInventory as unknown as Record<string, unknown>[]}
             createLabel="Add Material"

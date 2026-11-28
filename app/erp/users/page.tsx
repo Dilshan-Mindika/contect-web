@@ -275,7 +275,7 @@ export default function UsersAccessControlPage() {
       <ModuleAnalytics
         title="Identity & Access Control Metrics"
         stats={[
-          { label: 'Total ERP Accounts', value: users.length, subtitle: 'Stored in MySQL erp_users', accent: 'blue', icon: <Users className="w-4 h-4" /> },
+          { label: 'Total ERP Accounts', value: users.length, subtitle: 'Active ERP accounts', accent: 'blue', icon: <Users className="w-4 h-4" /> },
           { label: 'Active Sessions Eligible', value: activeCount, subtitle: 'Verified active users', accent: 'emerald', icon: <ShieldCheck className="w-4 h-4" /> },
           { label: 'Suspended / Locked', value: suspendedCount, subtitle: 'Blocked at login gate', accent: suspendedCount > 0 ? 'amber' : 'blue', icon: <Lock className="w-4 h-4" /> },
           { label: 'Privileged Admins', value: adminCount, subtitle: 'Hold admin_settings scope', accent: 'gold', icon: <Key className="w-4 h-4" /> },
@@ -315,7 +315,7 @@ export default function UsersAccessControlPage() {
       />
 
       {loading ? (
-        <div className="p-8 text-center text-xs text-zinc-400">Loading RBAC directory from MySQL...</div>
+        <div className="p-8 text-center text-xs text-zinc-400">Loading user directory...</div>
       ) : viewMode === 'DETAILED' ? (
         <div className="rounded-2xl bg-[#080e1c]/90 border border-white/10 overflow-x-auto">
           <table className="w-full text-left text-xs">

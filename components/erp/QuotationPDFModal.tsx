@@ -304,7 +304,7 @@ export default function QuotationPDFModal({ quotation, onClose, onSendEmail }: P
                 Authorized By (Executive Board):
               </span>
               <div className="border-t border-white/30 print:border-zinc-400 pt-1 font-semibold text-white print:text-black">
-                Eng. Elena Vance, C.Eng MIE-SL
+                Eng. Dilshan Perera, C.Eng MIE-SL
               </div>
               <div className="text-[11px] text-zinc-400 print:text-zinc-600">
                 Managing Director & Chartered Engineer

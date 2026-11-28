@@ -641,7 +641,7 @@ export default function AuditAndVaultPage() {
         <div className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="p-4 rounded-2xl bg-[#080e1c]/90 border border-white/10">
-              <div className="text-[11px] font-mono text-zinc-400">MySQL Pool Health</div>
+              <div className="text-[11px] font-mono text-zinc-400">Database Health</div>
               <div className={`text-xl font-extrabold mt-1 ${sysInfo?.database?.connected ? 'text-emerald-400' : 'text-amber-400'}`}>
                 {sysInfo?.database?.connected ? `ONLINE (${sysInfo.database.latencyMs} ms)` : 'Checking / Fallback'}
               </div>
@@ -672,7 +672,7 @@ export default function AuditAndVaultPage() {
 
           {sysInfo?.database?.tableCounts && (
             <div className="p-5 rounded-2xl bg-[#080e1c]/90 border border-white/10 space-y-3">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-300 font-mono">Live MySQL Table Row Telemetry</h3>
+              <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-300 font-mono">Live Table Row Telemetry</h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
                 {Object.entries(sysInfo.database.tableCounts).map(([tbl, cnt]) => (
                   <div key={tbl} className="p-3 rounded-xl bg-white/5 border border-white/5 flex items-center justify-between text-xs font-mono">

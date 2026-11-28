@@ -88,12 +88,12 @@ async function seed() {
     await connection.query(`
       INSERT INTO users (id, name, email, role, title, department, avatar, password_hash)
       VALUES 
-      ('usr_admin_01', 'Eng. Elena Vance', 'director@contec.com', 'SUPER_ADMIN', 'Managing Director & Chartered Civil Engineer', 'Executive Board', 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150', 'Dila1011@'),
-      ('usr_fin_02', 'Arthur Sterling', 'finance@contec.com', 'FINANCE_DIRECTOR', 'Chief Financial Officer & Cost Controller', 'Corporate Finance', 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150', 'Dila1011@'),
-      ('usr_ops_03', 'Eng. Marcus Chen', 'operations@contec.com', 'OPERATIONS_HEAD', 'VP of Construction & Site Ops', 'Field Operations', 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150', 'Dila1011@'),
-      ('usr_hr_04', 'Sophia Al-Mansoor', 'hr@contec.com', 'HR_MANAGER', 'Chief People Officer', 'People & Culture', 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150', 'Dila1011@'),
-      ('usr_sales_05', 'Julian Voss', 'sales@contec.com', 'SALES_DIRECTOR', 'VP of Commercial & Tenders', 'Commercial & CRM', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150', 'Dila1011@'),
-      ('usr_eng_06', 'Eng. Maya Lin', 'architect@contec.com', 'PROJECT_ENGINEER', 'Principal Structural Architect & BIM Lead', 'Structural Engineering', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150', 'Dila1011@'),
+      ('usr_admin_01', 'Eng. Dilshan Perera', 'director@contec.com', 'SUPER_ADMIN', 'Managing Director & Chartered Civil Engineer', 'Executive Board', 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150', 'Dila1011@'),
+      ('usr_fin_02', 'Ruwan Bandara', 'finance@contec.com', 'FINANCE_DIRECTOR', 'Chief Financial Officer & Cost Controller', 'Corporate Finance', 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150', 'Dila1011@'),
+      ('usr_ops_03', 'Eng. Kasun Jayawardena', 'operations@contec.com', 'OPERATIONS_HEAD', 'VP of Construction & Site Ops', 'Field Operations', 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150', 'Dila1011@'),
+      ('usr_hr_04', 'Nadeesha Senanayake', 'hr@contec.com', 'HR_MANAGER', 'Chief People Officer', 'People & Culture', 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150', 'Dila1011@'),
+      ('usr_sales_05', 'Tharindu Fernando', 'sales@contec.com', 'SALES_DIRECTOR', 'VP of Commercial & Tenders', 'Commercial & CRM', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150', 'Dila1011@'),
+      ('usr_eng_06', 'Eng. Samantha Weerasinghe', 'architect@contec.com', 'PROJECT_ENGINEER', 'Principal Structural Architect & BIM Lead', 'Structural Engineering', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150', 'Dila1011@'),
       ('usr_qs_07', 'Kavita Patel', 'qs@contec.com', 'QUANTITY_SURVEYOR', 'Chief Quantity Surveyor & Commercial Estimator', 'Quantity Surveying & Contracts', 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=150', 'Dila1011@'),
       ('usr_safe_08', 'David Okafor', 'safety@contec.com', 'SAFETY_ENGINEER', 'Senior Site Safety Engineer (HSE & OSHA)', 'Safety & Quality Assurance', 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150', 'Dila1011@')
       ON DUPLICATE KEY UPDATE name=VALUES(name), title=VALUES(title);
@@ -103,8 +103,8 @@ async function seed() {
     await connection.query(`
       INSERT INTO projects (id, company_id, code, name, client, location, budget, spent, progress, phase, site_engineer, start_date, target_completion)
       VALUES 
-      ('prj-01', 'COMP_A', 'CNT-PRJ-241', 'Colombo Port City Marina Residences', 'Port City Colombo Holdings', 'Port City Marine Drive, Colombo 01', 3850000000.00, 1463000000.00, 38, 'FOUNDATION', 'Eng. Maya Lin (Chartered Structural Eng)', '2026-04-10', '2027-12-15'),
-      ('prj-02', 'COMP_A', 'CNT-PRJ-198', 'Kandy Hills Scenic Resort & Convention Hub', 'Kandy Scenic Sanctuaries Pvt Ltd', 'George E. De Silva Mawatha, Kandy', 2250000000.00, 1462500000.00, 65, 'STRUCTURAL', 'Eng. Marcus Chen & Eng. Elena Vance', '2025-08-01', '2027-03-30'),
+      ('prj-01', 'COMP_A', 'CNT-PRJ-241', 'Colombo Port City Marina Residences', 'Port City Colombo Holdings', 'Port City Marine Drive, Colombo 01', 3850000000.00, 1463000000.00, 38, 'FOUNDATION', 'Eng. Samantha Weerasinghe (Chartered Structural Eng)', '2026-04-10', '2027-12-15'),
+      ('prj-02', 'COMP_A', 'CNT-PRJ-198', 'Kandy Hills Scenic Resort & Convention Hub', 'Kandy Scenic Sanctuaries Pvt Ltd', 'George E. De Silva Mawatha, Kandy', 2250000000.00, 1462500000.00, 65, 'STRUCTURAL', 'Eng. Kasun Jayawardena & Eng. Dilshan Perera', '2025-08-01', '2027-03-30'),
       ('prj-03', 'COMP_A', 'CNT-PRJ-310', 'Nuwara Eliya High-Altitude Eco Pavilion', 'Nuwara Eliya Eco Ventures', 'Pedro Estate Ridge, Nuwara Eliya', 680000000.00, 598400000.00, 88, 'INTERIOR', 'Eng. David Okafor (BIM Coordinator)', '2025-02-15', '2026-12-20'),
       ('prj-04', 'COMP_A', 'CNT-PRJ-405', 'Central Expressway Viaduct & Bridge Section', 'Road Development Authority (RDA)', 'Kurunegala-Kandy Section 3, Sri Lanka', 5200000000.00, 936000000.00, 18, 'FOUNDATION', 'Eng. Tariq Mansour (Lead Geotech Eng)', '2026-07-01', '2029-06-30')
       ON DUPLICATE KEY UPDATE budget=VALUES(budget), spent=VALUES(spent), progress=VALUES(progress);
@@ -128,8 +128,8 @@ async function seed() {
     await connection.query(`
       INSERT INTO daily_labour_muster (id, company_id, project_id, project_code, muster_date, total_present, total_skilled, total_unskilled, approved_by, status)
       VALUES 
-      ('mst-01', 'COMP_A', 'prj-01', 'CNT-PRJ-241', '2026-10-28', 86, 52, 34, 'Eng. Maya Lin (Chartered Structural Eng)', 'APPROVED'),
-      ('mst-02', 'COMP_A', 'prj-02', 'CNT-PRJ-198', '2026-10-28', 68, 40, 28, 'Eng. Marcus Chen (VP Ops)', 'APPROVED'),
+      ('mst-01', 'COMP_A', 'prj-01', 'CNT-PRJ-241', '2026-10-28', 86, 52, 34, 'Eng. Samantha Weerasinghe (Chartered Structural Eng)', 'APPROVED'),
+      ('mst-02', 'COMP_A', 'prj-02', 'CNT-PRJ-198', '2026-10-28', 68, 40, 28, 'Eng. Kasun Jayawardena (VP Ops)', 'APPROVED'),
       ('mst-03', 'COMP_B', 'prj-04', 'CNT-PRJ-405', '2026-10-28', 35, 25, 10, 'Plant Ops Manager (Comp B)', 'APPROVED')
       ON DUPLICATE KEY UPDATE total_present=VALUES(total_present);
     `);
@@ -148,9 +148,9 @@ async function seed() {
     await connection.query(`
       INSERT INTO vault_documents (id, company_id, document_ref_number, title, category, related_entity_id, file_format, file_size_kb, upload_date, uploaded_by, is_confidential, sha256_hash)
       VALUES 
-      ('doc-01', 'COMP_A', 'A-CNT-2026-001', 'Colombo Port City Marina Residences Master Contract Agreement (FIDIC)', 'CONTRACT', 'CNT-PRJ-241', 'PDF', 18450, '2026-04-10', 'Eng. Elena Vance', TRUE, '7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069'),
+      ('doc-01', 'COMP_A', 'A-CNT-2026-001', 'Colombo Port City Marina Residences Master Contract Agreement (FIDIC)', 'CONTRACT', 'CNT-PRJ-241', 'PDF', 18450, '2026-04-10', 'Eng. Dilshan Perera', TRUE, '7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069'),
       ('doc-02', 'COMP_A', 'A-IPC-CERT-014', 'IPC #014 Consultant Certified Valuation & Retention Schedule', 'CIDA_IPC', 'CNT-PRJ-241', 'PDF', 4200, '2026-10-26', 'Kavita Patel (Chief QS)', FALSE, '3c59dc048e8850243be8079a5c74d079'),
-      ('doc-03', 'COMP_A', 'A-TAX-VAT-Q3-26', 'Inland Revenue Department VAT & SSCL Q3/2026 Clearance Return', 'TAX_RETURN', 'VAT-10928374-7000', 'PDF', 2850, '2026-10-15', 'Arthur Sterling (CFO)', TRUE, 'c28a5840f0d393693e50668b0b973ef4'),
+      ('doc-03', 'COMP_A', 'A-TAX-VAT-Q3-26', 'Inland Revenue Department VAT & SSCL Q3/2026 Clearance Return', 'TAX_RETURN', 'VAT-10928374-7000', 'PDF', 2850, '2026-10-15', 'Ruwan Bandara (CFO)', TRUE, 'c28a5840f0d393693e50668b0b973ef4'),
       ('doc-04', 'COMP_B', 'B-FLEET-CAT-349', 'Caterpillar 349D Excavator Telematics Calibration & Safety Certificate', 'CONTRACT', 'EX-349-04', 'PDF', 3100, '2026-09-12', 'Plant Fleet Director', FALSE, '9a0364b9e99bb480dd25e1f0284c8555'),
       ('doc-05', 'COMP_B', 'B-PV-2026-0089', 'Lanka IOC Bulk Auto Diesel Delivery Voucher (12,000L @ LKR 370/L)', 'PAYMENT_VOUCHER', 'B-PV-0089', 'PDF', 1250, '2026-10-27', 'Site Fuel Logistics', FALSE, 'e3b0c44298fc1c149afbf4c8996fb924')
       ON DUPLICATE KEY UPDATE title=VALUES(title);

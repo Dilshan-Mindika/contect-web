@@ -66,7 +66,7 @@ export interface DemoAccount extends ERPUser {
 export const ENTERPRISE_USERS: Record<string, DemoAccount> = {
   'admin@contec.com': {
     id: 'usr_admin_01',
-    name: 'Elena Vance',
+    name: 'Dilshan Perera',
     email: 'admin@contec.com',
     role: 'SUPER_ADMIN',
     title: 'Chief Executive Officer',
@@ -77,7 +77,7 @@ export const ENTERPRISE_USERS: Record<string, DemoAccount> = {
   },
   'finance@contec.com': {
     id: 'usr_fin_02',
-    name: 'Arthur Sterling',
+    name: 'Ruwan Bandara',
     email: 'finance@contec.com',
     role: 'FINANCE_DIRECTOR',
     title: 'Chief Financial Officer',
@@ -88,7 +88,7 @@ export const ENTERPRISE_USERS: Record<string, DemoAccount> = {
   },
   'operations@contec.com': {
     id: 'usr_ops_03',
-    name: 'Marcus Chen',
+    name: 'Kasun Jayawardena',
     email: 'operations@contec.com',
     role: 'OPERATIONS_HEAD',
     title: 'VP of Construction & Site Ops',
@@ -99,7 +99,7 @@ export const ENTERPRISE_USERS: Record<string, DemoAccount> = {
   },
   'hr@contec.com': {
     id: 'usr_hr_04',
-    name: 'Sophia Al-Mansoor',
+    name: 'Nadeesha Senanayake',
     email: 'hr@contec.com',
     role: 'HR_MANAGER',
     title: 'Chief People & Talent Officer',
@@ -110,7 +110,7 @@ export const ENTERPRISE_USERS: Record<string, DemoAccount> = {
   },
   'sales@contec.com': {
     id: 'usr_sales_05',
-    name: 'Julian Voss',
+    name: 'Tharindu Fernando',
     email: 'sales@contec.com',
     role: 'SALES_DIRECTOR',
     title: 'VP of Global Business Development',
@@ -121,7 +121,7 @@ export const ENTERPRISE_USERS: Record<string, DemoAccount> = {
   },
   'engineer@contec.com': {
     id: 'usr_eng_06',
-    name: 'Maya Lin',
+    name: 'Samantha Weerasinghe',
     email: 'engineer@contec.com',
     role: 'PROJECT_ENGINEER',
     title: 'Principal Structural Architect & BIM Lead',

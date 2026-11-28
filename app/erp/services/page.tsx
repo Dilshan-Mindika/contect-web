@@ -224,7 +224,7 @@ export default function WebsiteServicesManagerPage() {
             <span>Website Services Manager</span>
           </h1>
           <p className="text-xs sm:text-sm text-zinc-400 mt-1">
-            Dedicated MySQL-backed service offerings manager for <span className="text-emerald-400 font-semibold">/services</span>.
+            Dedicated service offerings manager for <span className="text-emerald-400 font-semibold">/services</span>.
             {saving && <span className="ml-2 text-emerald-400 font-semibold">• Syncing to database...</span>}
           </p>
         </div>
@@ -254,7 +254,7 @@ export default function WebsiteServicesManagerPage() {
           {
             label: 'Active Service Stages',
             value: publicServices.length,
-            subtitle: 'Live in MySQL public_services',
+            subtitle: 'Published to /services',
             accent: 'emerald',
             icon: <Layers className="w-4 h-4" />,
           },
@@ -474,7 +474,7 @@ export default function WebsiteServicesManagerPage() {
             <div className="flex items-center justify-between pb-3 border-b border-white/10">
               <h3 className="text-lg font-bold text-white flex items-center gap-2">
                 <Layers className="w-5 h-5 text-emerald-400" />
-                <span>{editingService ? 'Edit Public Service (MySQL)' : 'Add New Public Service (MySQL)'}</span>
+                <span>{editingService ? 'Edit Public Service' : 'Add New Public Service'}</span>
               </h3>
               <button
                 onClick={() => setShowModal(false)}
@@ -679,7 +679,7 @@ export default function WebsiteServicesManagerPage() {
                   className="px-6 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold flex items-center gap-1.5 cursor-pointer"
                 >
                   <Check className="w-4 h-4" />
-                  <span>Save to MySQL &amp; Publish</span>
+                  <span>Save &amp; Publish</span>
                 </button>
               </div>
             </form>

@@ -85,7 +85,7 @@ export default function ProcurementPage() {
       totalAmount: Number(poAmount),
       status: 'APPROVED',
       itemsCount: 1,
-      approvedBy: 'Arthur Sterling (CFO)',
+      approvedBy: 'Ruwan Bandara (CFO)',
       prReference: selectedPrRef,
       projectCode: prProjectCode,
     });
@@ -99,7 +99,7 @@ export default function ProcurementPage() {
       companyId: activeCompany === 'COMP_B' ? 'COMP_B' : 'COMP_A',
       projectId: projects[0]?.id || 'prj-01',
       projectCode: prProjectCode,
-      requestedBy: 'Eng. Maya Lin (Structural Eng)',
+      requestedBy: 'Eng. Samantha Weerasinghe (Structural Eng)',
       requiredDate: new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0],
       itemName: prItem,
       category: prCategory,

@@ -359,7 +359,7 @@ export default function GovernmentContractsPage() {
                   <div className="space-y-6">
                     <div>
                       <div className="border-b border-zinc-400 pb-1 font-bold text-zinc-900">
-                        Eng. Maya Lin, B.Sc. Eng (Hons), C.Eng, MIE(SL)
+                        Eng. Samantha Weerasinghe, B.Sc. Eng (Hons), C.Eng, MIE(SL)
                       </div>
                       <span className="text-[10px] text-zinc-500">The Engineer's Representative</span>
                     </div>
@@ -367,7 +367,7 @@ export default function GovernmentContractsPage() {
                   <div className="space-y-6">
                     <div>
                       <div className="border-b border-zinc-400 pb-1 font-bold text-zinc-900">
-                        Arthur Sterling, B.Sc., FCA, FCMA
+                        Ruwan Bandara, B.Sc., FCA, FCMA
                       </div>
                       <span className="text-[10px] text-zinc-500">Contractor's Authorized Signatory</span>
                     </div>
