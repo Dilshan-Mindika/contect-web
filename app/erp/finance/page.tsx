@@ -479,50 +479,44 @@ export default function FinancePage() {
       {/* TAB 3: CASH & BANK BOOKS */}
       {financeTab === 'CASHBOOK' && (
         <div className="space-y-4">
-          <div className="rounded-2xl bg-[#080e1c] border border-white/10 overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs text-left">
-                <thead className="bg-white/5 text-zinc-400 border-b border-white/10 font-mono">
-                  <tr>
-                    <th className="p-3">Date</th>
-                    <th className="p-3">Voucher #</th>
-                    <th className="p-3">Type</th>
-                    <th className="p-3">Particulars & Description</th>
-                    <th className="p-3">Payment Mode</th>
-                    <th className="p-3 text-right">Amount (LKR)</th>
-                    <th className="p-3 text-right">Running Balance</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/5">
-                  {filteredCashBook.map((cb) => (
-                    <tr key={cb.id} className="hover:bg-white/[0.02]">
-                      <td className="p-3 font-mono text-zinc-400">{cb.date}</td>
-                      <td className="p-3 font-mono font-bold text-white">{cb.voucherNo}</td>
-                      <td className="p-3">
-                        <span
-                          className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
-                            cb.type === 'RECEIPT'
-                              ? 'bg-emerald-500/20 text-emerald-400'
-                              : 'bg-red-500/20 text-red-400'
-                          }`}
-                        >
-                          {cb.type}
-                        </span>
-                      </td>
-                      <td className="p-3 font-medium text-white">{cb.particulars}</td>
-                      <td className="p-3 font-mono text-zinc-400">{cb.paymentMode}</td>
-                      <td className={`p-3 font-mono font-bold text-right ${cb.type === 'RECEIPT' ? 'text-emerald-400' : 'text-red-400'}`}>
-                        {cb.type === 'RECEIPT' ? '+' : '-'}{formatLKR(cb.amountLkr)}
-                      </td>
-                      <td className="p-3 font-mono font-bold text-white text-right">
-                        {formatLKR(cb.balanceLkr)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <UniversalRecordManager
+            title="Cash & Bank Books Ledger (Create, View, Edit, Delete & View Modes)"
+            defaultViewMode="DETAILED"
+            items={filteredCashBook as unknown as Record<string, unknown>[]}
+            createLabel="Record Cashbook Entry"
+            searchPlaceholder="Search voucher #, particulars, payment mode..."
+            sortOptions={[
+              { value: 'date', label: 'Date' },
+              { value: 'voucherNo', label: 'Voucher #' },
+              { value: 'amountLkr', label: 'Amount (LKR)' },
+              { value: 'type', label: 'Type' },
+            ]}
+            fields={[
+              { key: 'voucherNo', label: 'Voucher #', isTitle: true, required: true },
+              { key: 'date', label: 'Date', type: 'date', required: true },
+              { key: 'type', label: 'Entry Type', type: 'select', options: ['RECEIPT', 'PAYMENT'], isBadge: true, required: true },
+              { key: 'particulars', label: 'Particulars & Description', required: true },
+              { key: 'paymentMode', label: 'Payment Mode', type: 'select', options: ['ONLINE_TRANSFER', 'CASH', 'CHEQUE'] },
+              { key: 'amountLkr', label: 'Amount (LKR)', type: 'number', isCurrency: true, required: true },
+              { key: 'balanceLkr', label: 'Running Balance (LKR)', type: 'number', isCurrency: true, showInTable: false, optional: true },
+              { key: 'projectCode', label: 'Project Code', showInTable: false, optional: true },
+              { key: 'bankAccount', label: 'Bank / Petty Cash Account', showInTable: false, optional: true },
+              { key: 'notes', label: 'Audit Remarks', type: 'textarea', showInTable: false, optional: true },
+              { key: 'images', label: 'Voucher & Bank Slip Scans', type: 'images', showInTable: false, optional: true },
+            ]}
+            onCreate={(d) =>
+              addCashBookEntry({
+                companyId: activeCompany === 'CONSOLIDATED' ? 'COMP_A' : activeCompany,
+                date: String(d.date || new Date().toISOString().split('T')[0]),
+                voucherNo: String(d.voucherNo || `CB-${Date.now().toString().slice(-4)}`),
+                type: (d.type as 'RECEIPT' | 'PAYMENT') || 'PAYMENT',
+                particulars: String(d.particulars || 'Cashbook Entry'),
+                accountName: String(d.bankAccount || 'BOC Corporate Current A/C'),
+                paymentMode: (d.paymentMode as 'ONLINE_TRANSFER' | 'CASH' | 'CHEQUE') || 'ONLINE_TRANSFER',
+                amountLkr: Number(d.amountLkr || 0),
+              })
+            }
+          />
         </div>
       )}
 

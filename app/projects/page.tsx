@@ -6,6 +6,7 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
+import { ScrollProgressBar, RevealSection, StaggerGroup, StaggerItem } from "@/components/ScrollMotion";
 import { getPublicProjects, DEFAULT_PROJECTS, PublicProject } from "@/lib/publicData";
 
 export default function ProjectsPage() {
@@ -45,6 +46,7 @@ export default function ProjectsPage() {
 
   return (
     <div className="min-h-screen bg-[#050811] text-white flex flex-col justify-between">
+      <ScrollProgressBar />
       <Navbar />
 
       <main className="pt-28 pb-20">
@@ -88,10 +90,10 @@ export default function ProjectsPage() {
             {filteredProjects.map((project, idx) => (
               <motion.div
                 key={project.id}
-                initial={{ opacity: 0, y: 18 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.15 }}
-                transition={{ duration: 0.35, delay: idx * 0.05 }}
+                initial={{ opacity: 0, y: 28, scale: 0.97 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                viewport={{ once: false, amount: 0.12 }}
+                transition={{ duration: 0.45, delay: (idx % 2) * 0.08, ease: [0.22, 1, 0.36, 1] }}
                 onClick={() => setSelectedProject(project)}
                 className="group glass-panel rounded-3xl overflow-hidden border border-white/15 bg-white/[0.02] hover:border-[#FFB800]/50 hover:bg-white/[0.05] transition-all duration-500 cursor-pointer flex flex-col justify-between"
               >

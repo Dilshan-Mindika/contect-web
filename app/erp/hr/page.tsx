@@ -23,7 +23,21 @@ import {
 
 export default function HRPage() {
   const { employees, leaves, updateLeaveStatus, addEmployee, activeCompany, companies } = useERP();
-  const [hrTab, setHrTab] = useState<'DIRECTORY' | 'PAYROLL' | 'LEAVE' | 'ONBOARD'>('DIRECTORY');
+  const [hrTab, setHrTab] = useState<'DIRECTORY' | 'ATTENDANCE' | 'PAYROLL' | 'LEAVE' | 'ONBOARD'>('DIRECTORY');
+  const todayStr = new Date().toISOString().split('T')[0];
+  const initialAttendance = employees.map((emp, idx) => ({
+    id: `att-${emp.id}`,
+    empId: emp.empId,
+    employeeName: emp.name,
+    department: emp.department,
+    date: todayStr,
+    checkIn: idx % 3 === 0 ? '08:12' : '07:55',
+    checkOut: '17:30',
+    overtimeHours: idx % 2 === 0 ? 1.5 : 0,
+    location: emp.department === 'Field Operations' ? 'Kandy Hillside Site' : 'Kandy Head Office',
+    status: idx % 4 === 0 ? 'ON_SITE' : 'PRESENT',
+    remarks: '',
+  }));
   const [selectedDept, setSelectedDept] = useState('ALL');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedPayslipEmp, setSelectedPayslipEmp] = useState<Employee | null>(null);
@@ -163,9 +177,10 @@ export default function HRPage() {
       <div className="flex items-center gap-2 border-b border-white/10 overflow-x-auto pb-1">
         {[
           { key: 'DIRECTORY', label: '01. Employee Master Directory', icon: Users },
-          { key: 'PAYROLL', label: '02. Sri Lankan Payroll (EPF/ETF Engine)', icon: CreditCard },
-          { key: 'LEAVE', label: '03. Leave Applications & Approvals', icon: Calendar },
-          { key: 'ONBOARD', label: '04. Onboard New Employee', icon: Plus },
+          { key: 'ATTENDANCE', label: '02. Employee Attendance', icon: Clock },
+          { key: 'PAYROLL', label: '03. Salary & Payroll (EPF/ETF)', icon: CreditCard },
+          { key: 'LEAVE', label: '04. Leave Applications', icon: Calendar },
+          { key: 'ONBOARD', label: '05. Onboard Employee', icon: Plus },
         ].map((tab) => {
           const Icon = tab.icon;
           const isActive = hrTab === tab.key;
@@ -250,7 +265,37 @@ export default function HRPage() {
         </div>
       )}
 
-      {/* TAB 2: PAYROLL ENGINE & STATUTORY EPF/ETF */}
+      {/* TAB 2: EMPLOYEE ATTENDANCE REGISTER */}
+      {hrTab === 'ATTENDANCE' && (
+        <div className="space-y-4">
+          <UniversalRecordManager
+            title="Daily Employee Attendance & Overtime Register"
+            defaultViewMode="DETAILED"
+            items={initialAttendance as unknown as Record<string, unknown>[]}
+            createLabel="Log Attendance"
+            searchPlaceholder="Search attendance by staff, ID, site..."
+            sortOptions={[
+              { value: 'employeeName', label: 'Employee Name' },
+              { value: 'date', label: 'Date' },
+              { value: 'status', label: 'Status' },
+              { value: 'overtimeHours', label: 'Overtime (Hrs)' },
+            ]}
+            fields={[
+              { key: 'employeeName', label: 'Employee Name', isTitle: true, required: true },
+              { key: 'empId', label: 'Staff ID', required: true },
+              { key: 'date', label: 'Date', type: 'date', required: true },
+              { key: 'checkIn', label: 'Check-In', required: true, placeholder: '08:00' },
+              { key: 'checkOut', label: 'Check-Out', placeholder: '17:30' },
+              { key: 'overtimeHours', label: 'OT Hours', type: 'number', showInTable: false, optional: true },
+              { key: 'location', label: 'Work Location / Site', showInTable: false, optional: true },
+              { key: 'status', label: 'Status', type: 'select', options: ['PRESENT', 'ON_SITE', 'LATE', 'HALF_DAY', 'ABSENT'], isBadge: true },
+              { key: 'remarks', label: 'Supervisor Remarks', type: 'textarea', showInTable: false, optional: true },
+            ]}
+          />
+        </div>
+      )}
+
+      {/* TAB 3: PAYROLL ENGINE & STATUTORY EPF/ETF */}
       {hrTab === 'PAYROLL' && (
         <div className="space-y-4">
           <div className="p-4 rounded-xl bg-blue-950/20 border border-blue-500/20 text-xs text-blue-300">

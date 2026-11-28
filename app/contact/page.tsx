@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { ScrollProgressBar, RevealSection } from "@/components/ScrollMotion";
 import {
   MapPin,
   Phone,
@@ -215,6 +216,7 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-[#050811] text-white flex flex-col justify-between selection:bg-[#0038B8] selection:text-white">
+      <ScrollProgressBar />
       <Navbar />
 
       <main className="pt-28 pb-20 overflow-hidden">

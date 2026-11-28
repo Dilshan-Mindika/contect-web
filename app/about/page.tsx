@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { ScrollProgressBar, RevealSection, StaggerGroup, StaggerItem, ParallaxFloat } from "@/components/ScrollMotion";
 
 export const metadata = {
   title: "About Us | ConTec Design & Build (Kandy)",
@@ -59,28 +60,32 @@ const TIMELINE = [
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-[#050811] text-white flex flex-col justify-between">
+      <ScrollProgressBar />
       <Navbar />
 
       <main className="pt-28 pb-20">
         {/* Hero Section */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16">
-          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-[#0038B8]/30 border border-[#0038B8]/60 text-[#FFB800] text-xs font-bold tracking-wider uppercase backdrop-blur-md mb-6 shadow-lg shadow-blue-950/40">
-            Our Heritage & Philosophy
-          </div>
+          <RevealSection direction="up">
+            <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-[#0038B8]/30 border border-[#0038B8]/60 text-[#FFB800] text-xs font-bold tracking-wider uppercase backdrop-blur-md mb-6 shadow-lg shadow-blue-950/40">
+              Our Heritage & Philosophy
+            </div>
 
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold uppercase tracking-tight leading-[0.98] max-w-4xl mb-8">
-            <span className="text-white drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">Building Visions,</span>{" "}
-            <span className="gradient-text-gold block sm:inline mt-1 sm:mt-0">
-              Designing Futures
-            </span>
-          </h1>
+            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold uppercase tracking-tight leading-[0.98] max-w-4xl mb-8">
+              <span className="text-white drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">Building Visions,</span>{" "}
+              <span className="gradient-text-gold block sm:inline mt-1 sm:mt-0">
+                Designing Futures
+              </span>
+            </h1>
 
-          <p className="text-zinc-300 text-lg sm:text-xl max-w-3xl leading-relaxed font-light mb-12">
-            At CONTEC Design & Build, we combine creative architectural design with solid structural engineering to build custom luxury homes and modern commercial buildings across Sri Lanka.
-          </p>
+            <p className="text-zinc-300 text-lg sm:text-xl max-w-3xl leading-relaxed font-light mb-12">
+              At CONTEC Design & Build, we combine creative architectural design with solid structural engineering to build custom luxury homes and modern commercial buildings across Sri Lanka.
+            </p>
+          </RevealSection>
 
-          {/* Large Studio Feature Image */}
-          <div className="relative w-full h-[360px] sm:h-[480px] lg:h-[560px] rounded-3xl overflow-hidden border border-white/15 shadow-2xl group">
+          {/* Large Studio Feature Image with Scrubbed Parallax */}
+          <ParallaxFloat offset={22}>
+            <div className="relative w-full h-[360px] sm:h-[480px] lg:h-[560px] rounded-3xl overflow-hidden border border-white/15 shadow-2xl group">
             <Image
               src="/images/architect-team.jpg"
               alt="CONTEC Architectural Design Studio"
@@ -106,18 +111,19 @@ export default function AboutPage() {
               </div>
             </div>
           </div>
+          </ParallaxFloat>
         </section>
 
         {/* Core Values / 3 Pillars */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 border-t border-white/10">
-          <div className="text-center max-w-2xl mx-auto mb-14">
+          <RevealSection direction="up" className="text-center max-w-2xl mx-auto mb-14">
             <h2 className="text-xs uppercase font-bold text-[#FFB800] tracking-widest mb-3">Our Core Pillars</h2>
             <p className="text-3xl sm:text-4xl font-extrabold uppercase tracking-tight text-white">
               Built on Quality, Strength & Durability
             </p>
-          </div>
+          </RevealSection>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <StaggerGroup className="grid grid-cols-1 md:grid-cols-3 gap-8" stagger={0.1}>
             {[
               {
                 icon: "01",
@@ -135,7 +141,7 @@ export default function AboutPage() {
                 desc: "We use high-grade Sri Lankan Kumbuk and Teak timber, natural stone, and durable hardware that look beautiful and last for generations.",
               },
             ].map((pillar) => (
-              <div
+              <StaggerItem
                 key={pillar.title}
                 className="glass-panel p-8 rounded-3xl border border-white/15 bg-white/[0.03] hover:bg-white/[0.07] hover:border-[#FFB800]/40 transition-all duration-300 flex flex-col justify-between"
               >
@@ -150,9 +156,9 @@ export default function AboutPage() {
                   <span>Certified CONTEC Standard</span>
                   <span>✓</span>
                 </div>
-              </div>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerGroup>
         </section>
 
         {/* Leadership Team */}

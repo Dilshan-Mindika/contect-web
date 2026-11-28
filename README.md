@@ -58,16 +58,23 @@ An all-in-one team management portal designed for CONTEC staff, site engineers, 
   - Secure authentication with zero hardcoded credentials displayed.
   - Quick link back to the main public website.
 - **Core ERP Modules**:
-  - **Dashboard (`/erp`)**: Overview of active site operations, financial summaries, and real-time alerts.
-  - **Projects (`/erp/projects`)**: Live construction tracker, milestones, site logs, and schedule tracking.
-  - **CRM & Client Inquiries (`/erp/crm`)**: Manages incoming website inquiries, consultation requests, and client communications.
-  - **Quotations & BOQ (`/erp/quotations`)**: Itemized Bills of Quantities creation and guaranteed fixed pricing management.
-  - **Finance & Budgeting (`/erp/finance`, `/erp/budgeting`)**: Financial ledgers, client invoices, supplier payments, and cash flow tracking.
-  - **Procurement & Inventory (`/erp/inventory`, `/erp/procurement`)**: Building materials inventory (steel, cement, sand) and purchase order tracking.
-  - **Machinery & Equipment (`/erp/machinery`)**: Heavy equipment tracking, maintenance schedules, and machinery dispatch.
-  - **Site Labour & Daily Logs (`/erp/site-labour`, `/erp/site-logs`)**: Daily workforce attendance, subcontractor hours, and site diaries.
-  - **Safety Compliance (`/erp/safety`)**: Site safety inspections, PPE compliance checks, and hazard reports.
-  - **Audit & Settings (`/erp/audit`, `/erp/company`, `/erp/hr`, `/erp/website`)**: Activity logs, staff permissions, and company configuration.
+  - **Dashboard Overview (`/erp`)**: Minimal & Advanced views with **Daily, Weekly, Monthly & Annual** analytics, Cashbook liquidity, payroll/attendance pulse, and CSV/Print reporting.
+  - **Website Projects & Services (`/erp/website`, `/erp/services`)**: Manage public showcase items with **multi-image photo galleries** (direct file upload + URLs), cover selection, and optional construction specs.
+  - **Projects (`/erp/projects`)**: Live construction tracker, milestones, Kanban boards, optional CIDA/CAR/permit metadata, and site progress photo galleries.
+  - **CRM & Client Inquiries (`/erp/crm`, `/erp/inquiries`)**: Manage incoming website inquiries, consultation requests, tender pipeline, and bid bonds.
+  - **Quotations & BOQ (`/erp/quotations`)**: Itemized Bills of Quantities + **Customizable Document Studio** (branding, taxes, columns, watermarks, bank details, A4 PDF export, email dispatch, and 1-click convert to Invoice).
+  - **Finance, Cashbook & Budgeting (`/erp/finance`, `/erp/budgeting`)**: Invoices/IPCs with **Customizable Document Studio**, General Ledger, full CRUD **Cash & Bank Books**, Chart of Accounts, P&L/Balance Sheet, and Cost Control.
+  - **Procurement & Inventory (`/erp/inventory`, `/erp/procurement`)**: Material stockpiles, Mill Test Certificates (MTC), multi-store depots, MINs, POs, GRNs, and 3-way match.
+  - **Machinery & Equipment (`/erp/machinery`)**: Heavy equipment tracking, diesel telematics, maintenance schedules, and fuel tanker discharges.
+  - **HR, Attendance, Payroll & Site Labour (`/erp/hr`, `/erp/site-labour`, `/erp/site-logs`)**: Employee directory, **Daily Employee Attendance & Overtime Register**, Sri Lankan EPF/ETF Salary & Payroll Engine, 15-day site labour muster rolls, and daily site diaries.
+  - **Safety, Contracts & Company (`/erp/safety`, `/erp/contracts`, `/erp/company`)**: HSE inspections, CIDA Directive 102/2024 IPC engine, bonds, and multi-company legal profiles.
+  - **Users & Access Control (`/erp/users`)**: Full MySQL-backed **RBAC User Management** (create/edit/suspend users, role templates, granular module permissions, company scope).
+  - **System & Audit Logs (`/erp/audit`)**: Central Document Vault, Activity & Security Audit Trail, and live **System Logs & Server Telemetry** (MySQL pool health, memory, table counts).
+
+### 🚀 Low-Resource & Shared Hosting Deployment (Spaceship / cPanel)
+- Configured with `output: "standalone"`, `images.unoptimized: true`, and lean MySQL connection pooling (`MYSQL_CONNECTION_LIMIT=5`).
+- Includes root `server.js` entry point for cPanel / Phusion Passenger and `build:lowmem` / `start:lowmem` scripts.
+- Package a self-contained deployment archive (`contec-deploy.zip`) containing `.next/standalone`, `.next/static`, `public`, `database`, and `.env.example`.
 
 ### 🔑 Staff & Admin Login Credentials (`/erp/login`)
 

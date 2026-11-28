@@ -6,6 +6,7 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
+import { ScrollProgressBar, RevealSection, StaggerGroup, StaggerItem, ParallaxFloat } from "@/components/ScrollMotion";
 import { getPublicServices, DEFAULT_SERVICES, PublicService } from "@/lib/publicData";
 
 const FAQS = [
@@ -57,6 +58,7 @@ export default function ServicesPage() {
 
   return (
     <div className="min-h-screen bg-[#050811] text-white flex flex-col justify-between">
+      <ScrollProgressBar />
       <Navbar />
 
       <main className="pt-28 pb-20">
@@ -98,16 +100,16 @@ export default function ServicesPage() {
               <motion.div
                 id={service.id}
                 key={service.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.15 }}
-                transition={{ duration: 0.4 }}
+                initial={{ opacity: 0, y: 34, scale: 0.98 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                viewport={{ once: false, amount: 0.14 }}
+                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
                 className={`glass-panel rounded-3xl border border-white/15 bg-white/[0.02] p-6 sm:p-10 lg:p-12 flex flex-col lg:flex-row gap-10 items-center scroll-mt-28 hover:border-blue-500/30 transition-all ${
                   isEven ? "lg:flex-row-reverse" : ""
                 }`}
               >
-                {/* Image Showcase */}
-                <div className="w-full lg:w-1/2 space-y-3">
+                {/* Image Showcase with Parallax */}
+                <ParallaxFloat offset={18} className="w-full lg:w-1/2 space-y-3">
                   <div className="relative h-[320px] sm:h-[420px] rounded-2xl overflow-hidden border border-white/15 shadow-xl group">
                     <Image
                       src={(service.images?.length ? service.images : [service.image])[activeImageByService[service.id] || 0] || service.image}
@@ -139,32 +141,34 @@ export default function ServicesPage() {
                       ))}
                     </div>
                   )}
-                </div>
+                </ParallaxFloat>
 
                 {/* Content */}
                 <div className="w-full lg:w-1/2 flex flex-col justify-between">
                   <div>
-                    <span className="text-xs font-mono font-bold text-[#FFB800] tracking-wider uppercase mb-2 block">
-                      Core Discipline
-                    </span>
-                    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold uppercase text-white mb-4 leading-tight">
-                      {service.title}
-                    </h2>
-                    <p className="text-sm sm:text-base text-zinc-300 leading-relaxed mb-6 font-normal">
-                      {service.desc}
-                    </p>
+                    <RevealSection direction={isEven ? "left" : "right"} delay={0.05}>
+                      <span className="text-xs font-mono font-bold text-[#FFB800] tracking-wider uppercase mb-2 block">
+                        Core Discipline
+                      </span>
+                      <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold uppercase text-white mb-4 leading-tight">
+                        {service.title}
+                      </h2>
+                      <p className="text-sm sm:text-base text-zinc-300 leading-relaxed mb-6 font-normal">
+                        {service.desc}
+                      </p>
+                    </RevealSection>
 
-                    {/* Features Checklist */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
+                    {/* Features Checklist Mini-Subsections */}
+                    <StaggerGroup className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8" stagger={0.06}>
                       {service.features.map((feat) => (
-                        <div key={feat} className="flex items-center gap-2.5 text-xs text-zinc-200">
+                        <StaggerItem key={feat} className="flex items-center gap-2.5 text-xs text-zinc-200">
                           <span className="w-4 h-4 rounded-full bg-[#0038B8]/30 text-[#FFB800] flex items-center justify-center font-bold text-[10px] shrink-0 border border-[#0038B8]/50">
                             ✓
                           </span>
                           <span>{feat}</span>
-                        </div>
+                        </StaggerItem>
                       ))}
-                    </div>
+                    </StaggerGroup>
                   </div>
 
                   <div className="pt-4 border-t border-white/10 flex items-center gap-4">

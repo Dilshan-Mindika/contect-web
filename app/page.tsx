@@ -6,6 +6,7 @@ import Link from "next/link";
 import ScrollCanvasBackground from "@/components/ScrollCanvasBackground";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { ScrollProgressBar, RevealSection, StaggerGroup, StaggerItem } from "@/components/ScrollMotion";
 
 interface SectionStage {
   badge: string;
@@ -231,6 +232,7 @@ export default function HomePage() {
 
   return (
     <div className="relative w-full bg-[#050811] text-white">
+      <ScrollProgressBar />
       {/* Global Sticky Navigation Bar */}
       <Navbar />
       
@@ -481,7 +483,7 @@ export default function HomePage() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <StaggerGroup className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" stagger={0.09}>
           {[
             {
               icon: "01",
@@ -508,29 +510,30 @@ export default function HomePage() {
               href: "/services#construction",
             },
           ].map((item) => (
-            <Link
-              key={item.title}
-              href={item.href}
-              className="glass-panel p-8 rounded-3xl border border-white/15 bg-[#080e1c]/75 hover:bg-[#0c152b]/95 hover:border-[#FFB800]/60 hover:shadow-[0_12px_40px_rgba(0,56,184,0.3)] transition-all duration-300 group flex flex-col justify-between"
-            >
-              <div>
-                <span className="text-3xl font-extrabold text-[#FFB800] font-mono block mb-6 group-hover:translate-x-1 transition-transform drop-shadow-[0_2px_8px_rgba(255,184,0,0.3)]">
-                  {item.icon}
-                </span>
-                <h3 className="text-xl font-bold text-white mb-3 group-hover:text-[#FFB800] transition-colors text-shadow-sub">
-                  {item.title}
-                </h3>
-                <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed font-normal">
-                  {item.desc}
-                </p>
-              </div>
-              <div className="mt-8 pt-4 border-t border-white/10 flex items-center justify-between text-xs font-bold text-zinc-300 group-hover:text-[#FFB800]">
-                <span>View Details</span>
-                <span className="group-hover:translate-x-1 transition-transform">↗</span>
-              </div>
-            </Link>
+            <StaggerItem key={item.title} className="h-full">
+              <Link
+                href={item.href}
+                className="h-full glass-panel p-8 rounded-3xl border border-white/15 bg-[#080e1c]/75 hover:bg-[#0c152b]/95 hover:border-[#FFB800]/60 hover:shadow-[0_12px_40px_rgba(0,56,184,0.3)] transition-all duration-300 group flex flex-col justify-between"
+              >
+                <div>
+                  <span className="text-3xl font-extrabold text-[#FFB800] font-mono block mb-6 group-hover:translate-x-1 transition-transform drop-shadow-[0_2px_8px_rgba(255,184,0,0.3)]">
+                    {item.icon}
+                  </span>
+                  <h3 className="text-xl font-bold text-white mb-3 group-hover:text-[#FFB800] transition-colors text-shadow-sub">
+                    {item.title}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed font-normal">
+                    {item.desc}
+                  </p>
+                </div>
+                <div className="mt-8 pt-4 border-t border-white/10 flex items-center justify-between text-xs font-bold text-zinc-300 group-hover:text-[#FFB800]">
+                  <span>View Details</span>
+                  <span className="group-hover:translate-x-1 transition-transform">↗</span>
+                </div>
+              </Link>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerGroup>
       </section>
 
       {/* ================= SECTION 3: FEATURED PROJECTS PORTFOLIO ================= */}
