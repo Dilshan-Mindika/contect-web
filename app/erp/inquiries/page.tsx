@@ -5,6 +5,7 @@ import { useERP } from '@/lib/erp/AuthContext';
 import { WebsiteInquiry } from '@/lib/erp/types';
 import ModuleAnalytics from '@/components/erp/ModuleAnalytics';
 import DataViewToolbar, { ViewMode } from '@/components/erp/DataViewToolbar';
+import CustomSelect from '@/components/erp/CustomSelect';
 import {
   Mail,
   Phone,
@@ -200,16 +201,17 @@ export default function ClientInquiriesPage() {
                   <td className="p-3.5 text-[#FFB800] font-semibold">{inq.budgetRange}</td>
                   <td className="p-3.5 text-zinc-400">{inq.phone} • {inq.email}</td>
                   <td className="p-3.5">
-                    <select
+                    <CustomSelect
                       value={inq.status}
-                      onChange={(e) => updateInquiryStatus(inq.id, e.target.value as WebsiteInquiry['status'])}
-                      className="px-2 py-1 rounded-lg bg-[#050811] border border-white/15 text-[11px] text-white"
-                    >
-                      <option value="NEW">NEW</option>
-                      <option value="CONTACTED">CONTACTED</option>
-                      <option value="CONVERTED_TO_QUOTE">QUOTED</option>
-                      <option value="ARCHIVED">ARCHIVED</option>
-                    </select>
+                      onChange={(val) => updateInquiryStatus(inq.id, val as WebsiteInquiry['status'])}
+                      options={[
+                        { value: 'NEW', label: 'NEW' },
+                        { value: 'CONTACTED', label: 'CONTACTED' },
+                        { value: 'CONVERTED_TO_QUOTE', label: 'QUOTED' },
+                        { value: 'ARCHIVED', label: 'ARCHIVED' },
+                      ]}
+                      className="min-w-[130px]"
+                    />
                   </td>
                   <td className="p-3.5 text-zinc-400">{inq.date}</td>
                   <td className="p-3.5 text-right">
@@ -332,12 +334,16 @@ export default function ClientInquiriesPage() {
                 </div>
                 <div>
                   <label className="block font-semibold text-zinc-300 mb-1">Status</label>
-                  <select value={formState.status} onChange={(e) => setFormState({ ...formState, status: e.target.value as WebsiteInquiry['status'] })} className="w-full px-3 py-2 rounded-xl bg-[#080e1c] border border-white/15 text-white">
-                    <option value="NEW">NEW</option>
-                    <option value="CONTACTED">CONTACTED</option>
-                    <option value="CONVERTED_TO_QUOTE">CONVERTED TO QUOTE</option>
-                    <option value="ARCHIVED">ARCHIVED</option>
-                  </select>
+                  <CustomSelect
+                    value={formState.status}
+                    onChange={(val) => setFormState({ ...formState, status: val as WebsiteInquiry['status'] })}
+                    options={[
+                      { value: 'NEW', label: 'NEW' },
+                      { value: 'CONTACTED', label: 'CONTACTED' },
+                      { value: 'CONVERTED_TO_QUOTE', label: 'CONVERTED TO QUOTE' },
+                      { value: 'ARCHIVED', label: 'ARCHIVED' },
+                    ]}
+                  />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">

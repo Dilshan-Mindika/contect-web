@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useERP } from '@/lib/erp/AuthContext';
 import UniversalRecordManager from '@/components/erp/UniversalRecordManager';
+import CustomSelect from '@/components/erp/CustomSelect';
 import {
   AuditSeverity,
   AuditModule,
@@ -729,14 +730,14 @@ export default function AuditAndVaultPage() {
             <form onSubmit={handleArchiveDocument} className="space-y-4 text-xs">
               <div>
                 <label className="block text-zinc-400 mb-1 font-mono">Company Entity</label>
-                <select
+                <CustomSelect
                   value={newCompanyId}
-                  onChange={(e) => setNewCompanyId(e.target.value as CompanyId)}
-                  className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-[#FFB800]"
-                >
-                  <option value="COMP_A">Company A: Contec Engineering & Construction (Building)</option>
-                  <option value="COMP_B">Company B: Contec Heavy Infra & Equipment (Plant Hire)</option>
-                </select>
+                  onChange={(val) => setNewCompanyId(val as CompanyId)}
+                  options={[
+                    { value: 'COMP_A', label: 'Company A: Contec Engineering & Construction (Building)' },
+                    { value: 'COMP_B', label: 'Company B: Contec Heavy Infra & Equipment (Plant Hire)' },
+                  ]}
+                />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
@@ -752,22 +753,22 @@ export default function AuditAndVaultPage() {
                 </div>
                 <div>
                   <label className="block text-zinc-400 mb-1 font-mono">Category</label>
-                  <select
+                  <CustomSelect
                     value={newCategory}
-                    onChange={(e) => setNewCategory(e.target.value as DocumentCategory)}
-                    className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-[#FFB800]"
-                  >
-                    <option value="CONTRACT">CONTRACT (FIDIC / CIDA)</option>
-                    <option value="INVOICE">INVOICE (Client Claim)</option>
-                    <option value="PAYMENT_VOUCHER">PAYMENT_VOUCHER</option>
-                    <option value="JOURNAL_VOUCHER">JOURNAL_VOUCHER</option>
-                    <option value="BANK_STATEMENT">BANK_STATEMENT</option>
-                    <option value="PURCHASE_ORDER">PURCHASE_ORDER</option>
-                    <option value="EMPLOYEE_FILE">EMPLOYEE_FILE</option>
-                    <option value="PAYROLL_SHEET">PAYROLL_SHEET</option>
-                    <option value="TAX_RETURN">TAX_RETURN (VAT/SSCL)</option>
-                    <option value="CIDA_IPC">CIDA_IPC</option>
-                  </select>
+                    onChange={(val) => setNewCategory(val as DocumentCategory)}
+                    options={[
+                      { value: 'CONTRACT', label: 'CONTRACT (FIDIC / CIDA)' },
+                      { value: 'INVOICE', label: 'INVOICE (Client Claim)' },
+                      { value: 'PAYMENT_VOUCHER', label: 'PAYMENT_VOUCHER' },
+                      { value: 'JOURNAL_VOUCHER', label: 'JOURNAL_VOUCHER' },
+                      { value: 'BANK_STATEMENT', label: 'BANK_STATEMENT' },
+                      { value: 'PURCHASE_ORDER', label: 'PURCHASE_ORDER' },
+                      { value: 'EMPLOYEE_FILE', label: 'EMPLOYEE_FILE' },
+                      { value: 'PAYROLL_SHEET', label: 'PAYROLL_SHEET' },
+                      { value: 'TAX_RETURN', label: 'TAX_RETURN (VAT/SSCL)' },
+                      { value: 'CIDA_IPC', label: 'CIDA_IPC' },
+                    ]}
+                  />
                 </div>
               </div>
 
@@ -796,16 +797,11 @@ export default function AuditAndVaultPage() {
                 </div>
                 <div>
                   <label className="block text-zinc-400 mb-1 font-mono">File Format</label>
-                  <select
+                  <CustomSelect
                     value={newFormat}
-                    onChange={(e) => setNewFormat(e.target.value as any)}
-                    className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-[#FFB800]"
-                  >
-                    <option value="PDF">PDF</option>
-                    <option value="EXCEL">EXCEL</option>
-                    <option value="WORD">WORD</option>
-                    <option value="IMAGE">IMAGE</option>
-                  </select>
+                    onChange={(val) => setNewFormat(val as typeof newFormat)}
+                    options={['PDF', 'EXCEL', 'WORD', 'IMAGE']}
+                  />
                 </div>
                 <div>
                   <label className="block text-zinc-400 mb-1 font-mono">File Size (KB)</label>

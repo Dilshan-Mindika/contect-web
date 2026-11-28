@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useERP } from '@/lib/erp/AuthContext';
 import UniversalRecordManager from '@/components/erp/UniversalRecordManager';
+import CustomSelect from '@/components/erp/CustomSelect';
 import {
   ShieldAlert,
   ShieldCheck,
@@ -341,16 +342,16 @@ export default function HealthSafetyPage() {
             <form onSubmit={handleCreateIncident} className="space-y-3.5 text-xs">
               <div>
                 <label className="block font-semibold text-zinc-300 mb-1">Severity Classification</label>
-                <select
+                <CustomSelect
                   value={incSeverity}
-                  onChange={(e) => setIncSeverity(e.target.value as any)}
-                  className="w-full px-3 py-2 rounded-xl bg-[#080e1c] border border-white/15 text-white"
-                >
-                  <option value="NEAR_MISS">Near Miss (No Injury / Property Safe)</option>
-                  <option value="FIRST_AID">First Aid Treatment</option>
-                  <option value="MEDICAL_TREATMENT">Medical Treatment Case (MTC)</option>
-                  <option value="LOST_TIME_INJURY_LTIR">Lost Time Injury (LTIR)</option>
-                </select>
+                  onChange={(val) => setIncSeverity(val as typeof incSeverity)}
+                  options={[
+                    { value: 'NEAR_MISS', label: 'Near Miss (No Injury / Property Safe)' },
+                    { value: 'FIRST_AID', label: 'First Aid Treatment' },
+                    { value: 'MEDICAL_TREATMENT', label: 'Medical Treatment Case (MTC)' },
+                    { value: 'LOST_TIME_INJURY_LTIR', label: 'Lost Time Injury (LTIR)' },
+                  ]}
+                />
               </div>
               <div>
                 <label className="block font-semibold text-zinc-300 mb-1">Exact Site Location</label>

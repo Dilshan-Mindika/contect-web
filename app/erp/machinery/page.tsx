@@ -5,6 +5,7 @@ import { useERP } from '@/lib/erp/AuthContext';
 import { MachineryStatus } from '@/lib/erp/types';
 import { formatLKR, formatLKRFull } from '@/lib/erp/currency';
 import UniversalRecordManager from '@/components/erp/UniversalRecordManager';
+import CustomSelect from '@/components/erp/CustomSelect';
 import {
   Wrench,
   Search,
@@ -402,15 +403,11 @@ export default function MachineryPage() {
             <form onSubmit={handleRecordFuel} className="space-y-3.5 text-xs">
               <div>
                 <label className="block font-semibold text-zinc-300 mb-1">Target Plant Asset</label>
-                <select
+                <CustomSelect
                   value={fuelMachineryId}
-                  onChange={(e) => setFuelMachineryId(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-[#080e1c] border border-white/15 text-white"
-                >
-                  {filteredMachinery.map((m) => (
-                    <option key={m.id} value={m.id}>{m.assetId} - {m.name}</option>
-                  ))}
-                </select>
+                  onChange={setFuelMachineryId}
+                  options={filteredMachinery.map((m) => ({ value: m.id, label: `${m.assetId} - ${m.name}` }))}
+                />
               </div>
               <div>
                 <label className="block font-semibold text-zinc-300 mb-1">Discharge Liters</label>
@@ -425,15 +422,11 @@ export default function MachineryPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block font-semibold text-zinc-300 mb-1">Mega-Site</label>
-                  <select
+                  <CustomSelect
                     value={fuelProject}
-                    onChange={(e) => setFuelProject(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-[#080e1c] border border-white/15 text-white"
-                  >
-                    {projects.map((p) => (
-                      <option key={p.id} value={p.code}>{p.code}</option>
-                    ))}
-                  </select>
+                    onChange={setFuelProject}
+                    options={projects.map((p) => p.code)}
+                  />
                 </div>
                 <div>
                   <label className="block font-semibold text-zinc-300 mb-1">Current Hour Meter</label>
@@ -509,17 +502,17 @@ export default function MachineryPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block font-semibold text-zinc-300 mb-1">Category</label>
-                  <select
+                  <CustomSelect
                     value={assetCat}
-                    onChange={(e) => setAssetCat(e.target.value as typeof assetCat)}
-                    className="w-full px-3 py-2 rounded-xl bg-[#080e1c] border border-white/15 text-white"
-                  >
-                    <option value="EXCAVATOR">Excavator</option>
-                    <option value="TOWER_CRANE">Tower Crane</option>
-                    <option value="BOOM_PUMP">Concrete Boom Pump</option>
-                    <option value="BULLDOZER">Bulldozer</option>
-                    <option value="GENERATOR">Heavy Generator</option>
-                  </select>
+                    onChange={(val) => setAssetCat(val as typeof assetCat)}
+                    options={[
+                      { value: 'EXCAVATOR', label: 'Excavator' },
+                      { value: 'TOWER_CRANE', label: 'Tower Crane' },
+                      { value: 'BOOM_PUMP', label: 'Concrete Boom Pump' },
+                      { value: 'BULLDOZER', label: 'Bulldozer' },
+                      { value: 'GENERATOR', label: 'Heavy Generator' },
+                    ]}
+                  />
                 </div>
                 <div>
                   <label className="block font-semibold text-zinc-300 mb-1">Assigned Site</label>

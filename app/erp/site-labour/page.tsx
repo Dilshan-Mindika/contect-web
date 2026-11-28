@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useERP } from '@/lib/erp/AuthContext';
 import { formatLKR, formatLKRFull } from '@/lib/erp/currency';
 import UniversalRecordManager from '@/components/erp/UniversalRecordManager';
+import CustomSelect from '@/components/erp/CustomSelect';
 import { LabourTrade, SiteLabourWorker } from '@/lib/erp/types';
 import {
   Activity,
@@ -428,33 +429,29 @@ export default function SiteLabourManagementPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block font-semibold text-zinc-300 mb-1">Trade Category</label>
-                  <select
+                  <CustomSelect
                     value={trade}
-                    onChange={(e) => setTrade(e.target.value as any)}
-                    className="w-full px-3 py-2 rounded-xl bg-[#080e1c] border border-white/15 text-white"
-                  >
-                    <option value="MASON">Mason</option>
-                    <option value="CARPENTER">Carpenter</option>
-                    <option value="STEEL_FIXER">Steel Fixer</option>
-                    <option value="BAR_BENDER">Bar Bender</option>
-                    <option value="HELPER">General Helper</option>
-                    <option value="ELECTRICIAN">Electrician</option>
-                    <option value="PLUMBER">Plumber</option>
-                    <option value="PAINTER">Painter</option>
-                    <option value="MACHINE_OPERATOR">Plant Operator</option>
-                  </select>
+                    onChange={(val) => setTrade(val as LabourTrade)}
+                    options={[
+                      { value: 'MASON', label: 'Mason' },
+                      { value: 'CARPENTER', label: 'Carpenter' },
+                      { value: 'STEEL_FIXER', label: 'Steel Fixer' },
+                      { value: 'BAR_BENDER', label: 'Bar Bender' },
+                      { value: 'HELPER', label: 'General Helper' },
+                      { value: 'ELECTRICIAN', label: 'Electrician' },
+                      { value: 'PLUMBER', label: 'Plumber' },
+                      { value: 'PAINTER', label: 'Painter' },
+                      { value: 'MACHINE_OPERATOR', label: 'Plant Operator' },
+                    ]}
+                  />
                 </div>
                 <div>
                   <label className="block font-semibold text-zinc-300 mb-1">Assigned Mega-Project</label>
-                  <select
+                  <CustomSelect
                     value={assignedProjectCode}
-                    onChange={(e) => setAssignedProjectCode(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-[#080e1c] border border-white/15 text-white"
-                  >
-                    {projects.map((p) => (
-                      <option key={p.id} value={p.code}>{p.code} - {p.name}</option>
-                    ))}
-                  </select>
+                    onChange={setAssignedProjectCode}
+                    options={projects.map((p) => ({ value: p.code, label: `${p.code} - ${p.name}` }))}
+                  />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
@@ -522,15 +519,11 @@ export default function SiteLabourManagementPage() {
             <form onSubmit={handleCreateMuster} className="space-y-3.5 text-xs">
               <div>
                 <label className="block font-semibold text-zinc-300 mb-1">Target Mega-Site</label>
-                <select
+                <CustomSelect
                   value={assignedProjectCode}
-                  onChange={(e) => setAssignedProjectCode(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-[#080e1c] border border-white/15 text-white"
-                >
-                  {projects.map((p) => (
-                    <option key={p.id} value={p.code}>{p.code} - {p.name}</option>
-                  ))}
-                </select>
+                  onChange={setAssignedProjectCode}
+                  options={projects.map((p) => ({ value: p.code, label: `${p.code} - ${p.name}` }))}
+                />
               </div>
               <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5 space-y-1">
                 <div className="text-zinc-400">Total Enrolled Workers Present:</div>

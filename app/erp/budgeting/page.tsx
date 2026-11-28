@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useERP } from '@/lib/erp/AuthContext';
 import { formatLKR, formatLKRFull } from '@/lib/erp/currency';
 import UniversalRecordManager from '@/components/erp/UniversalRecordManager';
+import CustomSelect from '@/components/erp/CustomSelect';
 import {
   Calculator,
   TrendingUp,
@@ -63,18 +64,16 @@ export default function ProjectBudgetingCostControlPage() {
         </div>
 
         {/* Project Selector */}
-        <div className="flex items-center gap-2">
-          <select
-            value={baseline?.id}
-            onChange={(e) => setSelectedBaselineId(e.target.value)}
-            className="px-3 py-2 rounded-xl bg-[#080f24] border border-blue-500/30 text-white text-xs font-mono"
-          >
-            {filteredBaselines.map((b) => (
-              <option key={b.id} value={b.id}>
-                {b.projectCode} Baseline (LKR {formatLKR(b.totalBaselineBudgetLkr)})
-              </option>
-            ))}
-          </select>
+        <div className="flex items-center gap-2 min-w-[260px]">
+          <CustomSelect
+            value={baseline?.id || ''}
+            onChange={(val) => setSelectedBaselineId(val)}
+            options={filteredBaselines.map((b) => ({
+              value: b.id,
+              label: `${b.projectCode} Baseline (${formatLKR(b.totalBaselineBudgetLkr)})`,
+            }))}
+            className="w-full"
+          />
         </div>
       </div>
 

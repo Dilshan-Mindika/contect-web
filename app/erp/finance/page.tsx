@@ -7,6 +7,7 @@ import { formatLKR, formatLKRFull } from '@/lib/erp/currency';
 import ModuleAnalytics from '@/components/erp/ModuleAnalytics';
 import UniversalRecordManager from '@/components/erp/UniversalRecordManager';
 import DocumentStudioModal from '@/components/erp/DocumentStudioModal';
+import CustomSelect from '@/components/erp/CustomSelect';
 import {
   CreditCard,
   Plus,
@@ -724,27 +725,19 @@ export default function FinancePage() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block font-semibold text-zinc-300 mb-1">Debit Account</label>
-                  <select
+                  <CustomSelect
                     value={jvDebitAcc}
-                    onChange={(e) => setJvDebitAcc(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-[#080e1c] border border-white/15 text-white"
-                  >
-                    {filteredGLAccounts.map((a) => (
-                      <option key={a.id} value={a.code}>{a.code} - {a.name}</option>
-                    ))}
-                  </select>
+                    onChange={setJvDebitAcc}
+                    options={filteredGLAccounts.map((a) => ({ value: a.code, label: `${a.code} - ${a.name}` }))}
+                  />
                 </div>
                 <div>
                   <label className="block font-semibold text-zinc-300 mb-1">Credit Account</label>
-                  <select
+                  <CustomSelect
                     value={jvCreditAcc}
-                    onChange={(e) => setJvCreditAcc(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-[#080e1c] border border-white/15 text-white"
-                  >
-                    {filteredGLAccounts.map((a) => (
-                      <option key={a.id} value={a.code}>{a.code} - {a.name}</option>
-                    ))}
-                  </select>
+                    onChange={setJvCreditAcc}
+                    options={filteredGLAccounts.map((a) => ({ value: a.code, label: `${a.code} - ${a.name}` }))}
+                  />
                 </div>
               </div>
               <div>

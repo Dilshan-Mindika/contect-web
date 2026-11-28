@@ -5,6 +5,7 @@ import { useERP } from '@/lib/erp/AuthContext';
 import { formatLKR, formatLKRFull } from '@/lib/erp/currency';
 import ModuleAnalytics from '@/components/erp/ModuleAnalytics';
 import UniversalRecordManager from '@/components/erp/UniversalRecordManager';
+import CustomSelect from '@/components/erp/CustomSelect';
 import {
   Boxes,
   Plus,
@@ -425,28 +426,20 @@ export default function InventoryPage() {
             <form onSubmit={handleCreateMin} className="space-y-3.5 text-xs">
               <div>
                 <label className="block font-semibold text-zinc-300 mb-1">Target Project Site</label>
-                <select
+                <CustomSelect
                   value={minProjectCode}
-                  onChange={(e) => setMinProjectCode(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-[#080e1c] border border-white/15 text-white"
-                >
-                  {projects.map((p) => (
-                    <option key={p.id} value={p.code}>{p.code} - {p.name}</option>
-                  ))}
-                </select>
+                  onChange={setMinProjectCode}
+                  options={projects.map((p) => ({ value: p.code, label: `${p.code} - ${p.name}` }))}
+                />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block font-semibold text-zinc-300 mb-1">Source Store</label>
-                  <select
+                  <CustomSelect
                     value={minStoreCode}
-                    onChange={(e) => setMinStoreCode(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-[#080e1c] border border-white/15 text-white"
-                  >
-                    {filteredStores.map((s) => (
-                      <option key={s.id} value={s.storeCode}>{s.storeCode}</option>
-                    ))}
-                  </select>
+                    onChange={setMinStoreCode}
+                    options={filteredStores.map((s) => s.storeCode)}
+                  />
                 </div>
                 <div>
                   <label className="block font-semibold text-zinc-300 mb-1">Receiver Name</label>
@@ -461,15 +454,14 @@ export default function InventoryPage() {
               </div>
               <div>
                 <label className="block font-semibold text-zinc-300 mb-1">Material SKU</label>
-                <select
+                <CustomSelect
                   value={minSku}
-                  onChange={(e) => setMinSku(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-[#080e1c] border border-white/15 text-white font-mono"
-                >
-                  {filteredInventory.map((i) => (
-                    <option key={i.id} value={i.sku}>{i.sku} - {i.name} ({formatLKR(i.unitCost)} / {i.unit})</option>
-                  ))}
-                </select>
+                  onChange={setMinSku}
+                  options={filteredInventory.map((i) => ({
+                    value: i.sku,
+                    label: `${i.sku} - ${i.name} (${formatLKR(i.unitCost)} / ${i.unit})`,
+                  }))}
+                />
               </div>
               <div>
                 <label className="block font-semibold text-zinc-300 mb-1">Quantity to Issue</label>

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useERP } from '@/lib/erp/AuthContext';
 import { formatLKR, formatLKRFull } from '@/lib/erp/currency';
 import UniversalRecordManager from '@/components/erp/UniversalRecordManager';
+import CustomSelect from '@/components/erp/CustomSelect';
 import {
   ShoppingCart,
   Plus,
@@ -476,15 +477,14 @@ export default function ProcurementPage() {
             <form onSubmit={handleCreatePO} className="space-y-3.5 text-xs">
               <div>
                 <label className="block font-semibold text-zinc-300 mb-1">Approved Requisition (PR Ref)</label>
-                <select
+                <CustomSelect
                   value={selectedPrRef}
-                  onChange={(e) => setSelectedPrRef(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-[#080e1c] border border-white/15 text-white"
-                >
-                  {filteredPRs.map((pr) => (
-                    <option key={pr.id} value={pr.prNumber}>{pr.prNumber} - {pr.itemName} ({formatLKR(pr.estimatedCostLkr)})</option>
-                  ))}
-                </select>
+                  onChange={setSelectedPrRef}
+                  options={filteredPRs.map((pr) => ({
+                    value: pr.prNumber,
+                    label: `${pr.prNumber} - ${pr.itemName} (${formatLKR(pr.estimatedCostLkr)})`,
+                  }))}
+                />
               </div>
               <div>
                 <label className="block font-semibold text-zinc-300 mb-1">Supplier Entity</label>

@@ -10,6 +10,7 @@ import {
 import ModuleAnalytics from '@/components/erp/ModuleAnalytics';
 import DataViewToolbar, { ViewMode } from '@/components/erp/DataViewToolbar';
 import MultiImageField from '@/components/erp/MultiImageField';
+import CustomSelect from '@/components/erp/CustomSelect';
 import {
   Globe,
   Plus,
@@ -606,16 +607,11 @@ export default function WebsiteProjectsManagerPage() {
                 </div>
                 <div>
                   <label className="block font-semibold text-zinc-300 mb-1">Category</label>
-                  <select
+                  <CustomSelect
                     value={projectForm.category || 'Hillside'}
-                    onChange={(e) => setProjectForm({ ...projectForm, category: e.target.value })}
-                    className="w-full px-3 py-2.5 rounded-xl bg-[#080f24] border border-white/15 text-white focus:outline-none focus:border-[#FFB800]"
-                  >
-                    <option value="Hillside">Hillside</option>
-                    <option value="Residential">Residential</option>
-                    <option value="Commercial">Commercial</option>
-                    <option value="Infrastructure">Infrastructure</option>
-                  </select>
+                    onChange={(val) => setProjectForm({ ...projectForm, category: val })}
+                    options={['Hillside', 'Residential', 'Commercial', 'Infrastructure']}
+                  />
                 </div>
               </div>
 
@@ -653,20 +649,20 @@ export default function WebsiteProjectsManagerPage() {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   <label className="block font-semibold text-zinc-300 mb-1">Status</label>
-                  <select
+                  <CustomSelect
                     value={projectForm.status || 'COMPLETED'}
-                    onChange={(e) =>
+                    onChange={(val) =>
                       setProjectForm({
                         ...projectForm,
-                        status: e.target.value as PublicProject['status'],
+                        status: val as PublicProject['status'],
                       })
                     }
-                    className="w-full px-3 py-2.5 rounded-xl bg-[#080f24] border border-white/15 text-white focus:outline-none focus:border-[#FFB800]"
-                  >
-                    <option value="COMPLETED">Completed</option>
-                    <option value="UNDER_CONSTRUCTION">Under Construction</option>
-                    <option value="DESIGN_PHASE">Design Phase</option>
-                  </select>
+                    options={[
+                      { value: 'COMPLETED', label: 'Completed' },
+                      { value: 'UNDER_CONSTRUCTION', label: 'Under Construction' },
+                      { value: 'DESIGN_PHASE', label: 'Design Phase' },
+                    ]}
+                  />
                 </div>
                 <div>
                   <label className="block font-semibold text-zinc-300 mb-1">Contract Value</label>
@@ -748,14 +744,14 @@ export default function WebsiteProjectsManagerPage() {
                   </div>
                   <div>
                     <label className="block font-semibold text-zinc-300 mb-1">Client Privacy</label>
-                    <select
+                    <CustomSelect
                       value={projectForm.clientPrivacy || 'PUBLIC'}
-                      onChange={(e) => setProjectForm({ ...projectForm, clientPrivacy: e.target.value as 'PUBLIC' | 'CONFIDENTIAL' })}
-                      className="w-full px-3 py-2 rounded-xl bg-[#080f24] border border-white/15 text-white"
-                    >
-                      <option value="PUBLIC">Public Display</option>
-                      <option value="CONFIDENTIAL">Confidential (NDA)</option>
-                    </select>
+                      onChange={(val) => setProjectForm({ ...projectForm, clientPrivacy: val as 'PUBLIC' | 'CONFIDENTIAL' })}
+                      options={[
+                        { value: 'PUBLIC', label: 'Public Display' },
+                        { value: 'CONFIDENTIAL', label: 'Confidential (NDA)' },
+                      ]}
+                    />
                   </div>
                   <div>
                     <label className="block font-semibold text-zinc-300 mb-1">Duration (Months)</label>

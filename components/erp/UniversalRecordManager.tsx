@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import DataViewToolbar, { ViewMode, SortOption } from '@/components/erp/DataViewToolbar';
 import MultiImageField from '@/components/erp/MultiImageField';
+import CustomSelect from '@/components/erp/CustomSelect';
 import { formatLKR } from '@/lib/erp/currency';
 import { Eye, Edit3, Trash2, X, Check, ChevronDown, ChevronRight, SlidersHorizontal } from 'lucide-react';
 
@@ -223,15 +224,11 @@ export default function UniversalRecordManager<T extends Record<string, unknown>
           <span className="font-semibold text-zinc-200">{f.label}</span>
         </label>
       ) : f.type === 'select' ? (
-        <select
+        <CustomSelect
           value={String(formData[f.key] ?? '')}
-          onChange={(e) => setFormData({ ...formData, [f.key]: e.target.value })}
-          className="w-full px-3 py-2 rounded-xl bg-[#080e1c] border border-white/15 text-white"
-        >
-          {(f.options || []).map((opt) => (
-            <option key={opt} value={opt}>{opt}</option>
-          ))}
-        </select>
+          onChange={(val) => setFormData({ ...formData, [f.key]: val })}
+          options={f.options || []}
+        />
       ) : f.type === 'textarea' ? (
         <textarea
           rows={3}

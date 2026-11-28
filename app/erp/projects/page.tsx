@@ -7,6 +7,7 @@ import { formatLKR, formatLKRFull } from '@/lib/erp/currency';
 import ModuleAnalytics from '@/components/erp/ModuleAnalytics';
 import DataViewToolbar, { ViewMode } from '@/components/erp/DataViewToolbar';
 import MultiImageField from '@/components/erp/MultiImageField';
+import CustomSelect from '@/components/erp/CustomSelect';
 import {
   HardHat,
   Plus,
@@ -675,14 +676,14 @@ export default function ProjectsPage() {
                 </div>
                 <div>
                   <label className="block font-semibold text-zinc-300 mb-1">Project Category</label>
-                  <select
+                  <CustomSelect
                     value={category}
-                    onChange={(e) => setCategory(e.target.value as any)}
-                    className="w-full px-3 py-2 rounded-xl bg-[#080e1c] border border-white/15 text-white"
-                  >
-                    <option value="GOVERNMENT">Government (CIDA / FIDIC)</option>
-                    <option value="PRIVATE">Private Commercial</option>
-                  </select>
+                    onChange={(val) => setCategory(val as 'GOVERNMENT' | 'PRIVATE')}
+                    options={[
+                      { value: 'GOVERNMENT', label: 'Government (CIDA / FIDIC)' },
+                      { value: 'PRIVATE', label: 'Private Commercial' },
+                    ]}
+                  />
                 </div>
               </div>
 
@@ -710,19 +711,19 @@ export default function ProjectsPage() {
                 </div>
                 <div>
                   <label className="block font-semibold text-zinc-300 mb-1">Initial Phase</label>
-                  <select
+                  <CustomSelect
                     value={phase}
-                    onChange={(e) => setPhase(e.target.value as any)}
-                    className="w-full px-3 py-2 rounded-xl bg-[#080e1c] border border-white/15 text-white"
-                  >
-                    <option value="DESIGN">Design & Feasibility</option>
-                    <option value="PILING">Piling & Shoring</option>
-                    <option value="FOUNDATION">Substructure Foundation</option>
-                    <option value="STRUCTURAL">Superstructure Casting</option>
-                    <option value="MEP_ENVELOPE">MEP & Façade</option>
-                    <option value="INTERIOR">Interior Finishes</option>
-                    <option value="HANDOVER">Handover & Commissioning</option>
-                  </select>
+                    onChange={(val) => setPhase(val as ProjectPhase)}
+                    options={[
+                      { value: 'DESIGN', label: 'Design & Feasibility' },
+                      { value: 'PILING', label: 'Piling & Shoring' },
+                      { value: 'FOUNDATION', label: 'Substructure Foundation' },
+                      { value: 'STRUCTURAL', label: 'Superstructure Casting' },
+                      { value: 'MEP_ENVELOPE', label: 'MEP & Façade' },
+                      { value: 'INTERIOR', label: 'Interior Finishes' },
+                      { value: 'HANDOVER', label: 'Handover & Commissioning' },
+                    ]}
+                  />
                 </div>
               </div>
 

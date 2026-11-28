@@ -6,6 +6,7 @@ import { ROLE_PERMISSIONS } from '@/lib/erp/auth';
 import { ActiveCompany, Permission, UserRole } from '@/lib/erp/types';
 import DataViewToolbar, { ViewMode } from '@/components/erp/DataViewToolbar';
 import ModuleAnalytics from '@/components/erp/ModuleAnalytics';
+import CustomSelect from '@/components/erp/CustomSelect';
 import {
   Users,
   ShieldCheck,
@@ -496,15 +497,11 @@ export default function UsersAccessControlPage() {
                 </div>
                 <div>
                   <label className="block font-semibold text-zinc-300 mb-1">Role Template</label>
-                  <select
+                  <CustomSelect
                     value={formRole}
-                    onChange={(e) => handleRoleChange(e.target.value as UserRole)}
-                    className="w-full px-3 py-2 rounded-xl bg-[#080e1c] border border-white/15 text-white"
-                  >
-                    {ALL_ROLES.map((r) => (
-                      <option key={r} value={r}>{r}</option>
-                    ))}
-                  </select>
+                    onChange={(val) => handleRoleChange(val as UserRole)}
+                    options={ALL_ROLES}
+                  />
                 </div>
                 <div>
                   <label className="block font-semibold text-zinc-300 mb-1">Designation / Title</label>
@@ -526,26 +523,26 @@ export default function UsersAccessControlPage() {
                 </div>
                 <div>
                   <label className="block font-semibold text-zinc-300 mb-1">Company Access Scope</label>
-                  <select
+                  <CustomSelect
                     value={formScope}
-                    onChange={(e) => setFormScope(e.target.value as ActiveCompany)}
-                    className="w-full px-3 py-2 rounded-xl bg-[#080e1c] border border-white/15 text-white"
-                  >
-                    <option value="CONSOLIDATED">Consolidated (All Divisions)</option>
-                    <option value="COMP_A">CONTEC Engineering (COMP_A)</option>
-                    <option value="COMP_B">CONTEC Plant &amp; Earthworks (COMP_B)</option>
-                  </select>
+                    onChange={(val) => setFormScope(val as ActiveCompany)}
+                    options={[
+                      { value: 'CONSOLIDATED', label: 'Consolidated (All Divisions)' },
+                      { value: 'COMP_A', label: 'CONTEC Engineering (COMP_A)' },
+                      { value: 'COMP_B', label: 'CONTEC Plant & Earthworks (COMP_B)' },
+                    ]}
+                  />
                 </div>
                 <div>
                   <label className="block font-semibold text-zinc-300 mb-1">Account Status</label>
-                  <select
+                  <CustomSelect
                     value={formStatus}
-                    onChange={(e) => setFormStatus(e.target.value as 'ACTIVE' | 'SUSPENDED')}
-                    className="w-full px-3 py-2 rounded-xl bg-[#080e1c] border border-white/15 text-white"
-                  >
-                    <option value="ACTIVE">ACTIVE</option>
-                    <option value="SUSPENDED">SUSPENDED (Blocked)</option>
-                  </select>
+                    onChange={(val) => setFormStatus(val as 'ACTIVE' | 'SUSPENDED')}
+                    options={[
+                      { value: 'ACTIVE', label: 'ACTIVE' },
+                      { value: 'SUSPENDED', label: 'SUSPENDED (Blocked)' },
+                    ]}
+                  />
                 </div>
               </div>
 

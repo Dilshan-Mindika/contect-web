@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+import CustomSelect from '@/components/erp/CustomSelect';
 import {
   Search,
   ArrowUpDown,
@@ -87,20 +88,13 @@ export default function DataViewToolbar({
 
         {/* Sort By + Direction */}
         <div className="flex items-center gap-1.5">
-          <div className="relative flex items-center">
-            <ArrowUpDown className="w-3.5 h-3.5 text-[#FFB800] absolute left-2.5 pointer-events-none" />
-            <select
-              value={sortBy}
-              onChange={(e) => onSortByChange(e.target.value)}
-              className="pl-8 pr-3 py-2 rounded-xl bg-[#050811] border border-white/15 text-xs text-white font-semibold focus:outline-none focus:border-[#FFB800] cursor-pointer"
-            >
-              {sortOptions.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  Sort: {opt.label}
-                </option>
-              ))}
-            </select>
-          </div>
+          <CustomSelect
+            value={sortBy}
+            onChange={onSortByChange}
+            options={sortOptions.map((opt) => ({ value: opt.value, label: `Sort: ${opt.label}` }))}
+            prefixIcon={<ArrowUpDown className="w-3.5 h-3.5 text-[#FFB800]" />}
+            className="min-w-[165px]"
+          />
           <button
             type="button"
             onClick={onSortDirToggle}

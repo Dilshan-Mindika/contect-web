@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useERP } from '@/lib/erp/AuthContext';
 import { OSHAStatus } from '@/lib/erp/types';
 import UniversalRecordManager from '@/components/erp/UniversalRecordManager';
+import CustomSelect from '@/components/erp/CustomSelect';
 import {
   HardHat,
   Plus,
@@ -196,17 +197,11 @@ export default function SiteLogsPage() {
             <form onSubmit={handleCreateLog} className="space-y-3.5">
               <div>
                 <label className="block text-xs font-semibold text-zinc-300 mb-1">Target Mega-Site</label>
-                <select
+                <CustomSelect
                   value={projectId}
-                  onChange={(e) => setProjectId(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-[#080e1c] border border-white/15 text-white text-xs focus:outline-none focus:border-[#FFB800]"
-                >
-                  {projects.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.name} ({p.code})
-                    </option>
-                  ))}
-                </select>
+                  onChange={setProjectId}
+                  options={projects.map((p) => ({ value: p.id, label: `${p.name} (${p.code})` }))}
+                />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -273,17 +268,17 @@ export default function SiteLogsPage() {
               <div className="grid grid-cols-3 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-zinc-300 mb-1">Concrete Grade</label>
-                  <select
+                  <CustomSelect
                     value={concreteGrade}
-                    onChange={(e) => setConcreteGrade(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-[#080e1c] border border-white/15 text-white text-xs"
-                  >
-                    <option value="G25">Grade 25 (G25)</option>
-                    <option value="G30">Grade 30 (G30)</option>
-                    <option value="G35">Grade 35 (G35)</option>
-                    <option value="G40">Grade 40 (G40)</option>
-                    <option value="G50">Grade 50 (G50)</option>
-                  </select>
+                    onChange={setConcreteGrade}
+                    options={[
+                      { value: 'G25', label: 'Grade 25 (G25)' },
+                      { value: 'G30', label: 'Grade 30 (G30)' },
+                      { value: 'G35', label: 'Grade 35 (G35)' },
+                      { value: 'G40', label: 'Grade 40 (G40)' },
+                      { value: 'G50', label: 'Grade 50 (G50)' },
+                    ]}
+                  />
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-zinc-300 mb-1">Concrete Placed (m³)</label>
@@ -308,15 +303,11 @@ export default function SiteLogsPage() {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-zinc-300 mb-1">OSHA / HSE Status</label>
-                  <select
+                  <CustomSelect
                     value={oshaStatus}
-                    onChange={(e) => setOshaStatus(e.target.value as OSHAStatus)}
-                    className="w-full px-3 py-2 rounded-xl bg-[#080e1c] border border-white/15 text-white text-xs"
-                  >
-                    <option value="COMPLIANT">COMPLIANT</option>
-                    <option value="OBSERVATION">OBSERVATION</option>
-                    <option value="BREACH">BREACH</option>
-                  </select>
+                    onChange={(val) => setOshaStatus(val as OSHAStatus)}
+                    options={['COMPLIANT', 'OBSERVATION', 'BREACH']}
+                  />
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-zinc-300 mb-1">Safety Incidents</label>

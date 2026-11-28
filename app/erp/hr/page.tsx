@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useERP } from '@/lib/erp/AuthContext';
 import UniversalRecordManager from '@/components/erp/UniversalRecordManager';
+import CustomSelect from '@/components/erp/CustomSelect';
 import { formatLKR, formatLKRFull } from '@/lib/erp/currency';
 import { Employee, LeaveStatus } from '@/lib/erp/types';
 import {
@@ -413,15 +414,11 @@ export default function HRPage() {
               </div>
               <div>
                 <label className="block font-semibold text-zinc-300 mb-1">Department</label>
-                <select
+                <CustomSelect
                   value={department}
-                  onChange={(e) => setDepartment(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-[#080f24] border border-white/15 text-white"
-                >
-                  {departments.filter((d) => d !== 'ALL').map((dept) => (
-                    <option key={dept} value={dept}>{dept}</option>
-                  ))}
-                </select>
+                  onChange={setDepartment}
+                  options={departments.filter((d) => d !== 'ALL')}
+                />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">

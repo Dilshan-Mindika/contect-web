@@ -6,6 +6,7 @@ import { ConstructionQuotation, BOQItem, BOQSection } from '@/lib/erp/types';
 import { formatLKR } from '@/lib/erp/currency';
 import DocumentStudioModal from '@/components/erp/DocumentStudioModal';
 import UniversalRecordManager from '@/components/erp/UniversalRecordManager';
+import CustomSelect from '@/components/erp/CustomSelect';
 import {
   FileText,
   Plus,
@@ -349,20 +350,20 @@ export default function QuotationsPage() {
                   </div>
                   <div>
                     <label className="text-[10px] text-zinc-400">Section</label>
-                    <select
+                    <CustomSelect
                       value={newSection}
-                      onChange={(e) => setNewSection(e.target.value as BOQSection)}
-                      className="w-full px-2 py-1.5 rounded bg-[#080e1c] border border-white/15 text-white text-xs"
-                    >
-                      <option value="PRELIMINARIES">Preliminaries</option>
-                      <option value="EARTHWORK">Earthwork</option>
-                      <option value="SUBSTRUCTURE">Substructure</option>
-                      <option value="SUPERSTRUCTURE">Superstructure</option>
-                      <option value="MEP">MEP Services</option>
-                      <option value="FACADE">Façade & Glazing</option>
-                      <option value="FINISHES">Architectural Finishes</option>
-                      <option value="INFRASTRUCTURE">Infrastructure</option>
-                    </select>
+                      onChange={(val) => setNewSection(val as BOQSection)}
+                      options={[
+                        { value: 'PRELIMINARIES', label: 'Preliminaries' },
+                        { value: 'EARTHWORK', label: 'Earthwork' },
+                        { value: 'SUBSTRUCTURE', label: 'Substructure' },
+                        { value: 'SUPERSTRUCTURE', label: 'Superstructure' },
+                        { value: 'MEP', label: 'MEP Services' },
+                        { value: 'FACADE', label: 'Façade & Glazing' },
+                        { value: 'FINISHES', label: 'Architectural Finishes' },
+                        { value: 'INFRASTRUCTURE', label: 'Infrastructure' },
+                      ]}
+                    />
                   </div>
                   <div className="sm:col-span-2">
                     <label className="text-[10px] text-zinc-400">Scope Description</label>
