@@ -229,28 +229,23 @@ export default function AuditAndVaultPage() {
             Document Management & Audit Trail
           </h1>
           <p className="text-xs sm:text-sm text-zinc-400 mt-0.5">
-            CIDA & ISO 9001:2015 audit-ready electronic document management, SHA-256 cryptographic provenance, multi-company isolation, and tamper-evident audit logs.
+            CIDA &amp; ISO 9001:2015 document archive, multi-company record isolation, and activity audit logs.
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5 flex-wrap">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-mono font-bold">
-            <CheckCircle2 className="w-4 h-4" />
-            <span>0 Vulnerabilities • 100% SHA-256 Verified</span>
-          </span>
-
+        <div className="flex items-center gap-2.5 shrink-0">
           {activeTab === 'VAULT' ? (
             <div className="flex items-center gap-2">
               <button
                 onClick={handleExportManifest}
-                className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                className="h-10 px-3.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs font-semibold flex items-center gap-1.5 whitespace-nowrap transition-colors cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5 text-zinc-400" />
                 <span>Export Manifest</span>
               </button>
               <button
                 onClick={() => setShowUploadModal(true)}
-                className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-[#0038B8] to-[#1D4ED8] hover:from-[#1D4ED8] hover:to-[#2563EB] text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-blue-900/30 transition-all"
+                className="h-10 px-4 rounded-xl bg-gradient-to-r from-[#0038B8] to-[#1D4ED8] hover:from-[#1D4ED8] hover:to-[#2563EB] text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-blue-900/30 whitespace-nowrap transition-all cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5 text-[#FFB800]" />
                 <span>Archive Document</span>
@@ -259,7 +254,7 @@ export default function AuditAndVaultPage() {
           ) : (
             <button
               onClick={handleExportAuditTrail}
-              className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors"
+              className="h-10 px-3.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs font-semibold flex items-center gap-1.5 whitespace-nowrap transition-colors cursor-pointer"
             >
               <Download className="w-3.5 h-3.5 text-zinc-400" />
               <span>Export Audit Trail (CSV)</span>
@@ -293,20 +288,20 @@ export default function AuditAndVaultPage() {
             {(vaultDocuments.reduce((acc, d) => acc + d.fileSizeKb, 0) / 1024).toFixed(2)} MB
           </div>
           <span className="text-[11px] text-zinc-400 mt-1 block">
-            AES-256 encrypted at rest & in transit
+            Protected company document storage
           </span>
         </div>
 
         <div className="p-4 rounded-xl bg-[#080e1c]/80 border border-white/10">
           <div className="flex items-center justify-between">
-            <span className="text-xs text-zinc-400">JWT Token Standard</span>
+            <span className="text-xs text-zinc-400">Access Protection</span>
             <Lock className="w-4 h-4 text-emerald-400" />
           </div>
-          <div className="text-xl font-mono font-extrabold text-emerald-400 mt-1">
-            HMAC-SHA256 (HS256)
+          <div className="text-xl font-bold text-emerald-400 mt-1">
+            Role-Based Access
           </div>
           <span className="text-[11px] text-zinc-400 mt-1 block">
-            HttpOnly & SameSite=Lax transport
+            Secure staff session controls
           </span>
         </div>
 
@@ -347,7 +342,7 @@ export default function AuditAndVaultPage() {
           }`}
         >
           <ShieldCheck className="w-4 h-4" />
-          <span>02. Cryptographic Audit Ledger & Token Inspector ({filteredLogs.length})</span>
+          <span>02. Activity &amp; Security Audit Trail ({filteredLogs.length})</span>
         </button>
 
         <button
@@ -537,14 +532,14 @@ export default function AuditAndVaultPage() {
                           <div className="flex items-center justify-end gap-1.5">
                             <button
                               onClick={() => setSelectedDocForInspect(doc)}
-                              title="Inspect SHA-256 Provenance"
+                              title="View Document Details"
                               className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-zinc-300 hover:text-white transition-colors"
                             >
                               <Eye className="w-3.5 h-3.5 text-blue-400" />
                             </button>
                             <button
                               onClick={() => {
-                                alert(`Downloading decrypted artifact "${doc.documentRefNumber}" (${doc.title}). File integrity verified against SHA-256 ledger.`);
+                                alert(`Downloading document "${doc.documentRefNumber}" (${doc.title}).`);
                               }}
                               title="Download Secure File"
                               className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-zinc-300 hover:text-[#FFB800] transition-colors"
@@ -563,61 +558,16 @@ export default function AuditAndVaultPage() {
         </div>
       )}
 
-      {/* ========================================================================= */}
-      {/* TAB 2: CRYPTOGRAPHIC AUDIT LEDGER */}
-      {/* ========================================================================= */}
+      {/* TAB 2: ACTIVITY & SECURITY AUDIT TRAIL */}
       {activeTab === 'AUDIT' && (
         <div className="space-y-6">
-          {/* Real-time JWT Claims Inspector */}
-          <div className="p-5 rounded-2xl bg-[#080e1c]/90 border border-blue-500/30 space-y-3">
-            <div className="flex items-center justify-between border-b border-white/10 pb-3">
-              <div className="flex items-center gap-2">
-                <Terminal className="w-4 h-4 text-[#FFB800]" />
-                <h3 className="text-sm font-bold text-white">
-                  Decoded Active Session Claims (JWT Payload)
-                </h3>
-              </div>
-              <span className="text-[11px] font-mono text-zinc-400">
-                Issuer: contec:erp:auth • Audience: contec:enterprise
-              </span>
+          <div className="p-4 rounded-2xl bg-[#080e1c]/90 border border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs">
+            <div className="flex items-center gap-2.5">
+              <ShieldCheck className="w-4 h-4 text-[#FFB800]" />
+              <span className="font-bold text-white">Active Session:</span>
+              <span className="text-zinc-300">{user?.name} ({user?.role})</span>
             </div>
-
-            <div className="bg-[#03060f] p-4 rounded-xl border border-white/5 font-mono text-xs text-zinc-300 overflow-x-auto space-y-1">
-              <div className="text-zinc-500">{'// Real-time cryptographic token verification payload'}</div>
-              <div>
-                <span className="text-purple-400">&quot;sub&quot;</span>: <span className="text-emerald-300">&quot;{user?.id}&quot;</span>,
-              </div>
-              <div>
-                <span className="text-purple-400">&quot;name&quot;</span>: <span className="text-emerald-300">&quot;{user?.name}&quot;</span>,
-              </div>
-              <div>
-                <span className="text-purple-400">&quot;email&quot;</span>: <span className="text-emerald-300">&quot;{user?.email}&quot;</span>,
-              </div>
-              <div>
-                <span className="text-purple-400">&quot;role&quot;</span>: <span className="text-[#FFB800]">&quot;{user?.role}&quot;</span>,
-              </div>
-              <div>
-                <span className="text-purple-400">&quot;companyScope&quot;</span>: <span className="text-blue-300">&quot;{activeCompany}&quot;</span>,
-              </div>
-              <div>
-                <span className="text-purple-400">&quot;department&quot;</span>: <span className="text-emerald-300">&quot;{user?.department}&quot;</span>,
-              </div>
-              <div>
-                <span className="text-purple-400">&quot;permissions&quot;</span>: [
-                {user?.permissions.map((p, idx) => (
-                  <span key={p} className="text-blue-300">
-                    &quot;{p}&quot;{idx < (user?.permissions.length || 0) - 1 ? ', ' : ''}
-                  </span>
-                ))}
-                ],
-              </div>
-              <div>
-                <span className="text-purple-400">&quot;iss&quot;</span>: <span className="text-zinc-400">&quot;contec:erp:auth&quot;</span>,
-              </div>
-              <div>
-                <span className="text-purple-400">&quot;exp&quot;</span>: <span className="text-amber-400">7 Days (Rolling Session)</span>
-              </div>
-            </div>
+            <span className="text-zinc-400">Company Scope: <strong className="text-blue-300">{activeCompany}</strong></span>
           </div>
 
           {/* Filter and Search Bar for Audit */}
@@ -905,7 +855,7 @@ export default function AuditAndVaultPage() {
                   className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#0038B8] to-[#1D4ED8] hover:from-[#1D4ED8] hover:to-[#2563EB] text-white text-xs font-bold shadow-lg shadow-blue-900/30 flex items-center gap-1.5"
                 >
                   <FolderLock className="w-3.5 h-3.5 text-[#FFB800]" />
-                  <span>Archive & Generate SHA-256</span>
+                  <span>Save to Vault</span>
                 </button>
               </div>
             </form>
@@ -913,9 +863,7 @@ export default function AuditAndVaultPage() {
         </div>
       )}
 
-      {/* ========================================================================= */}
-      {/* MODAL 2: DOCUMENT PROVENANCE & SHA-256 INSPECTOR */}
-      {/* ========================================================================= */}
+      {/* MODAL 2: DOCUMENT DETAILS */}
       {selectedDocForInspect && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
           <div className="w-full max-w-xl rounded-2xl bg-[#091124] border border-blue-500/30 p-6 shadow-2xl relative space-y-4">
@@ -929,7 +877,7 @@ export default function AuditAndVaultPage() {
             <div className="flex items-center gap-2">
               <FileCheck className="w-5 h-5 text-emerald-400" />
               <h2 className="text-base font-bold text-white">
-                Cryptographic Document Provenance & Verification
+                Document Details &amp; Verification
               </h2>
             </div>
 
@@ -959,25 +907,19 @@ export default function AuditAndVaultPage() {
                 </span>
               </div>
               <div className="flex items-center justify-between pb-2 border-b border-white/5">
-                <span className="text-zinc-400">File Signature:</span>
+                <span className="text-zinc-400">File Format &amp; Size:</span>
                 <span className="text-white">
                   {selectedDocForInspect.fileFormat} • {(selectedDocForInspect.fileSizeKb / 1024).toFixed(2)} MB
                 </span>
-              </div>
-              <div className="pt-1">
-                <span className="text-zinc-400 block mb-1">SHA-256 Cryptographic Checksum:</span>
-                <div className="p-2.5 rounded-lg bg-black/60 border border-emerald-500/30 text-emerald-300 text-[11px] break-all select-all">
-                  sha256:7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069
-                </div>
               </div>
             </div>
 
             <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/25 flex items-start gap-2.5 text-xs text-emerald-200">
               <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
               <div>
-                <span className="font-bold">Cryptographically Verified Immutable</span>
+                <span className="font-bold">Verified Archive Record</span>
                 <p className="text-[11px] text-emerald-300/80 mt-0.5">
-                  This document record matches the tamper-evident hash stored in the central audit ledger. Meets all evidence standards under the Sri Lanka Electronic Transactions Act No. 19 of 2006.
+                  This document is archived in the central vault with complete audit history.
                 </p>
               </div>
             </div>

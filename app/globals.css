@@ -334,10 +334,38 @@ html {
   border-color: #e2e8f0 !important;
 }
 
+/* Theme-aligned dropdowns (<select> & <option>) across Dark & Light ERP */
+.erp-main select {
+  color-scheme: dark;
+  background-color: #0b1428;
+  color: #f4f4f7;
+  border-color: rgba(255, 255, 255, 0.14);
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.erp-main select:focus {
+  border-color: #3b82f6;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.erp-main select option {
+  background-color: #0b1428;
+  color: #f4f4f7;
+  padding: 8px 12px;
+}
+
 [data-erp-theme="light"] .erp-main input,
 [data-erp-theme="light"] .erp-main select,
 [data-erp-theme="light"] .erp-main textarea {
+  color-scheme: light;
   background-color: #ffffff !important;
   color: #0f172a !important;
   border-color: #cbd5e1 !important;
+}
+
+[data-erp-theme="light"] .erp-main select option {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
 }

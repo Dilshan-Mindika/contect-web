@@ -420,7 +420,7 @@ export default function ERPDashboardPage() {
               <span className="text-zinc-400">Security &amp; Audit</span>
               <span className="font-bold text-blue-300 flex items-center gap-1">
                 <ShieldCheck className="w-3.5 h-3.5" />
-                JWT + MySQL Active
+                System &amp; Database Online
               </span>
             </div>
           </div>

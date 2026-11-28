@@ -146,19 +146,12 @@ export default function MachineryPage() {
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
-          <button
-            onClick={() => setShowAssetModal(true)}
-            className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#0038B8] to-[#1D4ED8] text-white text-xs font-bold shadow-lg border border-blue-400/40 flex items-center gap-2 transition-all cursor-pointer"
-          >
-            <Plus className="w-4 h-4 text-[#FFB800]" />
-            <span>Register Fleet Asset</span>
-          </button>
+        <div className="flex items-center gap-2 shrink-0 self-start sm:self-auto">
           <button
             onClick={() => setShowFuelModal(true)}
-            className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 to-yellow-600 text-white text-xs font-bold shadow-lg border border-amber-400/40 flex items-center gap-2 transition-all cursor-pointer"
+            className="h-10 px-4 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-[#FFB800] text-xs font-bold border border-amber-500/35 flex items-center gap-2 whitespace-nowrap transition-all cursor-pointer"
           >
-            <Fuel className="w-4 h-4 text-white" />
+            <Fuel className="w-4 h-4" />
             <span>Record Fuel Tanker Discharge</span>
           </button>
         </div>
