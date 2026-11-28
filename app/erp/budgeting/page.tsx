@@ -256,17 +256,18 @@ export default function ProjectBudgetingCostControlPage() {
         searchPlaceholder="Search budget baselines..."
         sortOptions={[
           { value: 'projectCode', label: 'Project Code' },
-          { value: 'costCode', label: 'Cost Code' },
-          { value: 'baselineBudgetLkr', label: 'Baseline Budget' },
+          { value: 'totalBaselineBudgetLkr', label: 'Baseline Budget' },
+          { value: 'totalActualSpentLkr', label: 'Actual Spent' },
         ]}
         fields={[
-          { key: 'description', label: 'Cost Element', isTitle: true, required: true },
-          { key: 'projectCode', label: 'Project Code', required: true },
-          { key: 'costCode', label: 'Cost Code', isBadge: true },
-          { key: 'baselineBudgetLkr', label: 'Baseline (LKR)', type: 'number', isCurrency: true },
-          { key: 'actualSpentLkr', label: 'Actual Spent (LKR)', type: 'number', isCurrency: true },
+          { key: 'projectCode', label: 'Project Code', isTitle: true, required: true },
+          { key: 'companyId', label: 'Company', isBadge: true },
+          { key: 'totalBaselineBudgetLkr', label: 'Total Baseline (LKR)', type: 'number', isCurrency: true, required: true },
+          { key: 'totalActualSpentLkr', label: 'Actual Spent (LKR)', type: 'number', isCurrency: true },
+          { key: 'materialsBudgetLkr', label: 'Materials Budget (LKR)', type: 'number', isCurrency: true, showInTable: false, optional: true },
+          { key: 'labourBudgetLkr', label: 'Labour Budget (LKR)', type: 'number', isCurrency: true, showInTable: false, optional: true },
+          { key: 'machineryBudgetLkr', label: 'Machinery Budget (LKR)', type: 'number', isCurrency: true, showInTable: false, optional: true },
           { key: 'committedPoLkr', label: 'Committed POs (LKR)', type: 'number', isCurrency: true, showInTable: false, optional: true },
-          { key: 'forecastToCompleteLkr', label: 'Forecast to Complete (ETC)', type: 'number', isCurrency: true, showInTable: false, optional: true },
           { key: 'costEngineer', label: 'Responsible Cost Engineer / QS', showInTable: false, optional: true },
           { key: 'varianceReason', label: 'Variance & Escalation Justification', type: 'textarea', showInTable: false, optional: true },
           { key: 'images', label: 'BOQ & Cost Variance Supporting Scans', type: 'images', showInTable: false, optional: true },

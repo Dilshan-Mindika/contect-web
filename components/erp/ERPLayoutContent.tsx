@@ -113,6 +113,32 @@ export default function ERPLayoutContent({ children }: { children: React.ReactNo
   const [passwordForm, setPasswordForm] = useState({ current: '', newPass: '', confirm: '' });
   const [passwordStatus, setPasswordStatus] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [profileName, setProfileName] = useState('');
+  const [profileTitle, setProfileTitle] = useState('');
+  const [profileMfa, setProfileMfa] = useState(false);
+  const [profileSaving, setProfileSaving] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      setProfileName(user.name || '');
+      setProfileTitle(user.title || '');
+    }
+  }, [user]);
+
+  const openProfileModal = () => {
+    setShowProfileModal(true);
+    setPasswordStatus(null);
+    fetch('/api/erp/auth/profile')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (d?.success && d.profile) {
+          setProfileName(d.profile.name || user?.name || '');
+          setProfileTitle(d.profile.title || user?.title || '');
+          setProfileMfa(Boolean(d.profile.mfaEnabled));
+        }
+      })
+      .catch(() => {});
+  };
 
   // Global Advanced Search State
   const [globalQuery, setGlobalQuery] = useState('');
@@ -145,25 +171,50 @@ export default function ERPLayoutContent({ children }: { children: React.ReactNo
     };
   }, []);
 
-  const handleUpdatePassword = (e: React.FormEvent) => {
+  const handleUpdatePassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!passwordForm.current) {
-      setPasswordStatus({ type: 'error', msg: 'Please enter your current account password.' });
-      return;
+    if (passwordForm.newPass || passwordForm.confirm || passwordForm.current) {
+      if (!passwordForm.current) {
+        setPasswordStatus({ type: 'error', msg: 'Please enter your current password.' });
+        return;
+      }
+      if (passwordForm.newPass.length < 6) {
+        setPasswordStatus({ type: 'error', msg: 'New password must be at least 6 characters.' });
+        return;
+      }
+      if (passwordForm.newPass !== passwordForm.confirm) {
+        setPasswordStatus({ type: 'error', msg: 'New password and confirmation do not match.' });
+        return;
+      }
     }
-    if (passwordForm.newPass.length < 6) {
-      setPasswordStatus({ type: 'error', msg: 'New password must be at least 6 characters.' });
-      return;
+    setProfileSaving(true);
+    setPasswordStatus(null);
+    try {
+      const res = await fetch('/api/erp/auth/profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: profileName,
+          title: profileTitle,
+          mfaEnabled: profileMfa,
+          ...(passwordForm.newPass ? { currentPassword: passwordForm.current, newPassword: passwordForm.newPass } : {}),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        setPasswordStatus({ type: 'error', msg: data.error || 'Could not update profile.' });
+      } else {
+        setPasswordStatus({ type: 'success', msg: 'Profile, 2FA & security settings saved.' });
+        setPasswordForm({ current: '', newPass: '', confirm: '' });
+        if (profileName && profileName !== user?.name) {
+          setTimeout(() => window.location.reload(), 650);
+        }
+      }
+    } catch {
+      setPasswordStatus({ type: 'error', msg: 'Network error while saving profile.' });
+    } finally {
+      setProfileSaving(false);
     }
-    if (passwordForm.newPass !== passwordForm.confirm) {
-      setPasswordStatus({ type: 'error', msg: 'New password and confirmation do not match.' });
-      return;
-    }
-    setPasswordStatus({ type: 'success', msg: 'Enterprise security credentials updated successfully.' });
-    setPasswordForm({ current: '', newPass: '', confirm: '' });
-    setTimeout(() => {
-      setPasswordStatus(null);
-    }, 4000);
   };
 
   // If on login page, render full screen login without sidebar
@@ -364,7 +415,7 @@ export default function ERPLayoutContent({ children }: { children: React.ReactNo
   return (
     <div
       data-erp-theme={erpTheme}
-      className={`min-h-screen flex flex-col antialiased transition-colors duration-300 ${
+      className={`h-screen overflow-hidden flex flex-col antialiased transition-colors duration-300 ${
         isLight ? 'bg-[#f4f6fb] text-slate-900' : 'bg-[#050811] text-[#f4f4f7]'
       }`}
     >
@@ -504,121 +555,28 @@ export default function ERPLayoutContent({ children }: { children: React.ReactNo
 
         {/* Center / Right controls - Clean & Uniform h-10 */}
         <div className="flex items-center gap-2 shrink-0">
-          {/* 1. Operating Division Selector */}
-          <div className="relative">
-            <button
-              onClick={() => setCompanyMenuOpen(!companyMenuOpen)}
-              className={`h-10 flex items-center gap-2 px-3 rounded-xl border text-xs font-semibold transition-all cursor-pointer focus:outline-none ${
-                isLight
-                  ? 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-800'
-                  : 'bg-white/[0.04] hover:bg-white/[0.08] border-white/10 text-zinc-200'
-              }`}
-            >
-              <Building2 className={`w-4 h-4 shrink-0 ${isLight ? 'text-[#0038B8]' : 'text-[#FFB800]'}`} />
-              <span className="hidden xl:inline truncate max-w-[140px]">
-                {activeCompany === 'CONSOLIDATED'
-                  ? 'All Divisions'
-                  : currentCompProfile?.tradeName || activeCompany}
-              </span>
-              <ChevronDown className={`w-3.5 h-3.5 opacity-60 transition-transform duration-200 ${companyMenuOpen ? 'rotate-180' : ''}`} />
-            </button>
-
-            <AnimatePresence>
-              {companyMenuOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: 6, scale: 0.98 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 6, scale: 0.98 }}
-                  transition={{ duration: 0.16 }}
-                  className={`absolute right-0 mt-2 w-72 rounded-xl border shadow-2xl p-2 z-50 ${
-                    isLight ? 'bg-white border-slate-200 text-slate-800' : 'bg-[#080f24] border-white/15 text-white'
-                  }`}
-                >
-                  <div className={`px-3 py-2 border-b mb-1 ${isLight ? 'border-slate-100' : 'border-white/10'}`}>
-                    <span className="text-xs font-bold block">Operating Division</span>
-                    <p className={`text-[11px] ${isLight ? 'text-slate-500' : 'text-zinc-400'}`}>
-                      Select branch or consolidated view
-                    </p>
-                  </div>
-                  <div className="space-y-1">
-                    {companies.map((comp) => {
-                      const isSelected = activeCompany === comp.id;
-                      return (
-                        <button
-                          key={comp.id}
-                          onClick={() => {
-                            setActiveCompany(comp.id);
-                            setCompanyMenuOpen(false);
-                          }}
-                          className={`w-full text-left p-2.5 rounded-lg text-xs transition-all cursor-pointer ${
-                            isSelected
-                              ? 'bg-[#0038B8] text-white font-bold'
-                              : isLight
-                              ? 'hover:bg-slate-100 text-slate-700'
-                              : 'hover:bg-white/5 text-zinc-300'
-                          }`}
-                        >
-                          <div className="font-semibold">{comp.tradeName}</div>
-                          <div className={`text-[10px] mt-0.5 ${isSelected ? 'text-blue-100' : isLight ? 'text-slate-500' : 'text-zinc-400'}`}>
-                            {comp.name}
-                          </div>
-                        </button>
-                      );
-                    })}
-
-                    <button
-                      onClick={() => {
-                        setActiveCompany('CONSOLIDATED');
-                        setCompanyMenuOpen(false);
-                      }}
-                      className={`w-full text-left p-2.5 rounded-lg text-xs transition-all mt-1 cursor-pointer ${
-                        activeCompany === 'CONSOLIDATED'
-                          ? 'bg-[#0038B8] text-white font-bold'
-                          : isLight
-                          ? 'hover:bg-slate-100 text-slate-700'
-                          : 'hover:bg-white/5 text-zinc-300'
-                      }`}
-                    >
-                      <div className="font-semibold">Combined Overview</div>
-                      <div className={`text-[10px] mt-0.5 ${activeCompany === 'CONSOLIDATED' ? 'text-blue-100' : isLight ? 'text-slate-500' : 'text-zinc-400'}`}>
-                        All projects and financial metrics across CONTEC
-                      </div>
-                    </button>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
-          {/* 2. Staff Profile Button */}
+          {/* Dynamic Time Greeting -> Profile Management */}
           <button
-            onClick={() => setShowProfileModal(true)}
-            className={`h-10 flex items-center gap-2 px-3 rounded-xl border text-xs font-semibold transition-all cursor-pointer focus:outline-none ${
+            type="button"
+            onClick={openProfileModal}
+            className={`h-10 hidden sm:flex items-center gap-2 px-3.5 rounded-xl border text-xs font-semibold transition-all cursor-pointer focus:outline-none ${
               isLight
                 ? 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-800'
-                : 'bg-white/[0.04] hover:bg-white/[0.08] border-white/10 text-white'
+                : 'bg-white/[0.04] hover:bg-white/[0.08] border-white/10 text-zinc-200'
             }`}
-            title="Staff Profile & Security"
+            title="Profile Management"
           >
-            <div className="relative shrink-0">
-              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#0038B8] to-blue-600 text-white font-bold text-[10px] flex items-center justify-center">
-                {user?.name
-                  ? user.name
-                      .split(' ')
-                      .map((n) => n[0])
-                      .slice(0, 2)
-                      .join('')
-                      .toUpperCase()
-                  : 'ST'}
-              </div>
-              <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 ring-1 ring-white" />
-            </div>
-            <span className="hidden sm:inline truncate max-w-[110px]">
-              {user?.name || 'Elena Vance'}
+            <User className={`w-4 h-4 shrink-0 ${isLight ? 'text-[#0038B8]' : 'text-[#FFB800]'}`} />
+            <span>
+              {(() => {
+                const hr = new Date().getHours();
+                const greeting = hr < 12 ? 'Good Morning' : hr < 17 ? 'Good Afternoon' : 'Good Evening';
+                return `${greeting}, ${profileName || user?.name || 'Staff'}`;
+              })()}
             </span>
           </button>
 
-          {/* 3. Light / Dark Theme Toggle */}
+          {/* Light / Dark Theme Toggle */}
           <button
             onClick={toggleErpTheme}
             className={`h-10 w-10 rounded-xl border flex items-center justify-center transition-all cursor-pointer focus:outline-none ${
@@ -632,98 +590,7 @@ export default function ERPLayoutContent({ children }: { children: React.ReactNo
             {isLight ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
           </button>
 
-          {/* 4. Dynamic Notifications Bell */}
-          <div className="relative">
-            <button
-              onClick={() => setNotificationsOpen(!notificationsOpen)}
-              className={`h-10 w-10 rounded-xl border flex items-center justify-center transition-all cursor-pointer relative focus:outline-none ${
-                isLight
-                  ? 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700'
-                  : 'bg-white/[0.04] hover:bg-white/[0.08] border-white/10 text-zinc-300 hover:text-white'
-              }`}
-              title="Live Notifications"
-            >
-              <Bell className="w-4 h-4" />
-              {totalAlertCount > 0 && (
-                <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#FFB800] animate-pulse" />
-              )}
-            </button>
-
-            <AnimatePresence>
-              {notificationsOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: 6, scale: 0.98 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 6, scale: 0.98 }}
-                  transition={{ duration: 0.16 }}
-                  className={`absolute right-0 mt-2 w-80 rounded-2xl border shadow-2xl p-3 z-50 space-y-2 ${
-                    isLight ? 'bg-white border-slate-200 text-slate-800' : 'bg-[#080f24] border-white/15 text-white'
-                  }`}
-                >
-                  <div className={`flex items-center justify-between pb-2 border-b px-1 ${isLight ? 'border-slate-100' : 'border-white/10'}`}>
-                    <span className="text-xs font-bold">Live Notifications</span>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-500 font-bold">
-                      {totalAlertCount} Active
-                    </span>
-                  </div>
-                  <div className="space-y-1.5 text-xs max-h-64 overflow-y-auto">
-                    {unreadInquiries.slice(0, 2).map((inq) => (
-                      <Link
-                        key={inq.id}
-                        href="/erp/inquiries"
-                        onClick={() => setNotificationsOpen(false)}
-                        className={`block p-2.5 rounded-xl border space-y-0.5 transition-colors ${
-                          isLight ? 'bg-slate-50 border-slate-200 hover:bg-slate-100' : 'bg-white/[0.03] border-white/5 hover:bg-white/[0.06]'
-                        }`}
-                      >
-                        <div className="font-semibold flex items-center justify-between">
-                          <span>New Inquiry: {inq.clientName}</span>
-                          <span className="text-[10px] opacity-60">{inq.date}</span>
-                        </div>
-                        <p className="text-[11px] opacity-75 truncate">{inq.projectType} • {inq.budgetRange}</p>
-                      </Link>
-                    ))}
-                    {lowStockAlerts.slice(0, 2).map((item) => (
-                      <Link
-                        key={item.id}
-                        href="/erp/inventory"
-                        onClick={() => setNotificationsOpen(false)}
-                        className={`block p-2.5 rounded-xl border space-y-0.5 transition-colors ${
-                          isLight ? 'bg-amber-50 border-amber-200 hover:bg-amber-100/60' : 'bg-amber-500/10 border-amber-500/20'
-                        }`}
-                      >
-                        <div className="font-semibold flex items-center justify-between">
-                          <span>Stock Alert: {item.name}</span>
-                          <span className="text-[10px] text-amber-500 font-bold">{item.status}</span>
-                        </div>
-                        <p className="text-[11px] opacity-75">{item.quantity} {item.unit} remaining</p>
-                      </Link>
-                    ))}
-                    {auditLogs[0] && (
-                      <div className={`p-2.5 rounded-xl border space-y-0.5 ${isLight ? 'bg-slate-50 border-slate-200' : 'bg-white/[0.03] border-white/5'}`}>
-                        <div className="font-semibold flex items-center justify-between">
-                          <span>{auditLogs[0].action.replace(/_/g, ' ')}</span>
-                          <span className="text-[10px] opacity-60">{auditLogs[0].module}</span>
-                        </div>
-                        <p className="text-[11px] opacity-75 truncate">{auditLogs[0].details}</p>
-                      </div>
-                    )}
-                  </div>
-                  <div className="pt-1 text-center">
-                    <Link
-                      href="/erp/inquiries"
-                      onClick={() => setNotificationsOpen(false)}
-                      className="text-[11px] text-[#0038B8] dark:text-[#FFB800] hover:underline font-bold inline-block"
-                    >
-                      View All Inquiries →
-                    </Link>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
-          {/* 5. Sign Out */}
+          {/* Sign Out */}
           <button
             onClick={async () => {
               await logout();
@@ -742,15 +609,15 @@ export default function ERPLayoutContent({ children }: { children: React.ReactNo
         </div>
       </header>
 
-      {/* Main Workspace with Sidebar */}
-      <div className="flex-1 flex overflow-hidden">
+      {/* Main Workspace with Fixed/Scrollable Sidebar */}
+      <div className="flex-1 flex min-h-0 overflow-hidden">
         {/* Sidebar */}
         <aside
-          className={`fixed inset-y-0 left-0 z-30 w-64 border-r pt-20 lg:pt-0 transform transition-all duration-300 ease-in-out lg:static lg:translate-x-0 ${
+          className={`fixed inset-y-0 left-0 z-30 w-64 shrink-0 border-r pt-20 lg:pt-0 transform transition-all duration-300 ease-in-out lg:static lg:translate-x-0 lg:h-full ${
             isLight ? 'bg-white border-slate-200' : 'bg-[#070c18] border-white/10'
           } ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
         >
-          <div className="h-full flex flex-col justify-between p-4 overflow-y-auto">
+          <div className="h-full flex flex-col justify-between p-4 overflow-y-auto custom-scrollbar">
             <div className="space-y-6">
               {[
                 { title: 'Main Navigation', items: PRIMARY_NAV, accent: true },
@@ -810,7 +677,7 @@ export default function ERPLayoutContent({ children }: { children: React.ReactNo
 
         {/* Content Viewport */}
         <main
-          className={`erp-main flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 transition-colors duration-300 ${
+          className={`erp-main flex-1 min-w-0 h-full overflow-y-auto custom-scrollbar p-4 sm:p-6 lg:p-8 transition-colors duration-300 ${
             isLight
               ? 'bg-gradient-to-b from-[#f4f6fb] to-[#eef2f8]'
               : 'bg-gradient-to-b from-[#050811] via-[#070d1d] to-[#050811]'
@@ -870,130 +737,146 @@ export default function ERPLayoutContent({ children }: { children: React.ReactNo
               </button>
             </div>
 
-            {/* Profile & Security Details */}
-            <div className="grid grid-cols-2 gap-3 text-xs">
-              <div className="p-3 rounded-xl bg-white/[0.03] border border-white/5 space-y-1">
-                <span className="text-[10px] text-zinc-400 uppercase font-semibold">Staff Identity ID</span>
-                <div className="font-mono font-bold text-white text-xs">{user?.id || 'EMP-CONTEC-014'}</div>
-              </div>
-
-              <div className="p-3 rounded-xl bg-white/[0.03] border border-white/5 space-y-1">
-                <span className="text-[10px] text-zinc-400 uppercase font-semibold">Email Contact</span>
-                <div className="font-bold text-white text-xs truncate">{user?.email || 'elena.vance@contec.lk'}</div>
-              </div>
-
-              <div className="p-3 rounded-xl bg-white/[0.03] border border-white/5 space-y-1">
-                <span className="text-[10px] text-zinc-400 uppercase font-semibold">2FA Security</span>
-                <div className="font-bold text-emerald-400 text-xs flex items-center gap-1">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  <span>Hardware &amp; TOTP Active</span>
+            {/* Profile Management Form */}
+            <form onSubmit={handleUpdatePassword} className="space-y-4 pt-2 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] font-semibold text-zinc-300 mb-1">Full Name</label>
+                  <input
+                    type="text"
+                    required
+                    value={profileName}
+                    onChange={(e) => setProfileName(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-[#FFB800]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-semibold text-zinc-300 mb-1">Title / Designation</label>
+                  <input
+                    type="text"
+                    value={profileTitle}
+                    onChange={(e) => setProfileTitle(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-[#FFB800]"
+                  />
+                </div>
+                <div className="p-3 rounded-xl bg-white/[0.03] border border-white/5">
+                  <span className="text-[10px] text-zinc-400 uppercase font-semibold block">Email Address</span>
+                  <div className="font-bold text-white text-xs truncate mt-0.5">{user?.email}</div>
+                </div>
+                <div className="p-3 rounded-xl bg-white/[0.03] border border-white/5">
+                  <span className="text-[10px] text-zinc-400 uppercase font-semibold block">Role &amp; Department</span>
+                  <div className="font-bold text-blue-300 text-xs mt-0.5">{user?.role?.replace(/_/g, ' ')} • {user?.department}</div>
                 </div>
               </div>
 
-              <div className="p-3 rounded-xl bg-white/[0.03] border border-white/5 space-y-1">
-                <span className="text-[10px] text-zinc-400 uppercase font-semibold">Session Encryption</span>
-                <div className="font-bold text-blue-300 text-xs">TLS 1.3 / AES-256 GCM</div>
-              </div>
-            </div>
-
-            {/* Active Security Clearances */}
-            <div>
-              <span className="text-[11px] font-bold text-zinc-300 uppercase tracking-wider block mb-2">
-                Active Staff Clearances
-              </span>
-              <div className="flex flex-wrap gap-1.5">
-                {[
-                  'Public Website Publishing',
-                  'Fixed BOQ & Contracts',
-                  'Engineering Drawings',
-                  'Finance & Invoices',
-                  'Site Progress & Labour',
-                  'Procurement Limits',
-                ].map((perm) => (
-                  <span
-                    key={perm}
-                    className="px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-blue-500/10 border border-blue-500/20 text-blue-300"
-                  >
-                    ✓ {perm}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Change Password Form */}
-            <form onSubmit={handleUpdatePassword} className="space-y-3 pt-3 border-t border-white/10 text-xs">
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-white flex items-center gap-1.5">
-                  <Key className="w-3.5 h-3.5 text-[#FFB800]" />
-                  <span>Update Account Password</span>
-                </span>
+              {/* 2FA Toggle */}
+              <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-between gap-3">
+                <div>
+                  <div className="font-bold text-white flex items-center gap-1.5">
+                    <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                    <span>Two-Factor Authentication (2FA)</span>
+                  </div>
+                  <div className="text-[11px] text-zinc-400 mt-0.5">
+                    {profileMfa ? '2FA verification is enabled for your account.' : 'Enable extra sign-in verification for this account.'}
+                  </div>
+                </div>
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="text-[11px] text-zinc-400 hover:text-white flex items-center gap-1"
+                  onClick={() => setProfileMfa((v) => !v)}
+                  className={`px-3.5 py-1.5 rounded-xl text-[11px] font-bold border transition-all cursor-pointer shrink-0 ${
+                    profileMfa
+                      ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300'
+                      : 'bg-white/5 border-white/15 text-zinc-300 hover:text-white'
+                  }`}
                 >
-                  {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-                  <span>{showPassword ? 'Hide' : 'Show'}</span>
+                  {profileMfa ? 'Enabled' : 'Enable 2FA'}
                 </button>
               </div>
 
-              {passwordStatus && (
-                <div
-                  className={`p-2.5 rounded-xl text-xs font-semibold flex items-center gap-2 ${
-                    passwordStatus.type === 'success'
-                      ? 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-300'
-                      : 'bg-red-500/15 border border-red-500/30 text-red-300'
-                  }`}
+              {/* Password Change Section */}
+              <div className="space-y-3 pt-3 border-t border-white/10">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-white flex items-center gap-1.5">
+                    <Key className="w-3.5 h-3.5 text-[#FFB800]" />
+                    <span>Change Password (Optional)</span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="text-[11px] text-zinc-300 hover:text-white flex items-center gap-1 px-2 py-1 rounded-lg bg-white/5 cursor-pointer"
+                  >
+                    {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                    <span>{showPassword ? 'Hide Password' : 'Show Password'}</span>
+                  </button>
+                </div>
+
+                {passwordStatus && (
+                  <div
+                    className={`p-2.5 rounded-xl text-xs font-semibold flex items-center gap-2 ${
+                      passwordStatus.type === 'success'
+                        ? 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-300'
+                        : 'bg-red-500/15 border border-red-500/30 text-red-300'
+                    }`}
+                  >
+                    {passwordStatus.type === 'success' ? (
+                      <CheckCircle2 className="w-4 h-4 shrink-0" />
+                    ) : (
+                      <ShieldAlert className="w-4 h-4 shrink-0" />
+                    )}
+                    <span>{passwordStatus.msg}</span>
+                  </div>
+                )}
+
+                <div>
+                  <label className="block text-[11px] font-semibold text-zinc-400 mb-1">Current Password</label>
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    value={passwordForm.current}
+                    onChange={(e) => setPasswordForm({ ...passwordForm, current: e.target.value })}
+                    placeholder="Enter current password to change"
+                    className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white placeholder-zinc-500 focus:outline-none focus:border-[#FFB800]"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-2.5">
+                  <div>
+                    <label className="block text-[11px] font-semibold text-zinc-400 mb-1">New Password</label>
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      value={passwordForm.newPass}
+                      onChange={(e) => setPasswordForm({ ...passwordForm, newPass: e.target.value })}
+                      placeholder="Min 6 characters"
+                      className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white placeholder-zinc-500 focus:outline-none focus:border-[#FFB800]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-zinc-400 mb-1">Confirm New Password</label>
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      value={passwordForm.confirm}
+                      onChange={(e) => setPasswordForm({ ...passwordForm, confirm: e.target.value })}
+                      placeholder="Repeat new password"
+                      className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white placeholder-zinc-500 focus:outline-none focus:border-[#FFB800]"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-white/10">
+                <button
+                  type="button"
+                  onClick={() => setShowProfileModal(false)}
+                  className="px-4 py-2 rounded-xl bg-white/5 text-zinc-300 font-semibold cursor-pointer"
                 >
-                  {passwordStatus.type === 'success' ? (
-                    <CheckCircle2 className="w-4 h-4 shrink-0" />
-                  ) : (
-                    <ShieldAlert className="w-4 h-4 shrink-0" />
-                  )}
-                  <span>{passwordStatus.msg}</span>
-                </div>
-              )}
-
-              <div>
-                <label className="block text-[11px] font-semibold text-zinc-400 mb-1">Current Password</label>
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  value={passwordForm.current}
-                  onChange={(e) => setPasswordForm({ ...passwordForm, current: e.target.value })}
-                  placeholder="Enter current password"
-                  className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white placeholder-zinc-500 focus:outline-none focus:border-[#FFB800]"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-2.5">
-                <div>
-                  <label className="block text-[11px] font-semibold text-zinc-400 mb-1">New Password</label>
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    value={passwordForm.newPass}
-                    onChange={(e) => setPasswordForm({ ...passwordForm, newPass: e.target.value })}
-                    placeholder="Min 6 characters"
-                    className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white placeholder-zinc-500 focus:outline-none focus:border-[#FFB800]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[11px] font-semibold text-zinc-400 mb-1">Confirm New Password</label>
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    value={passwordForm.confirm}
-                    onChange={(e) => setPasswordForm({ ...passwordForm, confirm: e.target.value })}
-                    placeholder="Repeat new password"
-                    className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white placeholder-zinc-500 focus:outline-none focus:border-[#FFB800]"
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center justify-end gap-2 pt-2">
+                  Close
+                </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#0038B8] to-[#1D4ED8] hover:from-[#1D4ED8] text-white font-bold transition-all shadow-md shadow-blue-950/50 cursor-pointer"
+                  disabled={profileSaving}
+                  className="px-5 py-2 rounded-xl bg-[#0038B8] hover:bg-[#1D4ED8] text-white font-bold flex items-center gap-1.5 cursor-pointer disabled:opacity-60"
                 >
-                  Save New Password
+                  <Check className="w-4 h-4" />
+                  <span>{profileSaving ? 'Saving...' : 'Save Profile Changes'}</span>
                 </button>
               </div>
             </form>
