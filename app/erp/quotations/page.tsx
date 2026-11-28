@@ -508,6 +508,7 @@ export default function QuotationsPage() {
           { key: 'termsAndConditions', label: 'Terms & Escalation Clauses', type: 'textarea', showInTable: false, optional: true },
           { key: 'images', label: 'Site Survey & BOQ Reference Drawings', type: 'images', showInTable: false, optional: true },
         ]}
+        onView={(item) => setSelectedQuotation(item as unknown as ConstructionQuotation)}
         renderRowActions={(item) => {
           const q = item as unknown as (typeof quotations)[number];
           return (
@@ -515,7 +516,7 @@ export default function QuotationsPage() {
               type="button"
               onClick={() => setSelectedQuotation(q)}
               className="px-2 py-1 rounded-lg bg-[#0038B8]/30 hover:bg-[#0038B8] text-white text-[11px] font-bold border border-blue-500/40 flex items-center gap-1 cursor-pointer"
-              title="PDF / Email"
+              title="Customize & Export PDF"
             >
               <Printer className="w-3 h-3 text-[#FFB800]" />
               <span>PDF</span>

@@ -30,7 +30,22 @@ interface UniversalRecordManagerProps<T extends Record<string, unknown>> {
   onCreate?: (data: Record<string, unknown>) => void;
   onUpdate?: (id: string, data: Record<string, unknown>) => void;
   onDelete?: (id: string) => void;
+  onView?: (item: T) => void;
   renderRowActions?: (item: T) => React.ReactNode;
+}
+
+function getStatusBadgeClass(val: unknown): string {
+  const s = String(val ?? '').toUpperCase();
+  if (['PAID', 'ACCEPTED', 'OPERATIONAL', 'COMPLIANT', 'PASS', 'FULFILLED', 'ACTIVE', 'COMPLETED', 'OPTIMAL', 'WON'].includes(s)) {
+    return 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300';
+  }
+  if (['OVERDUE', 'CRITICAL', 'FAIL', 'BREACH', 'CANCELLED', 'SUSPENDED', 'LOST', 'REPAIR'].includes(s)) {
+    return 'bg-red-500/20 border-red-500/40 text-red-300';
+  }
+  if (['PENDING', 'LOW_STOCK', 'MAINTENANCE', 'OBSERVATION', 'CONDITIONAL', 'DRAFT', 'NEGOTIATION'].includes(s)) {
+    return 'bg-amber-500/20 border-amber-500/40 text-amber-300';
+  }
+  return 'bg-blue-500/15 border-blue-500/30 text-blue-300';
 }
 
 export default function UniversalRecordManager<T extends Record<string, unknown>>({
@@ -43,6 +58,7 @@ export default function UniversalRecordManager<T extends Record<string, unknown>
   onCreate,
   onUpdate,
   onDelete,
+  onView,
   renderRowActions,
 }: UniversalRecordManagerProps<T>) {
   const [localItems, setLocalItems] = useState<T[] | null>(null);
@@ -54,6 +70,7 @@ export default function UniversalRecordManager<T extends Record<string, unknown>
   const [viewMode, setViewMode] = useState<ViewMode>('GRID');
 
   const [viewingItem, setViewingItem] = useState<T | null>(null);
+  const [showEmptyOptionalInView, setShowEmptyOptionalInView] = useState(false);
   const [showFormModal, setShowFormModal] = useState(false);
   const [showOptionalFields, setShowOptionalFields] = useState(false);
   const [editingItem, setEditingItem] = useState<T | null>(null);
@@ -64,6 +81,15 @@ export default function UniversalRecordManager<T extends Record<string, unknown>
   const tableFields = fields.filter((f) => f.showInTable !== false && f.type !== 'images').slice(0, 6);
   const coreFields = fields.filter((f) => !f.optional);
   const optionalFields = fields.filter((f) => f.optional);
+
+  const handleView = (item: T) => {
+    if (onView) {
+      onView(item);
+      return;
+    }
+    setShowEmptyOptionalInView(false);
+    setViewingItem(item);
+  };
 
   const handleOpenCreate = () => {
     setEditingItem(null);
@@ -260,7 +286,7 @@ export default function UniversalRecordManager<T extends Record<string, unknown>
                   <td className="p-3.5 text-right">
                     <div className="inline-flex items-center gap-1">
                       {renderRowActions && renderRowActions(item)}
-                      <button type="button" onClick={() => setViewingItem(item)} className="p-1.5 rounded-lg bg-white/5 hover:bg-white/15 text-emerald-400 cursor-pointer" title="View"><Eye className="w-3.5 h-3.5" /></button>
+                      <button type="button" onClick={() => handleView(item)} className="p-1.5 rounded-lg bg-white/5 hover:bg-white/15 text-emerald-400 cursor-pointer" title="View"><Eye className="w-3.5 h-3.5" /></button>
                       <button type="button" onClick={() => handleOpenEdit(item)} className="p-1.5 rounded-lg bg-white/5 hover:bg-white/15 text-blue-400 cursor-pointer" title="Edit"><Edit3 className="w-3.5 h-3.5" /></button>
                       <button type="button" onClick={() => handleDelete(item)} className="p-1.5 rounded-lg bg-white/5 hover:bg-red-500/20 text-red-400 cursor-pointer" title="Delete"><Trash2 className="w-3.5 h-3.5" /></button>
                     </div>
@@ -289,11 +315,15 @@ export default function UniversalRecordManager<T extends Record<string, unknown>
             >
               <div className="space-y-1.5 min-w-0">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span className="text-sm font-bold text-white truncate">
+                  <button
+                    type="button"
+                    onClick={() => handleView(item)}
+                    className="text-sm font-bold text-white hover:text-[#FFB800] transition-colors truncate text-left cursor-pointer"
+                  >
                     {formatVal(titleField, item[titleField.key])}
-                  </span>
+                  </button>
                   {badgeField && (
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-300 shrink-0">
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border shrink-0 ${getStatusBadgeClass(item[badgeField.key])}`}>
                       {formatVal(badgeField, item[badgeField.key])}
                     </span>
                   )}
@@ -319,7 +349,7 @@ export default function UniversalRecordManager<T extends Record<string, unknown>
               <div className="flex items-center justify-between gap-2 pt-2 border-t border-white/5 shrink-0">
                 <div className="flex items-center gap-1 flex-wrap">
                   {renderRowActions && renderRowActions(item)}
-                  <button type="button" onClick={() => setViewingItem(item)} className="px-2 py-1 rounded-lg bg-white/5 hover:bg-white/15 text-emerald-400 text-[11px] font-semibold flex items-center gap-1 cursor-pointer">
+                  <button type="button" onClick={() => handleView(item)} className="px-2 py-1 rounded-lg bg-white/5 hover:bg-white/15 text-emerald-400 text-[11px] font-semibold flex items-center gap-1 cursor-pointer">
                     <Eye className="w-3 h-3" />
                     <span>View</span>
                   </button>
@@ -339,44 +369,124 @@ export default function UniversalRecordManager<T extends Record<string, unknown>
       )}
 
       {/* VIEW MODAL */}
-      {viewingItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-          <div className="w-full max-w-2xl bg-[#080f24] border border-blue-500/30 rounded-3xl p-6 shadow-2xl space-y-4 max-h-[88vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-white/10">
-              <h3 className="text-base font-bold text-white">{formatVal(titleField, viewingItem[titleField.key])}</h3>
-              <button type="button" onClick={() => setViewingItem(null)} className="p-1 text-zinc-400 hover:text-white cursor-pointer"><X className="w-5 h-5" /></button>
-            </div>
-            {fields
-              .filter((f) => f.type === 'images' && Array.isArray(viewingItem[f.key]) && (viewingItem[f.key] as string[]).length > 0)
-              .map((f) => (
-                <div key={f.key} className="space-y-2">
-                  <span className="text-[10px] uppercase font-bold text-zinc-400">{f.label}</span>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    {(viewingItem[f.key] as string[]).map((src, i) => (
-                      <a key={`${src}-${i}`} href={src} target="_blank" rel="noreferrer" className="block aspect-video rounded-xl overflow-hidden border border-white/10">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={src} alt={`Attachment ${i + 1}`} className="w-full h-full object-cover" />
-                      </a>
-                    ))}
+      {viewingItem && (() => {
+        const heroCurrencyField = fields.find((f) => f.isCurrency && !f.optional && viewingItem[f.key] !== undefined && viewingItem[f.key] !== null);
+        const nonImageFields = fields.filter((f) => f.type !== 'images' && f.key !== titleField.key && f.key !== badgeField?.key && f.key !== heroCurrencyField?.key);
+        const isEmptyVal = (f: FieldSchema, v: unknown) => v === null || v === undefined || v === '' || (f.optional && v === 0);
+        const populatedFields = nonImageFields.filter((f) => !isEmptyVal(f, viewingItem[f.key]));
+        const emptyOptionalCount = nonImageFields.filter((f) => f.optional && isEmptyVal(f, viewingItem[f.key])).length;
+        const visibleFields = showEmptyOptionalInView
+          ? nonImageFields
+          : nonImageFields.filter((f) => !f.optional || !isEmptyVal(f, viewingItem[f.key]));
+
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+            <div className="w-full max-w-2xl bg-[#080f24] border border-blue-500/30 rounded-3xl overflow-hidden shadow-2xl max-h-[88vh] flex flex-col">
+              {/* Executive Hero Header */}
+              <div className="p-6 pb-5 bg-gradient-to-r from-[#0c1633] via-[#091229] to-[#080f24] border-b border-white/10 flex flex-wrap items-start justify-between gap-4">
+                <div className="space-y-1.5 min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-400">{titleField.label}</span>
+                    {badgeField && viewingItem[badgeField.key] !== undefined && (
+                      <span className={`text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full border ${getStatusBadgeClass(viewingItem[badgeField.key])}`}>
+                        {formatVal(badgeField, viewingItem[badgeField.key])}
+                      </span>
+                    )}
                   </div>
+                  <h3 className="text-xl font-extrabold text-white break-words">
+                    {formatVal(titleField, viewingItem[titleField.key])}
+                  </h3>
                 </div>
-              ))}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-              {fields
-                .filter((f) => f.type !== 'images')
-                .map((f) => (
-                  <div key={f.key} className="p-3 rounded-xl bg-white/5 border border-white/5">
-                    <span className="text-zinc-400 block text-[10px] uppercase font-semibold">{f.label}</span>
-                    <span className="text-white font-semibold mt-0.5 block break-words">{formatVal(f, viewingItem[f.key])}</span>
-                  </div>
-                ))}
-            </div>
-            <div className="flex justify-end gap-2 pt-2 border-t border-white/10">
-              <button type="button" onClick={() => { setViewingItem(null); handleOpenEdit(viewingItem); }} className="px-4 py-2 rounded-xl bg-[#0038B8] text-white text-xs font-bold cursor-pointer">Edit Record</button>
+
+                <div className="flex items-start gap-3">
+                  {heroCurrencyField && (
+                    <div className="text-right px-3.5 py-2 rounded-2xl bg-white/[0.04] border border-white/10">
+                      <span className="text-[10px] font-mono uppercase text-zinc-400 block">{heroCurrencyField.label}</span>
+                      <span className="text-lg font-extrabold font-mono text-[#FFB800]">
+                        {formatVal(heroCurrencyField, viewingItem[heroCurrencyField.key])}
+                      </span>
+                    </div>
+                  )}
+                  <button type="button" onClick={() => setViewingItem(null)} className="p-1.5 rounded-xl bg-white/5 hover:bg-white/15 text-zinc-400 hover:text-white cursor-pointer">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Body */}
+              <div className="p-6 space-y-4 overflow-y-auto flex-1">
+                {fields
+                  .filter((f) => f.type === 'images' && Array.isArray(viewingItem[f.key]) && (viewingItem[f.key] as string[]).length > 0)
+                  .map((f) => (
+                    <div key={f.key} className="space-y-2">
+                      <span className="text-[10px] uppercase font-bold text-zinc-400">{f.label}</span>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                        {(viewingItem[f.key] as string[]).map((src, i) => (
+                          <a key={`${src}-${i}`} href={src} target="_blank" rel="noreferrer" className="block aspect-video rounded-xl overflow-hidden border border-white/10">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={src} alt={`Attachment ${i + 1}`} className="w-full h-full object-cover" />
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                  {visibleFields.map((f) => (
+                    <div
+                      key={f.key}
+                      className={`p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 ${
+                        f.type === 'textarea' ? 'sm:col-span-2' : ''
+                      }`}
+                    >
+                      <span className="text-zinc-400 block text-[10px] uppercase font-semibold tracking-wider">{f.label}</span>
+                      <span className={`mt-1 block break-words font-semibold ${f.isCurrency ? 'text-[#FFB800] font-mono text-sm' : 'text-white'}`}>
+                        {formatVal(f, viewingItem[f.key])}
+                      </span>
+                    </div>
+                  ))}
+                  {populatedFields.length === 0 && !showEmptyOptionalInView && (
+                    <div className="sm:col-span-2 p-4 rounded-xl bg-white/[0.02] border border-dashed border-white/10 text-center text-xs text-zinc-400">
+                      No additional details recorded yet.
+                    </div>
+                  )}
+                </div>
+
+                {emptyOptionalCount > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setShowEmptyOptionalInView((v) => !v)}
+                    className="text-[11px] font-semibold text-blue-300 hover:text-blue-200 flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <SlidersHorizontal className="w-3.5 h-3.5" />
+                    <span>
+                      {showEmptyOptionalInView
+                        ? 'Hide empty optional fields'
+                        : `Show ${emptyOptionalCount} empty optional field(s)`}
+                    </span>
+                  </button>
+                )}
+              </div>
+
+              {/* Footer Actions */}
+              <div className="p-4 px-6 bg-[#060c1d] border-t border-white/10 flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  {renderRowActions && renderRowActions(viewingItem)}
+                </div>
+                <div className="flex items-center gap-2">
+                  <button type="button" onClick={() => setViewingItem(null)} className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-zinc-300 text-xs font-semibold cursor-pointer">
+                    Close
+                  </button>
+                  <button type="button" onClick={() => { setViewingItem(null); handleOpenEdit(viewingItem); }} className="px-4 py-2 rounded-xl bg-[#0038B8] hover:bg-[#1D4ED8] text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer">
+                    <Edit3 className="w-3.5 h-3.5" />
+                    <span>Edit Record</span>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* CREATE / EDIT MODAL */}
       {showFormModal && (

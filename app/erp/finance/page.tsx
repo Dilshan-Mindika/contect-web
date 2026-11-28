@@ -379,35 +379,18 @@ export default function FinancePage() {
             onCreate={(d) => addInvoice({ clientName: String(d.clientName), projectName: String(d.projectName), issueDate: new Date().toISOString().split('T')[0], dueDate: String(d.dueDate || new Date().toISOString().split('T')[0]), items: [], subtotal: Number(d.total || 0), tax: 0, total: Number(d.total || 0), status: (d.status as InvoiceStatus) || 'PENDING' })}
             onUpdate={(id, d) => updateInvoice(id, d)}
             onDelete={(id) => deleteInvoice(id)}
+            onView={(item) => setStudioInvoice(item as unknown as Invoice)}
             renderRowActions={(item) => {
               const inv = item as unknown as (typeof filteredInvoices)[number];
-              return (
-                <>
-                  <button
-                    type="button"
-                    onClick={() => setStudioInvoice(inv)}
-                    className="px-2 py-1 rounded-lg bg-[#0038B8]/40 hover:bg-[#0038B8] text-[10px] text-white font-bold border border-blue-500/40 cursor-pointer"
-                  >
-                    Customize &amp; PDF
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setSelectedInvoice(inv)}
-                    className="px-2 py-1 rounded-lg bg-white/5 hover:bg-white/15 text-[10px] text-zinc-300 cursor-pointer"
-                  >
-                    Inspect
-                  </button>
-                  {inv.status !== 'PAID' && (
-                    <button
-                      type="button"
-                      onClick={() => updateInvoiceStatus(inv.id, 'PAID')}
-                      className="px-2 py-1 rounded-lg bg-emerald-600/30 hover:bg-emerald-600/50 text-[10px] text-emerald-300 font-bold border border-emerald-500/30 cursor-pointer"
-                    >
-                      Settle
-                    </button>
-                  )}
-                </>
-              );
+              return inv.status !== 'PAID' ? (
+                <button
+                  type="button"
+                  onClick={() => updateInvoiceStatus(inv.id, 'PAID')}
+                  className="px-2 py-1 rounded-lg bg-emerald-600/30 hover:bg-emerald-600/50 text-[10px] text-emerald-300 font-bold border border-emerald-500/30 cursor-pointer"
+                >
+                  Settle
+                </button>
+              ) : null;
             }}
           />
         </div>
